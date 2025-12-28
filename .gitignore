@@ -9,6 +9,7 @@ lerna-debug.log*
 
 frontend/node_modules
 backend/node_modules
+automation/node_modules
 backlend/.env
 
 dist
@@ -25,3 +26,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#Playwright
+automation/test-results
+automation/node_modules
+automation/playwright-report/
+automation/blob-report/
+automation/playwright/.cache/
+automation/playwright/.auth/
