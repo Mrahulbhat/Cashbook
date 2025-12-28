@@ -1,9 +1,7 @@
 import commonConstants from '../constants/commonConstants.js';
 
 export async function waitForResponse(page: any, urlPart: string, timeout?: number) {
-    await page.waitForResponse((response: any) =>
-        response.url().includes(urlPart) && response.status() === 200
-        , { timeout: timeout || 15000 });
+    await page.waitForResponse((response: any) => response.url().includes(urlPart) && response.status() === 200, { timeout: timeout || 15000 });
 }
 
 export async function navigateToPage(page: any, pageName: string) {
@@ -53,4 +51,3 @@ export async function navigateToPage(page: any, pageName: string) {
             return;
     }
 }
-

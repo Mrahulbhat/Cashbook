@@ -27,7 +27,12 @@ test.describe('Transaction Related Tests', () => {
         // assert default selection is expense
         await expect(transactionPage.expenseRadioBox).toBeChecked();
 
-        await transactionPage.inputFieldById('Amount').pressSequentially('1000');
+        await transactionPage.enterAmount('1000');
+
+        await transactionPage.selectAccount('Cash');
+
+        // await transactionPage.selectCategory('Food & Dining');
+
 
     });
 });

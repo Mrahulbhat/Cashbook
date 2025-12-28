@@ -213,7 +213,7 @@ const AddTransaction = () => {
                   Account *
                 </label>
                 <select
-                  data-testid="dropdown_container"
+                id="accountDropDown"
                   name="account"
                   value={formData.account}
                   onChange={handleInputChange}

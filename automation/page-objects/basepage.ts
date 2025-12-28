@@ -2,11 +2,9 @@ import { expect, Locator, Page } from '@playwright/test';
 
 export class BasePage {
     public page: Page;
-
     constructor(page: Page) {
         this.page = page;
     }
-
     setPage(newPage: Page) {
         this.page = newPage;
     }
@@ -20,9 +18,6 @@ export class BasePage {
     }
 
     //dropdown container
-    get dropdownContainer(): Locator {
-        return this.page.getByTestId("dropdown_container");
-    }
     get dropdownOptions(): Locator {
         return this.page.getByTestId("dropdown_option");
     }
@@ -42,4 +37,27 @@ export class BasePage {
     get lifetimeFilterButton(): Locator {
         return this.page.locator(`#lifetimeFilterBtn`);
     }
+
+    async enterAmount(amount: string) {
+        await expect(this.inputFieldById('Amount')).toBeVisible();
+        await this.inputFieldById('Amount').pressSequentially(amount);
+        await expect(this.inputFieldById('Amount')).toHaveValue(amount);
+    }
+
+    async selectAccount(optionText: string) {
+        const dropdownContainer = this.dropdownOptions;
+        await dropdownContainer.click();
+        await expect(this.page.getByTestId('dropdown_option')).toContainText('Cash');
+        await expect(this.page.getByTestId('dropdown_option')).toContainText('Bank Account');
+        const option = this.page.getByTestId('dropdown_option').filter({ hasText: optionText });
+        await option.click();
+    }
+
+    async selectCategory(optionText: string) {
+        const dropdownContainer = this.page.locator('#categoryDropDown');
+        await dropdownContainer.click();
+        const option = this.page.getByTestId('dropdown_option').filter({ hasText: optionText });
+        await option.click();
+    }
+
 }
