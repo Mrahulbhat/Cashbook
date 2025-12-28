@@ -48,7 +48,7 @@ test.describe('Cashbook Application Basic Tests', () => {
             await expect(tabLocator).toBeVisible();
             await tabLocator.click();
             try {
-                await waitForResponse(page, `/api/${tab.api}`,{ timeout: 5000 } );
+                await waitForResponse(page, `/api/${tab.api}`, 10000);
             }
             catch {
                 console.log('Its okay if no response is found for transfer tab');
