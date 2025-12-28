@@ -20,7 +20,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-    //   "https://service-care-kappa.vercel.app"
+      "https://cashbook-kappa.vercel.app"
     ],
     credentials: true,
   })
