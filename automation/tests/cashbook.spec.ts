@@ -8,15 +8,20 @@ test.describe('Cashbook Application Basic Tests', () => {
         await navigateToLoginPage(page);
     });
 
-    test('TC01 - Does the application start @BAT', async ({page,welcomepage}) => {
+    test('TC01 - Does the application start @BAT', async ({page,welcomePage,dashboardPage}) => {
         //Check if the welcome page loads, click on get Started button and verify navigation to login page
         //check if the frontend gets connected to backend
 
-        await expect(welcomepage.buttonByTestId('GetStarted')).toBeVisible();
-        await welcomepage.buttonByTestId('GetStarted').click();
+        await expect(welcomePage.buttonByTestId('GetStarted')).toBeVisible();
+        await welcomePage.buttonByTestId('GetStarted').click();
 
+        // wait for last url to load which confirms page is loaded with data from backend
         await page.waitForResponse(response =>
             response.url().includes('/api/account') && response.status() === 200
         );
+
+        await expect(dashboardPage.totalExpense).toBeVisible();
+        const totalExpense = await dashboardPage.totalExpense.textContent();
+        expect(totalExpense).toBeGreaterThan(0);
     });
 });

@@ -1,7 +1,7 @@
 import {expect,Locator,Page} from '@playwright/test';
 import { BasePage } from './basepage';
 
-export class Dashboard extends BasePage {
+export class DashboardPage extends BasePage {
     readonly page: Page;
 
     constructor(page: Page) {
@@ -14,6 +14,6 @@ export class Dashboard extends BasePage {
     }
 
 
-        
+
    
 }
