@@ -8,6 +8,7 @@ import AddTransaction from "./pages/AddTransaction";
 import Dashboard from "./pages/Dashboard";
 import AddAccount from "./pages/AddAccount";
 import AddCategory from "./pages/AddCategory";
+import Statistics from "./pages/Statistics";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -35,6 +36,7 @@ const App = () => {
           <Route path="/addTransaction" element={<AddTransaction />} />
           <Route path="/addAccount" element={<AddAccount />} />
           <Route path="/addCategory" element={<AddCategory />} />
+          <Route path='/stats' element={<Statistics/>}/>
         </Routes>
         <Toaster />
       </div>

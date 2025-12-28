@@ -298,6 +298,15 @@ const Dashboard = () => {
               </div>
               <span>Add Category</span>
             </button>
+            <button
+              onClick={() => navigate("/stats")}
+              className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-8 py-4 rounded-xl flex items-center gap-3 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-500/20"
+            >
+              <div className="p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors duration-300">
+                <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+              </div>
+              <span>View Statistics</span>
+            </button>
           </div>
 
           {/* Transactions Table */}
