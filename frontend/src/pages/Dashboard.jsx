@@ -62,7 +62,9 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const filteredTransactions = getFilteredTransactions();
+    const filteredTransactions = [...getFilteredTransactions()].sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    );
 
     if (filteredTransactions && filteredTransactions.length > 0) {
       // Sort by date (most recent first) and get last 5
@@ -138,8 +140,8 @@ const Dashboard = () => {
             <button
               onClick={() => setFilter("monthly")}
               className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "monthly"
-                  ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
             >
               Monthly
@@ -147,8 +149,8 @@ const Dashboard = () => {
             <button
               onClick={() => setFilter("yearly")}
               className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "yearly"
-                  ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
             >
               Yearly
@@ -156,8 +158,8 @@ const Dashboard = () => {
             <button
               onClick={() => setFilter("lifetime")}
               className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "lifetime"
-                  ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
             >
               Lifetime
@@ -265,8 +267,8 @@ const Dashboard = () => {
                         <td className="px-8 py-4">
                           <span
                             className={`font-bold text-lg ${transaction.type.toLowerCase() === "income"
-                                ? "text-green-600"
-                                : "text-red-600"
+                              ? "text-green-600"
+                              : "text-red-600"
                               }`}
                           >
                             {transaction.type.toLowerCase() === "income"
