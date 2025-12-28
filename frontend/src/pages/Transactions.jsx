@@ -131,7 +131,7 @@ const Transactions = () => {
           {/* Table Header */}
           <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-8 py-6">
             <h2 className="text-white text-2xl font-bold">All Transactions</h2>
-            <p className="text-gray-400 text-sm mt-1">
+            <p id="txnCount" className="text-gray-400 text-sm mt-1">
               {filteredTransactions.length} transaction(s) ({filter})
             </p>
           </div>
@@ -167,9 +167,9 @@ const Transactions = () => {
                 </thead>
                 <tbody>
                   {filteredTransactions.map((transaction) => (
-                    <tr
+                    <tr 
                       key={transaction._id}
-                      className="border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200"
+                      className="tablebody border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200"
                     >
                       {/* Type */}
                       <td className="px-8 py-4">

@@ -21,4 +21,7 @@ export class TransactionPage extends BasePage {
     get expenseRadioBox(): Locator {
         return this.page.locator('#expenseRadioBox');
     }
+    get txnCountOnTable(): Locator {
+        return this.page.locator('#txnCount');
+    }
 }
