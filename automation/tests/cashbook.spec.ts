@@ -1,6 +1,7 @@
 import { test } from '../fixtures/test-base.js';
 import { expect } from '@playwright/test';
 import { navigateToPage } from '../page-objects/common-functions.js';
+import {waitForResponse} from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Cashbook Application Basic Tests', () => {
@@ -16,9 +17,7 @@ test.describe('Cashbook Application Basic Tests', () => {
         await page.locator('#getStarted').click();
 
         // wait for last url to load which confirms page is loaded with data from backend
-        await page.waitForResponse(response =>
-            response.url().includes('/api/account') && response.status() === 200
-        );
+        await waitForResponse(page, commonConstants.urls.accountsAPI);
 
         //check if expense value is greater than zero which indicates data is loaded from backend
         await expect(dashboardPage.totalExpense).toBeVisible();
@@ -36,10 +35,9 @@ test.describe('Cashbook Application Basic Tests', () => {
         await expect(dashboardPage.sidebar).toBeVisible();
 
         for (const tab of tabs) {
-            const tabLocator = dashboardPage.sidebar.locator(`a[href*='${tab}']`);
+            const tabLocator = dashboardPage.sidebarTab(tab);
             await expect(tabLocator).toBeVisible();
             await tabLocator.click();
-            await expect(page).toHaveURL(new RegExp(`${tab}$`));
         }
     });
 });

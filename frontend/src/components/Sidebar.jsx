@@ -34,7 +34,7 @@ const Sidebar = () => {
             </button>
 
             {/* Sidebar */}
-            <div
+            <div id="sidebar"
                 className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-gradient-to-b from-gray-900 via-gray-900 to-black border-r border-gray-700/50 backdrop-blur-sm z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
                     } md:translate-x-0 md:relative md:top-0 md:h-auto md:w-64 md:z-30`}
             >

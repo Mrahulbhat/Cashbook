@@ -10,31 +10,31 @@ export async function navigateToPage(page: any, pageName: string) {
     switch (pageName) {
         case commonConstants.urls.baseURL:
             await page.goto(commonConstants.urls.baseURL);
-            await waitForResponse(page, '/api/account');
+            await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
         case commonConstants.pageName.DASHBOARD:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.DASHBOARD}`);
-            await waitForResponse(page, '/api/account');
+            await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
             case commonConstants.pageName.TRANSACTIONS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSACTIONS}`);
-            await waitForResponse(page, '/api/account');
+            await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
             case commonConstants.pageName.ACCOUNTS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.ACCOUNTS}`);
-            await waitForResponse(page, '/api/account');
+            await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
             case commonConstants.pageName.TRANSFER:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSFER}`);
-            await waitForResponse(page, '/api/account');
+            await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
             case commonConstants.pageName.CATEGORIES:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.CATEGORIES}`);
-            await waitForResponse(page, '/api/account');
+            await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
             case commonConstants.pageName.STATISTICS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.STATISTICS}`);
-            await waitForResponse(page, '/api/account');
+            await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
         default:
     }
