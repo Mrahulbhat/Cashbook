@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { axiosInstance as axios } from '../lib/axios';
 
 const Transfer = () => {
   const [sourceAccount, setSourceAccount] = useState('');
@@ -9,9 +9,9 @@ const Transfer = () => {
   const handleTransfer = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/transfer', {
-        sourceAccount,
-        destinationAccount,
+      const response = await axios.post('/transaction/transfer', {
+        fromAccountId: sourceAccount,
+        toAccountId: destinationAccount,
         amount,
       });
       alert(response.data.message);
@@ -19,21 +19,21 @@ const Transfer = () => {
       console.error(error);
       alert('Transfer failed');
     }
-  };
+  }; 
 
   return (
     <form onSubmit={handleTransfer}>
       <h2>Transfer Amount</h2>
       <input
         type="text"
-        placeholder="Source Account"
+        placeholder="Source Account ID"
         value={sourceAccount}
         onChange={(e) => setSourceAccount(e.target.value)}
         required
       />
       <input
         type="text"
-        placeholder="Destination Account"
+        placeholder="Destination Account ID"
         value={destinationAccount}
         onChange={(e) => setDestinationAccount(e.target.value)}
         required

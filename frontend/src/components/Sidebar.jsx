@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, TrendingUp, Wallet, Tag, Home } from "lucide-react";
+import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat } from "lucide-react"; 
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +11,7 @@ const Sidebar = () => {
         { name: "Dashboard", icon: Home, path: "/dashboard", id: "dashboard" },
         { name: "Transactions", icon: TrendingUp, path: "/transactions", id: "transactions" },
         { name: "Accounts", icon: Wallet, path: "/accounts", id: "accounts" },
+        { name: "Transfer", icon: Repeat, path: "/transfer", id: "transfer" },
         { name: "Categories", icon: Tag, path: "/categories", id: "categories" },
         { name: "Statistics", icon: TrendingUp, path: "/stats", id: "statistics" },
     ];

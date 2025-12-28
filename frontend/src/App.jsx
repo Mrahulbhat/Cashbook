@@ -14,6 +14,7 @@ import Statistics from "./pages/Statistics";
 import Transactions from "./pages/Transactions";
 import Accounts from "./pages/Accounts";
 import Categories from "./pages/Categories";
+import Transfer from "./pages/Transfer"; 
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -51,8 +52,9 @@ const App = () => {
             <Route path="/edit-transaction/:id" element={<EditTransaction />} />
             <Route path="/addAccount" element={<AddAccount />} />
             <Route path="/addCategory" element={<AddCategory />} />
+            <Route path="/transfer" element={<Transfer />} />
             <Route path='/stats' element={<Statistics/>}/>
-          </Routes>
+          </Routes> 
           <Toaster />
         </div>
       </div>
