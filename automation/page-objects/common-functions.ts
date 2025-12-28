@@ -8,35 +8,49 @@ export async function waitForResponse(page: any, urlPart: string) {
 
 export async function navigateToPage(page: any, pageName: string) {
     switch (pageName) {
+
         case commonConstants.urls.baseURL:
             await page.goto(commonConstants.urls.baseURL);
-            await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
+
         case commonConstants.pageName.DASHBOARD:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.DASHBOARD}`);
-            await waitForResponse(page, commonConstants.urls.accountsAPI);
+            await Promise.all([
+                waitForResponse(page, commonConstants.urls.accountsAPI),
+                waitForResponse(page, commonConstants.urls.transactionAPI)
+            ]);
             break;
-            case commonConstants.pageName.TRANSACTIONS:
+
+        case commonConstants.pageName.TRANSACTIONS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSACTIONS}`);
-            await waitForResponse(page, commonConstants.urls.accountsAPI);
+            await waitForResponse(page, commonConstants.urls.transactionAPI);
             break;
-            case commonConstants.pageName.ACCOUNTS:
+
+        case commonConstants.pageName.ACCOUNTS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.ACCOUNTS}`);
             await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
-            case commonConstants.pageName.TRANSFER:
+
+        case commonConstants.pageName.TRANSFER:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSFER}`);
             await waitForResponse(page, commonConstants.urls.accountsAPI);
             break;
-            case commonConstants.pageName.CATEGORIES:
+
+        case commonConstants.pageName.CATEGORIES:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.CATEGORIES}`);
-            await waitForResponse(page, commonConstants.urls.accountsAPI);
+            await waitForResponse(page, commonConstants.urls.categoriesAPI);
             break;
-            case commonConstants.pageName.STATISTICS:
+
+        case commonConstants.pageName.STATISTICS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.STATISTICS}`);
-            await waitForResponse(page, commonConstants.urls.accountsAPI);
+            await Promise.all([
+                waitForResponse(page, commonConstants.urls.categoriesAPI),
+                waitForResponse(page, commonConstants.urls.transactionAPI)
+            ]);
             break;
-        default:
+
+        default: console.error('Invalid page name provided for navigation.');
+        return;
     }
 }
 

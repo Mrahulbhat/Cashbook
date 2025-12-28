@@ -1,7 +1,7 @@
 import { test } from '../fixtures/test-base.js';
 import { expect } from '@playwright/test';
 import { navigateToPage } from '../page-objects/common-functions.js';
-import {waitForResponse} from '../page-objects/common-functions.js';
+import { waitForResponse } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Cashbook Application Basic Tests', () => {
@@ -30,14 +30,29 @@ test.describe('Cashbook Application Basic Tests', () => {
 
         //check if sidebar is visible and all tabs are clickable and navigate to correct pages
 
-        const tabs = ["dashboard", "transactions", "accounts", "transfer", "categories", "statistics"];
+        await navigateToPage(page, commonConstants.pageName.DASHBOARD);
+
+        const tabs = [
+            { tabname: "transactions", api: "transaction",locator: },
+            { tabname: "accounts", api: "accounts" },
+            { tabname: "transfer", api: "accounts" },
+            { tabname: "categories", api: "categories" },
+            { tabname: "statistics", api: "categories" },
+            { tabname: "dashboard", api: "accounts" },
+        ];
 
         await expect(dashboardPage.sidebar).toBeVisible();
 
         for (const tab of tabs) {
-            const tabLocator = dashboardPage.sidebarTab(tab);
+            const tabLocator = dashboardPage.sidebarTab(tab.tabname);
             await expect(tabLocator).toBeVisible();
             await tabLocator.click();
+            try {
+                await waitForResponse(page, `/api/${tab.api}`);
+            }
+            catch{
+                console.log('Its okay if no response is found for transfer tab');
+            }
         }
     });
 });

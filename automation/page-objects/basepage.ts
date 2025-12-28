@@ -10,4 +10,8 @@ export class BasePage {
     setPage(newPage: Page) {
         this.page = newPage;
     }
+
+    get resultsTable(): Locator {
+        return this.page.locator('table[data-testid="resultsTable"]');
+    }
 }

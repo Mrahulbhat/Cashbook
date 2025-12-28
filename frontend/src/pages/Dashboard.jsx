@@ -214,7 +214,7 @@ const Dashboard = () => {
             {/* Table Content */}
             {lastTransactions.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table data-testid="resultsTable" className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200 bg-gray-50">
                       <th className="px-8 py-4 text-left text-sm font-semibold text-gray-700">

@@ -3,6 +3,8 @@ const commonConstants = {
     urls:{
         baseURL: 'https://cashbook-kappa.vercel.app',
         accountsAPI: '/api/account',
+        transactionAPI: '/api/transaction',
+        categoriesAPI: '/api/category'
     },
 
     pageName: {
