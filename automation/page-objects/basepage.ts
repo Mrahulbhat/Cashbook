@@ -14,4 +14,8 @@ export class BasePage {
     get resultsTable(): Locator {
         return this.page.locator('table[data-testid="resultsTable"]');
     }
+
+    get buttonElementById(): (id: string) => Locator {
+        return (id: string) => this.page.locator(`#${id}`);
+    }
 }

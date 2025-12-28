@@ -66,6 +66,7 @@ const Accounts = () => {
             <p className="text-gray-400">Manage your financial accounts</p>
           </div>
           <button
+          id="addAccountBtn"
             onClick={() => navigate("/addAccount")}
             className="mt-4 sm:mt-0 group bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25"
           >

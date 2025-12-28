@@ -26,15 +26,15 @@ test.describe('Cashbook Application Basic Tests', () => {
         expect(totalExpenseValue).toBeGreaterThan(0);
     });
 
-    test('TC02 - Verify Sidebar Functionality @BAT', async ({ page, dashboardPage }) => {
+    test('TC02 - Verify Sidebar Functionality @BAT', async ({ page, dashboardPage,transactionPage }) => {
 
         //check if sidebar is visible and all tabs are clickable and navigate to correct pages
 
         await navigateToPage(page, commonConstants.pageName.DASHBOARD);
 
         const tabs = [
-            { tabname: "transactions", api: "transaction",locator: },
-            { tabname: "accounts", api: "accounts" },
+            { tabname: "transactions", api: "transaction",locator: transactionPage.addTransactionBtn },
+            { tabname: "accounts", api: "accounts", locator: page },
             { tabname: "transfer", api: "accounts" },
             { tabname: "categories", api: "categories" },
             { tabname: "statistics", api: "categories" },

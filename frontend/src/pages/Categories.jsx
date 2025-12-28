@@ -72,7 +72,7 @@ const Categories = () => {
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Categories</h1>
             <p className="text-gray-400">Organize your income and expenses</p>
           </div>
-          <button
+          <button id="addCategoryBtn"
             onClick={() => navigate("/addCategory")}
             className="mt-4 sm:mt-0 group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25"
           >

@@ -83,7 +83,7 @@ const Transactions = () => {
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Transactions</h1>
             <p className="text-gray-400">Manage and view all your transactions</p>
           </div>
-          <button
+          <button id="addTransactionBtn"
             onClick={() => navigate("/addTransaction")}
             className="mt-4 sm:mt-0 group bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25"
           >
