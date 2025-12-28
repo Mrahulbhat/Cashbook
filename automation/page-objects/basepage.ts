@@ -73,6 +73,7 @@ export class BasePage {
         expect(optionIndex).toBeGreaterThanOrEqual(0);
         await this.accountDropdownContainer.selectOption({ index: optionIndex });
         await this.page.waitForTimeout(500);
+        await expect(this.accountDropdownContainer).toHaveText(optionText);
     }
 
     async selectCategory(optionText: string) {
@@ -84,13 +85,14 @@ export class BasePage {
         const normalizedOptions = rawOptions.map(text =>
             text.replace(/\s*\(.*?\)/, '').trim()
         );
-        expect(normalizedOptions).toContain('Food');
+        expect(normalizedOptions).toContain(optionText);
         const optionIndex = normalizedOptions.findIndex(
             text => text === optionText
         );
         expect(optionIndex).toBeGreaterThanOrEqual(0);
         await this.categoryDropdownContainer.selectOption({ index: optionIndex });
         await this.page.waitForTimeout(500);
+        await expect(this.categoryDropdownContainer).toHaveText(optionText);
     }
 
     async selectDate(dateString: string = new Date().toISOString().split('T')[0]) {

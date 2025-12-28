@@ -36,6 +36,8 @@ test.describe('Transaction Related Tests', () => {
 
         await transactionPage.selectCategory('Fuel');
 
+        await transactionPage.selectDate('2025-12-29');
+
         await transactionPage.inputFieldById('description').pressSequentially('TEST AUTOMATION');
 
         await expect(transactionPage.cancelButton).toBeVisible();
@@ -43,8 +45,8 @@ test.describe('Transaction Related Tests', () => {
         await transactionPage.saveButton.click();
 
         await Promise.all([
-            page.waitForResponse(commonConstants.urls.transactionAPI),
-            expect(page.getByText(commonConstants.toastMessages.transactionCreated)).toBeVisible()
+            page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newTransactionAPI) && response.status() === 201, { timeout: 15000 }),
+            expect(page.getByText(commonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
         ]);
 
         //page will be redirected to dashboard page after creation
