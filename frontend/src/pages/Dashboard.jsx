@@ -131,14 +131,7 @@ const Dashboard = () => {
       </div>
 
       <div className="relative z-10 p-4 sm:p-8 pb-20">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2">
-              Dashboard
-            </h1>
-            <p className="text-gray-400">Manage your finances at a glance</p>
-          </div>
+        <div className="max-w-6xl mx-auto">         
 
           {/* Accounts Section */}
           <div className="mb-8">

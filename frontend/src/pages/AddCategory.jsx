@@ -124,7 +124,7 @@ const AddCategory = () => {
                   placeholder="e.g., Groceries, Salary, Rent"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border-2 border-gray-300 bg-white text-gray-900 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all hover:border-gray-400"
                   required
                 />
                 <p className="text-gray-500 text-xs mt-1">
@@ -172,7 +172,7 @@ const AddCategory = () => {
                   name="parentCategory"
                   value={formData.parentCategory}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border-2 border-gray-300 bg-white text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all hover:border-gray-400"
                   required
                 >
                   <option value="">Select a parent category</option>
@@ -204,7 +204,7 @@ const AddCategory = () => {
                     onChange={handleInputChange}
                     step="0.01"
                     min="0"
-                    className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-300 bg-white text-gray-900 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all hover:border-gray-400"
                   />
                 </div>
                 <p className="text-gray-500 text-xs mt-1">
