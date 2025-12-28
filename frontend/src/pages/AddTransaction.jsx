@@ -98,7 +98,7 @@ const AddTransaction = () => {
         date: new Date().toISOString().split("T")[0],
         account: "",
       });
-      
+
       // Navigate back
       setTimeout(() => {
         navigate("/dashboard");
@@ -163,7 +163,7 @@ const AddTransaction = () => {
                 <div className="flex gap-4">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
-                    id="incomeRadioBox"
+                      id="incomeRadioBox"
                       type="radio"
                       name="type"
                       value="income"
@@ -175,7 +175,7 @@ const AddTransaction = () => {
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
-                    id="expenseRadioBox"
+                      id="expenseRadioBox"
                       type="radio"
                       name="type"
                       value="expense"
@@ -194,7 +194,7 @@ const AddTransaction = () => {
                   Amount *
                 </label>
                 <input
-                id="AmountInputField"
+                  id="AmountInputField"
                   type="number"
                   name="amount"
                   placeholder="Enter amount"
@@ -213,7 +213,7 @@ const AddTransaction = () => {
                   Account *
                 </label>
                 <select
-                id="accountDropDown"
+                  id="accountDropDown"
                   name="account"
                   value={formData.account}
                   onChange={handleInputChange}
@@ -235,7 +235,7 @@ const AddTransaction = () => {
                   Category *
                 </label>
                 <select
-                id="categoryDropDown"
+                  id="categoryDropDown"
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
@@ -244,7 +244,7 @@ const AddTransaction = () => {
                 >
                   <option value="">Select a category</option>
                   {filteredCategories.map((cat) => (
-                    <option data-testid="dropdown_option" key={cat._id} value={cat.name}>
+                    <option data-testid="dropdown_option1" key={cat._id} value={cat.name}>
                       {cat.name}
                     </option>
                   ))}

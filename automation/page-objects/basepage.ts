@@ -21,6 +21,9 @@ export class BasePage {
     get dropdownOptions(): Locator {
         return this.page.getByTestId("dropdown_option");
     }
+    get dropdownOptions1(): Locator {
+        return this.page.getByTestId("dropdown_option1");
+    }
     get accountDropdownContainer(): Locator {
         return this.page.locator('#accountDropDown');
     }
@@ -68,11 +71,16 @@ export class BasePage {
         await this.categoryDropdownContainer.click();
         await this.dropdownOptions.first().waitFor({ state: 'attached' });
         const rawOptions = await this.dropdownOptions.allTextContents();
-        expect(rawOptions).toContain(optionText);
-        const optionIndex = rawOptions.findIndex(
+        // Normalize text (remove amount in brackets)
+        const normalizedOptions = rawOptions.map(text =>
+            text.replace(/\s*\(.*?\)/, '').trim()
+        );
+        expect(normalizedOptions).toContain('Food');
+        const optionIndex = normalizedOptions.findIndex(
             text => text === optionText
         );
         expect(optionIndex).toBeGreaterThanOrEqual(0);
         await this.categoryDropdownContainer.selectOption({ index: optionIndex });
     }
+
 }

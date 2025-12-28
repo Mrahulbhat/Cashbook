@@ -31,6 +31,8 @@ test.describe('Transaction Related Tests', () => {
 
         await transactionPage.selectAccount('Cash');
 
+        await page.waitForTimeout(500); 
+
         await transactionPage.selectCategory('Fuel');
 
 
