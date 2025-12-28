@@ -9,7 +9,7 @@ const Transactions = () => {
   const navigate = useNavigate();
   const { transactions, fetchTransactions, deleteTransaction, loading } =
     useTransactionStore();
-  const [filter, setFilter] = useState("lifetime");
+  const [filter, setFilter] = useState("monthly");
 
   useEffect(() => {
     loadData();
@@ -94,7 +94,7 @@ const Transactions = () => {
 
         {/* Filter Section */}
         <div className="mb-8 flex flex-wrap gap-3">
-          <button
+          <button id="monthlyFilterBtn"
             onClick={() => setFilter("monthly")}
             className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
               filter === "monthly"
@@ -104,7 +104,7 @@ const Transactions = () => {
           >
             Monthly
           </button>
-          <button
+          <button id="yearlyFilterBtn"
             onClick={() => setFilter("yearly")}
             className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
               filter === "yearly"
@@ -114,7 +114,7 @@ const Transactions = () => {
           >
             Yearly
           </button>
-          <button
+          <button id="lifetimeFilterBtn"
             onClick={() => setFilter("lifetime")}
             className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
               filter === "lifetime"

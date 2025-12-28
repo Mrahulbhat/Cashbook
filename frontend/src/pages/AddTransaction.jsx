@@ -129,7 +129,7 @@ const AddTransaction = () => {
 
       <div className="relative z-10 p-4 pb-20">
         {/* Back button */}
-        <button
+        <button id="BackBtn"
           className="group flex items-center gap-3 ml-2 mb-6 bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-700/50 hover:border-green-500/30 text-white px-6 py-3 rounded-xl hover:from-green-600/20 hover:to-emerald-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"
           onClick={() => navigate(-1)}
         >
@@ -154,7 +154,7 @@ const AddTransaction = () => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form id="addTransactionForm" onSubmit={handleSubmit} className="space-y-6">
               {/* Type Selection */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -163,6 +163,7 @@ const AddTransaction = () => {
                 <div className="flex gap-4">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
+                    id="incomeRadioBox"
                       type="radio"
                       name="type"
                       value="income"
@@ -174,6 +175,7 @@ const AddTransaction = () => {
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
+                    id="expenseRadioBox"
                       type="radio"
                       name="type"
                       value="expense"

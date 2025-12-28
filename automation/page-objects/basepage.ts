@@ -1,4 +1,4 @@
-import {expect,Locator,Page} from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 export class BasePage {
     public page: Page;
@@ -15,7 +15,19 @@ export class BasePage {
         return this.page.locator('table[data-testid="resultsTable"]');
     }
 
-    get buttonElementById(): (id: string) => Locator {
-        return (id: string) => this.page.locator(`#${id}`);
+    // buttons ==============================================================================
+
+    get backButton(): Locator {
+        return this.page.locator('#BackBtn');
+    }
+
+    get monthlyFilterButton(): Locator {
+        return this.page.locator(`#monthlyFilterBtn`);  
+    }
+    get yearlyFilterButton(): Locator {
+        return this.page.locator(`#yearlyFilterBtn`);
+    }
+    get lifetimeFilterButton(): Locator {
+        return this.page.locator(`#lifetimeFilterBtn`);
     }
 }
