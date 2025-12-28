@@ -67,11 +67,16 @@ test.describe('Transaction Related Tests', () => {
 
         // Verify if all details are correct in the latest transaction row
         const latestRow = page.locator('tr.tablebody').first();
-        await expect(latestRow).toContainText(type);
+        await expect(latestRow).toContainText(type.toLowerCase());
         await expect(latestRow).toContainText(categoryName);
         await expect(latestRow).toContainText(accountName);
-        await expect(latestRow).toContainText(amount);
+        await expect(latestRow).toContainText(`₹${Number(amount).toLocaleString('en-IN')}`);
         await expect(latestRow).toContainText(description);
-        await expect(latestRow).toContainText(date);
+        const formattedDate = new Date(date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+        await expect(latestRow).toContainText(formattedDate);
     });
 });

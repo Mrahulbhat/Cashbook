@@ -81,17 +81,22 @@ export class BasePage {
         const dropdownOptions = this.categoryDropdownOptions;
         await dropdownOptions.first().waitFor({ state: 'attached' });
         const rawOptions = await dropdownOptions.allTextContents();
+        console.log('Category Options:', rawOptions);
+
         // Normalize text (remove amount in brackets)
         const normalizedOptions = rawOptions.map(text =>
             text.replace(/\s*\(.*?\)/, '').trim()
         );
+        console.log('Normalized Category Options:', normalizedOptions);
         expect(normalizedOptions).toContain(optionText);
         const optionIndex = normalizedOptions.findIndex(
             text => text === optionText
         );
         expect(optionIndex).toBeGreaterThanOrEqual(0);
+        await this.page.pause();
         await this.categoryDropdownContainer.selectOption({ index: optionIndex });
         await this.page.waitForTimeout(500);
+        await this.page.pause();
         await expect(this.categoryDropdownContainer).toContainText(optionText);
     }
 
