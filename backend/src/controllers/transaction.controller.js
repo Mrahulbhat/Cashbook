@@ -1,6 +1,7 @@
 import Transaction from "../models/transaction.model.js";
 import Account from "../models/account.model.js";
 import Category from "../models/category.model.js";
+import mongoose from "mongoose";
 
 // Get all transactions
 export const getAllTransactions = async (req, res) => {
@@ -208,6 +209,94 @@ export const getTransactionsByCategory = async (req, res) => {
 
     const transactions = await Transaction.find({ category }).populate("account");
     res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Transfer amounts between accounts
+export const transferAmount = async (req, res) => {
+  const { fromAccountId, toAccountId, amount, category: categoryName = "Investment" } = req.body;
+
+  try {
+    // Validate input
+    if (!fromAccountId || !toAccountId || amount === undefined) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const amountNum = Number(amount);
+    if (Number.isNaN(amountNum) || amountNum <= 0) {
+      return res.status(400).json({ message: "Amount must be a positive number." });
+    }
+
+    // Start a mongoose session for atomicity
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Find accounts
+      const fromAccount = await Account.findById(fromAccountId).session(session);
+      const toAccount = await Account.findById(toAccountId).session(session);
+
+      if (!fromAccount || !toAccount) {
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(404).json({ message: "Account not found." });
+      }
+
+      // Check if sufficient balance
+      if (fromAccount.balance < amountNum) {
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(400).json({ message: "Insufficient balance." });
+      }
+
+      // Update balances
+      fromAccount.balance -= amountNum;
+      toAccount.balance += amountNum;
+
+      await fromAccount.save({ session });
+      await toAccount.save({ session });
+
+      // Ensure category exists (create if missing)
+      let category = await Category.findOne({ name: categoryName }).session(session);
+      if (!category) {
+        category = new Category({ name: categoryName, type: "expense", parentCategory: categoryName });
+        await category.save({ session });
+      }
+
+      const date = new Date();
+
+      // Create expense on fromAccount
+      const expense = new Transaction({
+        amount: amountNum,
+        type: "expense",
+        category: categoryName,
+        date,
+        account: fromAccountId,
+      });
+
+      // Create income on toAccount
+      const income = new Transaction({
+        amount: amountNum,
+        type: "income",
+        category: categoryName,
+        date,
+        account: toAccountId,
+      });
+
+      await expense.save({ session });
+      await income.save({ session });
+
+      await session.commitTransaction();
+      session.endSession();
+
+      res.status(200).json({ message: "Transfer successful.", expense, income });
+    } catch (err) {
+      await session.abortTransaction();
+      session.endSession();
+      throw err;
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

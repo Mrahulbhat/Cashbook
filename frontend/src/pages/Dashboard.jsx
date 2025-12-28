@@ -137,31 +137,28 @@ const Dashboard = () => {
           <div className="mb-8 flex flex-wrap gap-3">
             <button
               onClick={() => setFilter("monthly")}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
-                filter === "monthly"
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "monthly"
                   ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              }`}
+                }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setFilter("yearly")}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
-                filter === "yearly"
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "yearly"
                   ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              }`}
+                }`}
             >
               Yearly
             </button>
             <button
               onClick={() => setFilter("lifetime")}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
-                filter === "lifetime"
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "lifetime"
                   ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              }`}
+                }`}
             >
               Lifetime
             </button>
@@ -267,11 +264,10 @@ const Dashboard = () => {
                         {/* Amount */}
                         <td className="px-8 py-4">
                           <span
-                            className={`font-bold text-lg ${
-                              transaction.type.toLowerCase() === "income"
+                            className={`font-bold text-lg ${transaction.type.toLowerCase() === "income"
                                 ? "text-green-600"
                                 : "text-red-600"
-                            }`}
+                              }`}
                           >
                             {transaction.type.toLowerCase() === "income"
                               ? "+"
