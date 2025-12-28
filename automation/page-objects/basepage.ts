@@ -33,8 +33,14 @@ export class BasePage {
 
     // buttons =======================================================================================      
 
+    get saveButton(): Locator { 
+        return this.page.locator('#saveBtn');
+    }
     get backButton(): Locator {
         return this.page.locator('#BackBtn');
+    }
+    get cancelButton(): Locator {
+        return this.page.locator('#cancelBtn');
     }
     get monthlyFilterButton(): Locator {
         return this.page.locator(`#monthlyFilterBtn`);
@@ -66,6 +72,7 @@ export class BasePage {
         );
         expect(optionIndex).toBeGreaterThanOrEqual(0);
         await this.accountDropdownContainer.selectOption({ index: optionIndex });
+        await this.page.waitForTimeout(500);
     }
 
     async selectCategory(optionText: string) {
@@ -83,6 +90,6 @@ export class BasePage {
         );
         expect(optionIndex).toBeGreaterThanOrEqual(0);
         await this.categoryDropdownContainer.selectOption({ index: optionIndex });
+        await this.page.waitForTimeout(500);
     }
-
 }

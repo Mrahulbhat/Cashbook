@@ -64,6 +64,17 @@ const AddTransaction = () => {
     (cat) => cat.type.toLowerCase() === formData.type.toLowerCase()
   );
 
+  // Determine if all required fields are valid
+  const isFormValid = Boolean(
+    formData.amount &&
+    !isNaN(parseFloat(formData.amount)) &&
+    parseFloat(formData.amount) > 0 &&
+    formData.type &&
+    formData.category &&
+    formData.account &&
+    formData.date
+  );
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -272,6 +283,7 @@ const AddTransaction = () => {
                   Description (Optional)
                 </label>
                 <textarea
+                id="descriptionInputField"
                   name="description"
                   placeholder="Add any notes about this transaction..."
                   value={formData.description}
@@ -284,6 +296,7 @@ const AddTransaction = () => {
               {/* Action Buttons */}
               <div className="flex gap-4 pt-4">
                 <button
+                id="cancelBtn"
                   type="button"
                   onClick={() => navigate(-1)}
                   className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
@@ -291,9 +304,11 @@ const AddTransaction = () => {
                   Cancel
                 </button>
                 <button
+                id="saveBtn"
                   type="submit"
-                  disabled={loading}
-                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:from-gray-400 disabled:to-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+                  disabled={loading || !isFormValid}
+                  aria-disabled={loading || !isFormValid}
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>

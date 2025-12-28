@@ -21,6 +21,9 @@ test.describe('Transaction Related Tests', () => {
         await expect(transactionPage.backButton).toBeVisible();
         await expect(transactionPage.addTransactionForm).toBeVisible();
 
+        //click on save button with empty form to check validation
+        await expect(transactionPage.saveButton).toBeDisabled();
+
         await expect(transactionPage.incomeRadioBox).toBeVisible();
         await expect(transactionPage.expenseRadioBox).toBeVisible();
 
@@ -31,10 +34,13 @@ test.describe('Transaction Related Tests', () => {
 
         await transactionPage.selectAccount('Cash');
 
-        await page.waitForTimeout(500); 
-
         await transactionPage.selectCategory('Fuel');
 
+        await transactionPage.inputFieldById('Description').pressSequentially('TEST AUTOMATION');
+
+        await expect(transactionPage.cancelButton).toBeVisible();
+        await expect(transactionPage.saveButton).toBeEnabled();
+        await transactionPage.saveButton.click();
 
     });
 });
