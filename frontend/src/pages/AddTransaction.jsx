@@ -194,6 +194,7 @@ const AddTransaction = () => {
                   Amount *
                 </label>
                 <input
+                id="AmountInputField"
                   type="number"
                   name="amount"
                   placeholder="Enter amount"

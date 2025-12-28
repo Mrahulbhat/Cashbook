@@ -15,6 +15,10 @@ export class BasePage {
         return this.page.locator('table[data-testid="resultsTable"]');
     }
 
+    inputFieldById(name: string): Locator {
+        return this.page.locator(`#${name}InputField`);
+    }
+
     // buttons ==============================================================================
 
     get backButton(): Locator {
@@ -22,7 +26,7 @@ export class BasePage {
     }
 
     get monthlyFilterButton(): Locator {
-        return this.page.locator(`#monthlyFilterBtn`);  
+        return this.page.locator(`#monthlyFilterBtn`);
     }
     get yearlyFilterButton(): Locator {
         return this.page.locator(`#yearlyFilterBtn`);
