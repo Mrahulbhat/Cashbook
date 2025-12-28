@@ -131,51 +131,7 @@ const Dashboard = () => {
       </div>
 
       <div className="relative z-10 p-4 sm:p-8 pb-20">
-        <div className="max-w-6xl mx-auto">         
-
-          {/* Accounts Section */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-4">Your Accounts</h2>
-            {accounts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {accounts.map((account) => (
-                  <div
-                    key={account._id}
-                    className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/50 rounded-2xl p-6 backdrop-blur-sm hover:border-green-500/30 transition-all duration-300 transform hover:scale-105"
-                  >
-                    <h3 className="text-gray-300 font-semibold text-sm mb-2">
-                      {account.name}
-                    </h3>
-                    <p className="text-2xl font-bold text-white">
-                      {formatCurrency(account.balance)}
-                    </p>
-                    <p className="text-gray-400 text-xs mt-2">Balance</p>
-                  </div>
-                ))}
-                {/* Total Balance Card */}
-                <div className="bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border border-emerald-500/30 rounded-2xl p-6 backdrop-blur-sm">
-                  <h3 className="text-emerald-400 font-semibold text-sm mb-2">
-                    Total Balance
-                  </h3>
-                  <p className="text-2xl font-bold text-white">
-                    {formatCurrency(getTotalAccountsBalance())}
-                  </p>
-                  <p className="text-emerald-400 text-xs mt-2">All Accounts</p>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-gray-800/50 border border-gray-600/50 rounded-2xl p-8 text-center backdrop-blur-sm">
-                <p className="text-gray-400 mb-4">No accounts yet</p>
-                <button
-                  onClick={() => navigate("/addAccount")}
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold px-6 py-2 rounded-lg inline-flex items-center gap-2 transition-all duration-300 transform hover:scale-105"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Account
-                </button>
-              </div>
-            )}
-          </div>
+        <div className="max-w-6xl mx-auto">
 
           {/* Filter Section */}
           <div className="mb-8 flex flex-wrap gap-3">
@@ -244,62 +200,6 @@ const Dashboard = () => {
               </p>
               <p className="text-red-400 text-xs mt-2 capitalize">{filter}</p>
             </div>
-
-            {/* Balance */}
-            <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-blue-400 font-semibold text-sm">Balance</h3>
-                <div className="p-2 bg-blue-500/20 rounded-lg">
-                  <Plus className="w-5 h-5 text-blue-400" />
-                </div>
-              </div>
-              <p className="text-2xl font-bold text-white">
-                {formatCurrency(stats.balance)}
-              </p>
-              <p className="text-blue-400 text-xs mt-2 capitalize">{filter}</p>
-            </div>
-          </div>
-
-          {/* Add Transaction Button */}
-          <div className="mb-8 flex flex-wrap gap-4">
-            <button
-              onClick={() => navigate("/addTransaction")}
-              className="group bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold px-8 py-4 rounded-xl flex items-center gap-3 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25 border border-green-500/20"
-            >
-              <div className="p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors duration-300">
-                <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-              </div>
-              <span>Add New Transaction</span>
-            </button>
-
-            <button
-              onClick={() => navigate("/addAccount")}
-              className="group bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold px-8 py-4 rounded-xl flex items-center gap-3 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 border border-blue-500/20"
-            >
-              <div className="p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors duration-300">
-                <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-              </div>
-              <span>Add Account</span>
-            </button>
-
-            <button
-              onClick={() => navigate("/addCategory")}
-              className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-8 py-4 rounded-xl flex items-center gap-3 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-500/20"
-            >
-              <div className="p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors duration-300">
-                <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-              </div>
-              <span>Add Category</span>
-            </button>
-            <button
-              onClick={() => navigate("/stats")}
-              className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-8 py-4 rounded-xl flex items-center gap-3 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 border border-purple-500/20"
-            >
-              <div className="p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors duration-300">
-                <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-              </div>
-              <span>View Statistics</span>
-            </button>
           </div>
 
           {/* Transactions Table */}
