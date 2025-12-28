@@ -213,7 +213,7 @@ const AddTransaction = () => {
                   Account *
                 </label>
                 <select
-                  id="accountDropDown"
+                  id="accountDropdown"
                   name="account"
                   value={formData.account}
                   onChange={handleInputChange}
@@ -222,7 +222,7 @@ const AddTransaction = () => {
                 >
                   <option value="">Select an account</option>
                   {accounts.map((acc) => (
-                    <option data-testid="dropdown_option" key={acc._id} value={acc._id}>
+                    <option id="accountDropdownOptions" key={acc._id} value={acc._id}>
                       {acc.name} (₹{acc.balance})
                     </option>
                   ))}
@@ -235,7 +235,7 @@ const AddTransaction = () => {
                   Category *
                 </label>
                 <select
-                  id="categoryDropDown"
+                  id="categoryDropdown"
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
@@ -244,7 +244,7 @@ const AddTransaction = () => {
                 >
                   <option value="">Select a category</option>
                   {filteredCategories.map((cat) => (
-                    <option data-testid="dropdown_option" key={cat._id} value={cat.name}>
+                    <option id="categoryDropdownOptions" key={cat._id} value={cat.name}>
                       {cat.name}
                     </option>
                   ))}
