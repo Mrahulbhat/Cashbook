@@ -19,6 +19,14 @@ export class BasePage {
         return this.page.locator(`#${name}InputField`);
     }
 
+    //dropdown container
+    get dropdownContainer(): Locator {
+        return this.page.getByTestId("dropdown_container");
+    }
+    get dropdownOptions(): Locator {
+        return this.page.getByTestId("dropdown_option");
+    }
+
     // buttons ==============================================================================
 
     get backButton(): Locator {

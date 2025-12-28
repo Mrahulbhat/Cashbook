@@ -213,13 +213,14 @@ const AddTransaction = () => {
                   Account *
                 </label>
                 <select
+                  data-testid="dropdown_container"
                   name="account"
                   value={formData.account}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border-2 border-gray-300 bg-white text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-gray-400 transition-colors"
                   required
                 >
-                  <option value="">Select an account</option>
+                  <option data-testid="dropdown_option" value="">Select an account</option>
                   {accounts.map((acc) => (
                     <option key={acc._id} value={acc._id}>
                       {acc.name} (₹{acc.balance})
