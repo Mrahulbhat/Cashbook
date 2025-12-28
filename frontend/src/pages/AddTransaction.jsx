@@ -244,7 +244,7 @@ const AddTransaction = () => {
                 >
                   <option value="">Select a category</option>
                   {filteredCategories.map((cat) => (
-                    <option data-testid="dropdown_option1" key={cat._id} value={cat.name}>
+                    <option data-testid="dropdown_option" key={cat._id} value={cat.name}>
                       {cat.name}
                     </option>
                   ))}

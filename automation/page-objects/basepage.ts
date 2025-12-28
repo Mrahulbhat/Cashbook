@@ -18,12 +18,6 @@ export class BasePage {
     }
 
     //dropdown containers=============================================================================
-    get dropdownOptions(): Locator {
-        return this.page.getByTestId("dropdown_option");
-    }
-    get dropdownOptions1(): Locator {
-        return this.page.getByTestId("dropdown_option1");
-    }
     get accountDropdownContainer(): Locator {
         return this.page.locator('#accountDropDown');
     }
@@ -53,8 +47,9 @@ export class BasePage {
     }
     async selectAccount(optionText: string) {
         await this.accountDropdownContainer.click();
-        await this.dropdownOptions.first().waitFor({ state: 'attached' });
-        const rawOptions = await this.dropdownOptions.allTextContents();
+        const dropdownOptions = this.accountDropdownContainer.locator('[data-testid="dropdown_option"]');
+        await dropdownOptions.first().waitFor({ state: 'attached' });
+        const rawOptions = await dropdownOptions.allTextContents();
         // Normalize text (remove amount in brackets)
         const normalizedOptions = rawOptions.map(text =>
             text.replace(/\s*\(.*?\)/, '').trim()
@@ -69,8 +64,9 @@ export class BasePage {
 
     async selectCategory(optionText: string) {
         await this.categoryDropdownContainer.click();
-        await this.dropdownOptions.first().waitFor({ state: 'attached' });
-        const rawOptions = await this.dropdownOptions.allTextContents();
+        const dropdownOptions = this.categoryDropdownContainer.locator('[data-testid="dropdown_option"]');
+        await dropdownOptions.first().waitFor({ state: 'attached' });
+        const rawOptions = await dropdownOptions.allTextContents();
         // Normalize text (remove amount in brackets)
         const normalizedOptions = rawOptions.map(text =>
             text.replace(/\s*\(.*?\)/, '').trim()
