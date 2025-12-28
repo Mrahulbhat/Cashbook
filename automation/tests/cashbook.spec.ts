@@ -5,14 +5,12 @@ import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Cashbook Application Basic Tests', () => {
 
-    test.beforeEach(async ({ page }) => {
-        await navigateToPage(page, commonConstants.baseURL);
-    });
-
     test('TC01 - Does the application start @BAT', async ({ page, basePage, dashboardPage }) => {
 
         //Check if the welcome page loads, click on get Started button and verify navigation to login page
         //check if the frontend gets connected to backend
+
+        await navigateToPage(page, commonConstants.urls.baseURL);
 
         await expect(page.locator('#getStarted')).toBeVisible();
         await page.locator('#getStarted').click();
@@ -30,7 +28,10 @@ test.describe('Cashbook Application Basic Tests', () => {
     });
 
     test('TC02 - Verify Sidebar Functionality @BAT', async ({ page, dashboardPage }) => {
-        const tabs = [ "dashboard", "transactions", "accounts", "transfer", "categories", "statistics" ];
+
+        //check if sidebar is visible and all tabs are clickable and navigate to correct pages
+
+        const tabs = ["dashboard", "transactions", "accounts", "transfer", "categories", "statistics"];
 
         await expect(dashboardPage.sidebar).toBeVisible();
 

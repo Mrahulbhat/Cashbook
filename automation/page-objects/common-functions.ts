@@ -1,8 +1,42 @@
 import commonConstants from '../constants/commonConstants.js';
 
-export async function navigateToPage(page: any,pageName?: string) {
-    if(!pageName){
-        pageName = commonConstants.baseURL;
-    }
-    await page.goto(pageName);
+export async function waitForResponse(page: any, urlPart: string) {
+    await page.waitForResponse((response: any) =>
+        response.url().includes(urlPart) && response.status() === 200
+    );
 }
+
+export async function navigateToPage(page: any, pageName: string) {
+    switch (pageName) {
+        case commonConstants.urls.baseURL:
+            await page.goto(commonConstants.urls.baseURL);
+            await waitForResponse(page, '/api/account');
+            break;
+        case commonConstants.pageName.DASHBOARD:
+            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.DASHBOARD}`);
+            await waitForResponse(page, '/api/account');
+            break;
+            case commonConstants.pageName.TRANSACTIONS:
+            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSACTIONS}`);
+            await waitForResponse(page, '/api/account');
+            break;
+            case commonConstants.pageName.ACCOUNTS:
+            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.ACCOUNTS}`);
+            await waitForResponse(page, '/api/account');
+            break;
+            case commonConstants.pageName.TRANSFER:
+            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSFER}`);
+            await waitForResponse(page, '/api/account');
+            break;
+            case commonConstants.pageName.CATEGORIES:
+            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.CATEGORIES}`);
+            await waitForResponse(page, '/api/account');
+            break;
+            case commonConstants.pageName.STATISTICS:
+            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.STATISTICS}`);
+            await waitForResponse(page, '/api/account');
+            break;
+        default:
+    }
+}
+
