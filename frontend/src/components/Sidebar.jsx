@@ -49,6 +49,7 @@ const Sidebar = () => {
 
                         return (
                             <button
+                                id={tab.id}
                                 key={tab.id}
                                 onClick={() => handleNavigation(tab.path)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 transform ${active
