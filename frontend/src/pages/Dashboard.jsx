@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Loader, ArrowUpRight, ArrowDownLeft, Trash2, Edit2 } from "lucide-react";
 import { useTransactionStore } from "../store/useTransactionStore";
+import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { transactions, fetchTransactions, deleteTransaction, loading } =
     useTransactionStore();
+  const [accounts, setAccounts] = useState([]);
   const [lastTransactions, setLastTransactions] = useState([]);
+  const [filter, setFilter] = useState("lifetime"); // lifetime, yearly, monthly
   const [stats, setStats] = useState({
     totalIncome: 0,
     totalExpense: 0,
@@ -16,17 +19,54 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    loadTransactions();
+    loadData();
   }, []);
 
-  const loadTransactions = async () => {
+  const loadData = async () => {
     await fetchTransactions();
+    await fetchAccounts();
+  };
+
+  const fetchAccounts = async () => {
+    try {
+      const response = await axiosInstance.get("/account");
+      setAccounts(response.data);
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
+      toast.error("Failed to load accounts");
+    }
+  };
+
+  const getFilteredTransactions = () => {
+    if (!transactions || transactions.length === 0) return [];
+
+    const now = new Date();
+    let filtered = transactions;
+
+    if (filter === "monthly") {
+      filtered = transactions.filter((t) => {
+        const transDate = new Date(t.date);
+        return (
+          transDate.getMonth() === now.getMonth() &&
+          transDate.getFullYear() === now.getFullYear()
+        );
+      });
+    } else if (filter === "yearly") {
+      filtered = transactions.filter((t) => {
+        const transDate = new Date(t.date);
+        return transDate.getFullYear() === now.getFullYear();
+      });
+    }
+
+    return filtered;
   };
 
   useEffect(() => {
-    if (transactions && transactions.length > 0) {
+    const filteredTransactions = getFilteredTransactions();
+
+    if (filteredTransactions && filteredTransactions.length > 0) {
       // Sort by date (most recent first) and get last 5
-      const sorted = [...transactions].sort(
+      const sorted = [...filteredTransactions].sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
       setLastTransactions(sorted.slice(0, 5));
@@ -35,7 +75,7 @@ const Dashboard = () => {
       let totalIncome = 0;
       let totalExpense = 0;
 
-      transactions.forEach((t) => {
+      filteredTransactions.forEach((t) => {
         const amount = Number(t.amount);
         if (t.type.toLowerCase() === "income") {
           totalIncome += amount;
@@ -53,12 +93,12 @@ const Dashboard = () => {
       setLastTransactions([]);
       setStats({ totalIncome: 0, totalExpense: 0, balance: 0 });
     }
-  }, [transactions]);
+  }, [transactions, filter]);
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this transaction?")) {
       await deleteTransaction(id);
-      await loadTransactions();
+      await loadData();
     }
   };
 
@@ -76,6 +116,10 @@ const Dashboard = () => {
       currency: "INR",
       minimumFractionDigits: 2,
     }).format(amount);
+  };
+
+  const getTotalAccountsBalance = () => {
+    return accounts.reduce((sum, acc) => sum + (Number(acc.balance) || 0), 0);
   };
 
   return (
@@ -96,6 +140,84 @@ const Dashboard = () => {
             <p className="text-gray-400">Manage your finances at a glance</p>
           </div>
 
+          {/* Accounts Section */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-4">Your Accounts</h2>
+            {accounts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {accounts.map((account) => (
+                  <div
+                    key={account._id}
+                    className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/50 rounded-2xl p-6 backdrop-blur-sm hover:border-green-500/30 transition-all duration-300 transform hover:scale-105"
+                  >
+                    <h3 className="text-gray-300 font-semibold text-sm mb-2">
+                      {account.name}
+                    </h3>
+                    <p className="text-2xl font-bold text-white">
+                      {formatCurrency(account.balance)}
+                    </p>
+                    <p className="text-gray-400 text-xs mt-2">Balance</p>
+                  </div>
+                ))}
+                {/* Total Balance Card */}
+                <div className="bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border border-emerald-500/30 rounded-2xl p-6 backdrop-blur-sm">
+                  <h3 className="text-emerald-400 font-semibold text-sm mb-2">
+                    Total Balance
+                  </h3>
+                  <p className="text-2xl font-bold text-white">
+                    {formatCurrency(getTotalAccountsBalance())}
+                  </p>
+                  <p className="text-emerald-400 text-xs mt-2">All Accounts</p>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gray-800/50 border border-gray-600/50 rounded-2xl p-8 text-center backdrop-blur-sm">
+                <p className="text-gray-400 mb-4">No accounts yet</p>
+                <button
+                  onClick={() => navigate("/addAccount")}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold px-6 py-2 rounded-lg inline-flex items-center gap-2 transition-all duration-300 transform hover:scale-105"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Account
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Filter Section */}
+          <div className="mb-8 flex flex-wrap gap-3">
+            <button
+              onClick={() => setFilter("monthly")}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
+                filter === "monthly"
+                  ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
+                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setFilter("yearly")}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
+                filter === "yearly"
+                  ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
+                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
+            >
+              Yearly
+            </button>
+            <button
+              onClick={() => setFilter("lifetime")}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
+                filter === "lifetime"
+                  ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
+                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
+            >
+              Lifetime
+            </button>
+          </div>
+
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Total Income */}
@@ -111,6 +233,7 @@ const Dashboard = () => {
               <p className="text-2xl font-bold text-white">
                 {formatCurrency(stats.totalIncome)}
               </p>
+              <p className="text-green-400 text-xs mt-2 capitalize">{filter}</p>
             </div>
 
             {/* Total Expense */}
@@ -126,6 +249,7 @@ const Dashboard = () => {
               <p className="text-2xl font-bold text-white">
                 {formatCurrency(stats.totalExpense)}
               </p>
+              <p className="text-red-400 text-xs mt-2 capitalize">{filter}</p>
             </div>
 
             {/* Balance */}
@@ -139,6 +263,7 @@ const Dashboard = () => {
               <p className="text-2xl font-bold text-white">
                 {formatCurrency(stats.balance)}
               </p>
+              <p className="text-blue-400 text-xs mt-2 capitalize">{filter}</p>
             </div>
           </div>
 
@@ -182,7 +307,7 @@ const Dashboard = () => {
               <h2 className="text-white text-2xl font-bold">Recent Transactions</h2>
               <p className="text-gray-400 text-sm mt-1">
                 {lastTransactions.length > 0
-                  ? `Last ${lastTransactions.length} transactions`
+                  ? `Last ${lastTransactions.length} transactions (${filter})`
                   : "No transactions yet"}
               </p>
             </div>
