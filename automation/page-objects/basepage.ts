@@ -17,17 +17,19 @@ export class BasePage {
         return this.page.locator(`#${name}InputField`);
     }
 
-    //dropdown container
+    //dropdown containers=============================================================================
     get dropdownOptions(): Locator {
         return this.page.getByTestId("dropdown_option");
     }
+    get accountDropdownContainer(): Locator {
+        return this.page.locator('#accountDropDown');
+    }
 
-    // buttons ==============================================================================
+    // buttons =======================================================================================      
 
     get backButton(): Locator {
         return this.page.locator('#BackBtn');
     }
-
     get monthlyFilterButton(): Locator {
         return this.page.locator(`#monthlyFilterBtn`);
     }
@@ -43,21 +45,20 @@ export class BasePage {
         await this.inputFieldById('Amount').pressSequentially(amount);
         await expect(this.inputFieldById('Amount')).toHaveValue(amount);
     }
-
     async selectAccount(optionText: string) {
-        const dropdownContainer = this.dropdownOptions;
-        await dropdownContainer.click();
-        await expect(this.page.getByTestId('dropdown_option')).toContainText('Cash');
-        await expect(this.page.getByTestId('dropdown_option')).toContainText('Bank Account');
-        const option = this.page.getByTestId('dropdown_option').filter({ hasText: optionText });
+        const dropdownContainer = this.accountDropdownContainer;
+        await dropdownContainer.click({force: true});
+        await this.page.waitForTimeout(500); 
+        await this.page.pause();
+        await expect(this.dropdownOptions).toContainText('Cash');
+        await expect(this.dropdownOptions).toContainText('Bank Account');
+        const option = this.dropdownOptions.filter({ hasText: optionText });
         await option.click();
     }
-
     async selectCategory(optionText: string) {
         const dropdownContainer = this.page.locator('#categoryDropDown');
         await dropdownContainer.click();
         const option = this.page.getByTestId('dropdown_option').filter({ hasText: optionText });
         await option.click();
     }
-
 }
