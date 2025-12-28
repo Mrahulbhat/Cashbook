@@ -5,7 +5,7 @@ import { waitForResponse } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Transaction Related Tests', () => {
-    test('Transaction CRUD Operation @BAT', async ({ page, transactionPage }) => {
+    test('Transaction CRUD Operation @BAT', async ({ page, transactionPage,dashboardPage }) => {
 
         // Navigate to Dashboard Page
         await navigateToPage(page, commonConstants.pageName.DASHBOARD);
@@ -36,11 +36,18 @@ test.describe('Transaction Related Tests', () => {
 
         await transactionPage.selectCategory('Fuel');
 
-        await transactionPage.inputFieldById('Description').pressSequentially('TEST AUTOMATION');
+        await transactionPage.inputFieldById('description').pressSequentially('TEST AUTOMATION');
 
         await expect(transactionPage.cancelButton).toBeVisible();
         await expect(transactionPage.saveButton).toBeEnabled();
         await transactionPage.saveButton.click();
 
+        await Promise.all([
+            page.waitForResponse(commonConstants.urls.transactionAPI),
+            expect(page.getByText(commonConstants.toastMessages.transactionCreated)).toBeVisible()
+        ]);
+
+        //page will be redirected to dashboard page after creation
+        await expect(dashboardPage.totalExpense).toBeVisible();
     });
 });

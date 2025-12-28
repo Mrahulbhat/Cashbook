@@ -4,7 +4,8 @@ const commonConstants = {
         baseURL: 'https://cashbook-kappa.vercel.app',
         accountsAPI: '/api/account',
         transactionAPI: '/api/transaction',
-        categoriesAPI: '/api/category'
+        categoriesAPI: '/api/category',
+        newTransactionAPI: '/api/transaction/new' //when we add a new transaction
     },
 
     pageName: {
@@ -14,6 +15,10 @@ const commonConstants = {
         TRANSFER: 'transfer',
         CATEGORIES: 'categories',
         STATISTICS: 'statistics'
+    },
+
+    toastMessages:{
+        transactionCreated: 'Transaction created successfully',
     }
 };
 

@@ -268,6 +268,7 @@ const AddTransaction = () => {
                   Date *
                 </label>
                 <input
+                  id="dateInputField"
                   type="date"
                   name="date"
                   value={formData.date}

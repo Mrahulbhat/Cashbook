@@ -33,7 +33,7 @@ export class BasePage {
 
     // buttons =======================================================================================      
 
-    get saveButton(): Locator { 
+    get saveButton(): Locator {
         return this.page.locator('#saveBtn');
     }
     get backButton(): Locator {
@@ -91,5 +91,12 @@ export class BasePage {
         expect(optionIndex).toBeGreaterThanOrEqual(0);
         await this.categoryDropdownContainer.selectOption({ index: optionIndex });
         await this.page.waitForTimeout(500);
+    }
+
+    async selectDate(dateString: string = new Date().toISOString().split('T')[0]) {
+        const dateInput = this.inputFieldById('date');
+        await expect(dateInput).toBeVisible();
+        await dateInput.fill(dateString);
+        await expect(dateInput).toHaveValue(dateString);
     }
 }
