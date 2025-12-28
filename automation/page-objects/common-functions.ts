@@ -1,5 +1,8 @@
 import commonConstants from '../constants/commonConstants.js';
 
-export function navigateToLoginPage(page: any) {
-    return page.goto(commonConstants.loginUrl);
+export async function navigateToPage(page: any,pageName?: string) {
+    if(!pageName){
+        pageName = commonConstants.baseURL;
+    }
+    await page.goto(pageName);
 }
