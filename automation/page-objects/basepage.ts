@@ -24,6 +24,9 @@ export class BasePage {
     get accountDropdownContainer(): Locator {
         return this.page.locator('#accountDropDown');
     }
+    get categoryDropdownContainer(): Locator {
+        return this.page.locator('#categoryDropDown');
+    }
 
     // buttons =======================================================================================      
 
@@ -46,19 +49,30 @@ export class BasePage {
         await expect(this.inputFieldById('Amount')).toHaveValue(amount);
     }
     async selectAccount(optionText: string) {
-        const dropdownContainer = this.accountDropdownContainer;
-        await dropdownContainer.click({force: true});
-        await this.page.waitForTimeout(500); 
-        await this.page.pause();
-        await expect(this.dropdownOptions).toContainText('Cash');
-        await expect(this.dropdownOptions).toContainText('Bank Account');
-        const option = this.dropdownOptions.filter({ hasText: optionText });
-        await option.click();
+        await this.accountDropdownContainer.click();
+        await this.dropdownOptions.first().waitFor({ state: 'attached' });
+        const rawOptions = await this.dropdownOptions.allTextContents();
+        // Normalize text (remove amount in brackets)
+        const normalizedOptions = rawOptions.map(text =>
+            text.replace(/\s*\(.*?\)/, '').trim()
+        );
+        expect(normalizedOptions).toContain('Cash');
+        const optionIndex = normalizedOptions.findIndex(
+            text => text === optionText
+        );
+        expect(optionIndex).toBeGreaterThanOrEqual(0);
+        await this.accountDropdownContainer.selectOption({ index: optionIndex });
     }
+
     async selectCategory(optionText: string) {
-        const dropdownContainer = this.page.locator('#categoryDropDown');
-        await dropdownContainer.click();
-        const option = this.page.getByTestId('dropdown_option').filter({ hasText: optionText });
-        await option.click();
+        await this.categoryDropdownContainer.click();
+        await this.dropdownOptions.first().waitFor({ state: 'attached' });
+        const rawOptions = await this.dropdownOptions.allTextContents();
+        expect(rawOptions).toContain(optionText);
+        const optionIndex = rawOptions.findIndex(
+            text => text === optionText
+        );
+        expect(optionIndex).toBeGreaterThanOrEqual(0);
+        await this.categoryDropdownContainer.selectOption({ index: optionIndex });
     }
 }
