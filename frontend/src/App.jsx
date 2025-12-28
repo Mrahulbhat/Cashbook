@@ -6,6 +6,7 @@ import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import AddTransaction from "./pages/AddTransaction";
+import EditTransaction from "./pages/EditTransaction";
 import Dashboard from "./pages/Dashboard";
 import AddAccount from "./pages/AddAccount";
 import AddCategory from "./pages/AddCategory";
@@ -47,6 +48,7 @@ const App = () => {
             <Route path="/accounts" element={<Accounts />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/addTransaction" element={<AddTransaction />} />
+            <Route path="/edit-transaction/:id" element={<EditTransaction />} />
             <Route path="/addAccount" element={<AddAccount />} />
             <Route path="/addCategory" element={<AddCategory />} />
             <Route path='/stats' element={<Statistics/>}/>
