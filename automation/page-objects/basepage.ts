@@ -12,6 +12,6 @@ export class BasePage {
     }
 
     buttonByTestId(title: string): Locator {
-        return this.page.getByTestId(`button${title}`);
+        return this.page.getByTestId(`button-${title}`);
     }
 }

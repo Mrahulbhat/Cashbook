@@ -1,3 +1,3 @@
 export default {
-    loginUrl: 'https://example.com/login',
+    loginUrl: 'https://cashbook-kappa.vercel.app',
 };

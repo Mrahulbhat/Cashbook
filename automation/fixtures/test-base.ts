@@ -1,9 +1,9 @@
 import { test as base } from '@playwright/test';
-import { WelcomePage } from '../page-objects/welcomePage';
+import { BasePage } from '../page-objects/basepage';
 import { DashboardPage} from '../page-objects/dashboard';
 
 type fixtures = {
-    welcomePage: WelcomePage;
+    basePage: BasePage;
     dashboardPage: DashboardPage;
 }
 
@@ -15,8 +15,8 @@ export const test = base.extend<fixtures>({
         await use(page);
     },
 
-    welcomePage: async ({ page }, use) => {
-        await use(new WelcomePage(page));
+    basePage: async ({ page }, use) => {
+        await use(new BasePage(page));
     },
     dashboardPage: async ({ page }, use) => {
         await use(new DashboardPage(page));
