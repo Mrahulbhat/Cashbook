@@ -71,7 +71,7 @@ export class BasePage {
             text => text === optionText
         );
         expect(optionIndex).toBeGreaterThanOrEqual(0);
-        await this.accountDropdownContainer.selectOption({ index: optionIndex });
+        await this.accountDropdownContainer.selectOption({ index: optionIndex + 1 });
         await this.page.waitForTimeout(500);
         await expect(this.accountDropdownContainer).toContainText(optionText);
     }
@@ -94,7 +94,7 @@ export class BasePage {
         );
         expect(optionIndex).toBeGreaterThanOrEqual(0);
         await this.page.pause();
-        await this.categoryDropdownContainer.selectOption({ index: optionIndex });
+        await this.categoryDropdownContainer.selectOption({ index: optionIndex + 1 });
         await this.page.waitForTimeout(500);
         await this.page.pause();
         await expect(this.categoryDropdownContainer).toContainText(optionText);
