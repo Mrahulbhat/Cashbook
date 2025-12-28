@@ -30,12 +30,12 @@ app.use(
 connectDB();
 
 // Routes
-app.use("/api/transaction", transactionRoute);
-app.use("/api/account", accountRoute);
-app.use("/api/category", categoryRoute);
+app.use("/transaction", transactionRoute);
+app.use("/account", accountRoute);
+app.use("/category", categoryRoute);
 
 // Health check endpoint
-app.get("/api/health", (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({ message: "Server is running" });
 });
 
