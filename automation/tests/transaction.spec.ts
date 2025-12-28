@@ -31,7 +31,7 @@ test.describe('Transaction Related Tests', () => {
 
         await transactionPage.selectAccount('Cash');
 
-        await transactionPage.selectCategory('Food & Dining');
+        await transactionPage.selectCategory('Fuel');
 
 
     });
