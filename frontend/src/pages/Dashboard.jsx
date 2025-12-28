@@ -192,7 +192,7 @@ const Dashboard = () => {
                   <ArrowUpRight className="w-5 h-5 text-red-400" />
                 </div>
               </div>
-              <p className="text-2xl font-bold text-white">
+              <p id="totalExpense" className="text-2xl font-bold text-white">
                 {formatCurrency(stats.totalExpense)}
               </p>
               <p className="text-red-400 text-xs mt-2 capitalize">{filter}</p>
