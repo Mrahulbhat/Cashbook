@@ -7,6 +7,7 @@ import commonConstants from '../constants/commonConstants.js';
 test.describe('Transaction Related Tests', () => {
     test('Transaction CRUD Operation @BAT', async ({ page, transactionPage, dashboardPage }) => {
 
+        const type = 'Expense';
         const amount = '1000';
         const accountName = 'Cash';
         const categoryName = 'Fuel';
@@ -60,17 +61,17 @@ test.describe('Transaction Related Tests', () => {
         await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
 
         const postCreationTxnCountText = await transactionPage.txnCountOnTable.innerText();
+
+        // Verify that transaction count has increased by 1
         expect(parseInt(postCreationTxnCountText)).toBe(parseInt(initialTxnCountText) + 1);
 
-    });
-
-    test('dummy test', async ({ page, transactionPage, dashboardPage }) => {
-        await navigateToPage(page, commonConstants.pageName.DASHBOARD);
-        await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
-        await expect(transactionPage.addTransactionBtn).toBeVisible();
-
-        const rowText = await page.locator('tr.tablebody').first().innerText();
-console.log(rowText);
-
+        // Verify if all details are correct in the latest transaction row
+        const latestRow = page.locator('tr.tablebody').first();
+        await expect(latestRow).toContainText(type);
+        await expect(latestRow).toContainText(categoryName);
+        await expect(latestRow).toContainText(accountName);
+        await expect(latestRow).toContainText(amount);
+        await expect(latestRow).toContainText(description);
+        await expect(latestRow).toContainText(date);
     });
 });
