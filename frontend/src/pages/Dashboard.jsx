@@ -11,7 +11,7 @@ const Dashboard = () => {
     useTransactionStore();
   const [accounts, setAccounts] = useState([]);
   const [lastTransactions, setLastTransactions] = useState([]);
-  const [filter, setFilter] = useState("lifetime"); // lifetime, yearly, monthly
+  const [filter, setFilter] = useState("monthly"); // lifetime, yearly, monthly
   const [stats, setStats] = useState({
     totalIncome: 0,
     totalExpense: 0,

@@ -1,6 +1,7 @@
 import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
 import HomePage from "./pages/HomePage";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
@@ -9,9 +10,13 @@ import Dashboard from "./pages/Dashboard";
 import AddAccount from "./pages/AddAccount";
 import AddCategory from "./pages/AddCategory";
 import Statistics from "./pages/Statistics";
+import Transactions from "./pages/Transactions";
+import Accounts from "./pages/Accounts";
+import Categories from "./pages/Categories";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1000);
@@ -26,23 +31,29 @@ const App = () => {
     );
   }
 
+  // Show sidebar only on dashboard and management pages (not on homepage)
+  const showSidebar = location.pathname !== "/";
+
   return (
-    <div className="h-screen">
+    <div className="h-screen flex flex-col">
       <Navbar />
-      <div className="h-[90vh] bg-black">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/addTransaction" element={<AddTransaction />} />
-          <Route path="/addAccount" element={<AddAccount />} />
-          <Route path="/addCategory" element={<AddCategory />} />
-          <Route path='/stats' element={<Statistics/>}/>
-        </Routes>
-        <Toaster />
+      <div className="flex h-[90vh] bg-black">
+        {showSidebar && <Sidebar />}
+        <div className="flex-1 overflow-auto">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/transactions" element={<Transactions />} />
+            <Route path="/accounts" element={<Accounts />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/addTransaction" element={<AddTransaction />} />
+            <Route path="/addAccount" element={<AddAccount />} />
+            <Route path="/addCategory" element={<AddCategory />} />
+            <Route path='/stats' element={<Statistics/>}/>
+          </Routes>
+          <Toaster />
+        </div>
       </div>
-      {/* <div className="hidden md:block">
-      <Footer/>
-      </div> */}
     </div>
   );
 };
