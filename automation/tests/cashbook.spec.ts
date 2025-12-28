@@ -6,7 +6,7 @@ import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Cashbook Application Basic Tests', () => {
 
-    test('TC01 - Does the application start @BAT', async ({ page, basePage, dashboardPage }) => {
+    test('TC01 - Does the application start @BAT', async ({ page, dashboardPage }) => {
 
         //Check if the welcome page loads, click on get Started button and verify navigation to login page
         //check if the frontend gets connected to backend
@@ -26,19 +26,19 @@ test.describe('Cashbook Application Basic Tests', () => {
         expect(totalExpenseValue).toBeGreaterThan(0);
     });
 
-    test('TC02 - Verify Sidebar Functionality @BAT', async ({ page, dashboardPage,transactionPage }) => {
+    test('TC02 - Verify Sidebar Functionality @BAT', async ({ page, dashboardPage, transactionPage, accountsPage, categoryPage, transferPage, statisticsPage }) => {
 
         //check if sidebar is visible and all tabs are clickable and navigate to correct pages
 
         await navigateToPage(page, commonConstants.pageName.DASHBOARD);
 
         const tabs = [
-            { tabname: "transactions", api: "transaction",locator: transactionPage.addTransactionBtn },
-            { tabname: "accounts", api: "accounts", locator: page },
-            { tabname: "transfer", api: "accounts" },
-            { tabname: "categories", api: "categories" },
-            { tabname: "statistics", api: "categories" },
-            { tabname: "dashboard", api: "accounts" },
+            { tabname: "transactions", api: "transaction", locator: transactionPage.addTransactionBtn },
+            { tabname: "accounts", api: "accounts", locator: accountsPage.addAccountBtn },
+            { tabname: "transfer", api: "accounts", locator: transferPage.transferForm },
+            { tabname: "categories", api: "categories", locator: categoryPage.addCategoryBtn },
+            { tabname: "statistics", api: "categories", locator: statisticsPage.statsContainer },
+            { tabname: "dashboard", api: "accounts", locator: dashboardPage.resultsTable },
         ];
 
         await expect(dashboardPage.sidebar).toBeVisible();
@@ -48,11 +48,12 @@ test.describe('Cashbook Application Basic Tests', () => {
             await expect(tabLocator).toBeVisible();
             await tabLocator.click();
             try {
-                await waitForResponse(page, `/api/${tab.api}`);
+                await waitForResponse(page, `/api/${tab.api}`,{ timeout: 5000 } );
             }
-            catch{
+            catch {
                 console.log('Its okay if no response is found for transfer tab');
             }
+            await expect(tab.locator).toBeVisible();
         }
     });
 });

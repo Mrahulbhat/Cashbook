@@ -1,9 +1,9 @@
 import commonConstants from '../constants/commonConstants.js';
 
-export async function waitForResponse(page: any, urlPart: string) {
+export async function waitForResponse(page: any, urlPart: string, timeout?: number) {
     await page.waitForResponse((response: any) =>
         response.url().includes(urlPart) && response.status() === 200
-    );
+        , { timeout: timeout || 15000 });
 }
 
 export async function navigateToPage(page: any, pageName: string) {
@@ -50,7 +50,7 @@ export async function navigateToPage(page: any, pageName: string) {
             break;
 
         default: console.error('Invalid page name provided for navigation.');
-        return;
+            return;
     }
 }
 

@@ -87,7 +87,7 @@ const Transfer = () => {
     <div className="max-w-2xl mx-auto p-6 mt-8 bg-gray-900 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Transfer Amount</h2>
 
-      <form onSubmit={handleTransfer} className="space-y-4">
+      <form id='transferForm' onSubmit={handleTransfer} className="space-y-4">
         <div>
           <label className="block text-sm text-gray-300 mb-1">From (source)</label>
           <select

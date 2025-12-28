@@ -270,7 +270,7 @@ const Statistics = () => {
           </div>
 
           {/* Category Breakdown */}
-          <div className="bg-gradient-to-br from-white via-gray-50 to-white rounded-3xl shadow-2xl border border-gray-200/50 backdrop-blur-sm overflow-hidden mb-8">
+          <div id="statsContainer" className="bg-gradient-to-br from-white via-gray-50 to-white rounded-3xl shadow-2xl border border-gray-200/50 backdrop-blur-sm overflow-hidden mb-8">
             <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-8 py-6">
               <h2 className="text-white text-2xl font-bold">Expense by Category</h2>
               <p className="text-gray-400 text-sm mt-1">
