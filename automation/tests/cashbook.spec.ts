@@ -12,8 +12,8 @@ test.describe('Cashbook Application Basic Tests', () => {
         //Check if the welcome page loads, click on get Started button and verify navigation to login page
         //check if the frontend gets connected to backend
 
-        await expect(basePage.buttonByTestId('GetStarted')).toBeVisible();
-        await basePage.buttonByTestId('GetStarted').click();
+        await expect(page.locator('getStarted')).toBeVisible();
+        await page.locator('getStarted').click();
 
         // wait for last url to load which confirms page is loaded with data from backend
         await page.waitForResponse(response =>

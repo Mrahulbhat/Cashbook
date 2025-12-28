@@ -55,7 +55,7 @@ const HomePage = () => {
           {/* CTA Button with enhanced styling */}
           <div className="flex justify-center">
             <button
-              datatest="button-getStarted"
+              id="getStarted"
               onClick={() => navigate("/dashboard")}
               className="group relative bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold px-10 py-4 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25 border border-green-500/20"
             >

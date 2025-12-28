@@ -10,8 +10,4 @@ export class BasePage {
     setPage(newPage: Page) {
         this.page = newPage;
     }
-
-    buttonByTestId(title: string): Locator {
-        return this.page.getByTestId(`button-${title}`);
-    }
 }
