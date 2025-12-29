@@ -13,17 +13,18 @@ const transactionSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    category:{
-      type:String,
-      required:true
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Categories",
+      required: true
     },
     date: {
-      type: Date, 
+      type: Date,
       required: true
     },
     account: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Account", 
+      ref: "Account",
       required: true
     }
   },
