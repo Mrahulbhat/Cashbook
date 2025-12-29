@@ -9,6 +9,7 @@ import {
   getTransactionsByDateRange,
   getTransactionsByCategory,
   transferAmount,
+  deleteAllTransactions,
 } from "../controllers/transaction.controller.js";
 
 const router = express.Router();
@@ -34,8 +35,9 @@ router.post("/new", addTransaction);
 // Update transaction
 router.put("/:id", updateTransaction);
 
-// Delete transaction
-router.delete("/:id", deleteTransaction);
+// IMPORTANT: keep this ABOVE '/:id'
+router.delete("/delete-all", deleteAllTransactions);
+router.delete("/transaction/:id", deleteTransaction);
 
 // Route for transferring amounts between accounts
 router.post("/transfer", transferAmount);

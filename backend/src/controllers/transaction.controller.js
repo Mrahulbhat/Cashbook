@@ -301,3 +301,28 @@ export const transferAmount = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const deleteAllTransactions = async (req, res) => {
+  try {
+    const transactions = await Transaction.find().populate("account");
+
+    for (const tx of transactions) {
+      const amount = Number(tx.amount);
+
+      if (tx.type.toLowerCase() === "income") {
+        tx.account.balance -= amount;
+      } else {
+        tx.account.balance += amount;
+      }
+
+      await tx.account.save();
+    }
+
+    await Transaction.deleteMany();
+    res.status(200).json({ message: "All transactions deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+

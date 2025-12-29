@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Edit2, Trash2, Loader, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader, ArrowUpRight, ArrowDownLeft, Divide } from "lucide-react";
 import { useTransactionStore } from "../store/useTransactionStore";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 
 const Transactions = () => {
   const navigate = useNavigate();
-  const { transactions, fetchTransactions, deleteTransaction, loading } =
+  const { transactions, fetchTransactions, deleteTransaction, deleteAllTransactions, deleloading } =
     useTransactionStore();
   const [filter, setFilter] = useState("monthly");
 
@@ -49,6 +49,16 @@ const Transactions = () => {
       await loadData();
     }
   };
+
+  const handleDeleteAll = async () => {
+  const confirmDelete = window.confirm(
+    "This will permanently delete ALL transactions. Are you sure?"
+  );
+
+  if (!confirmDelete) return;
+
+  await deleteAllTransactions();
+};
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -254,7 +264,13 @@ const Transactions = () => {
                   ))}
                 </tbody>
               </table>
+              <div>
+                <button onClick={handleDeleteAll}>
+                  Delete All Transactions
+                </button>
+              </div>
             </div>
+            
           ) : (
             <div className="px-8 py-16 text-center">
               <div className="mb-4 text-5xl">📊</div>

@@ -123,4 +123,18 @@ export const useTransactionStore = create((set) => ({
       set({ loading: false });
     }
   },
+
+  // Delete All transactions
+  deleteAllTransactions: async () => {
+    set({ loading: true });
+    try {
+      await axiosInstance.delete("/transaction/delete-all");
+
+      set({ transactions: [], loading: false });
+      toast.success("All transactions deleted successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete all transactions");
+      set({ loading: false });
+    }
+  },
 }));
