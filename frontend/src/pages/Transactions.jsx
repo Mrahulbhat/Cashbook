@@ -70,6 +70,29 @@ const Transactions = () => {
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
+  const handleDeleteAll = async () => {
+    const confirmed = window.confirm(
+      "This will permanently delete ALL transactions. Are you sure?"
+    );
+
+    if (!confirmed) return;
+
+    await deleteAllTransactions();
+    await loadData();
+  };
+
+  const handleDeleteTest = async () => {
+    const confirmed = window.confirm(
+      "This will delete only TEST transactions. Are you sure?"
+    );
+
+    if (!confirmed) return;
+
+    await deleteTestTransactions();
+    await loadData();
+  };
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden p-4 sm:p-8 pb-20">
@@ -254,15 +277,14 @@ const Transactions = () => {
                   ))}
                 </tbody>
               </table>
-              <div>
-                 <button onClick={deleteTestTransactions}>
-                  Delete Test Transactions
-                </button>
+              <button onClick={handleDeleteTest}>
+                Delete Test Transactions
+              </button>
 
-                <button onClick={deleteAllTransactions}>
-                  Delete All Transactions
-                </button>
-              </div>
+              <button onClick={handleDeleteAll}>
+                Delete All Transactions
+              </button>
+
             </div>
 
           ) : (
