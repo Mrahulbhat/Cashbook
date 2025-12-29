@@ -5,7 +5,8 @@ const commonConstants = {
         accountsAPI: '/api/account',
         transactionAPI: '/api/transaction',
         categoriesAPI: '/api/category',
-        newTransactionAPI: '/api/transaction/new' //when we add a new transaction
+        newTransactionAPI: '/api/transaction/new', 
+        newAccountAPI:'/api/account/new',
     },
 
     pageName: {

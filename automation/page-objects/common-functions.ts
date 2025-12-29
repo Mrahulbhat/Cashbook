@@ -1,7 +1,7 @@
 import commonConstants from '../constants/commonConstants.js';
 
-export async function waitForResponse(page: any, urlPart: string, timeout?: number) {
-    await page.waitForResponse((response: any) => response.url().includes(urlPart) && response.status() === 200, { timeout: timeout || 15000 });
+export async function waitForResponse(page: any, urlPart: string, statusCode: number = 200, method: string = "GET") {
+    page.waitForResponse((response: any) => response.url().includes(urlPart) && response.status() === statusCode && response.request().method() === method, { timeout: 15000 });
 }
 
 export async function navigateToPage(page: any, pageName: string) {
@@ -14,8 +14,8 @@ export async function navigateToPage(page: any, pageName: string) {
         case commonConstants.pageName.DASHBOARD:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.DASHBOARD}`);
             await Promise.all([
-                page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200, { timeout:15000 }),
-                page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200, { timeout:15000 }),
+                page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200, { timeout: 15000 }),
+                page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200, { timeout: 15000 }),
             ]);
             break;
 

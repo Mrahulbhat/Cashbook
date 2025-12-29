@@ -10,16 +10,15 @@ test.describe('Account Related Tests', () => {
         const accountName = commonConstants.TEST_ACCOUNT_NAME
         const initialBalance = commonConstants.TEST_AMOUNT_1000;
 
-
         await navigateToPage(page,commonConstants.pageName.ACCOUNTS);
 
         await expect(accountsPage.addAccountBtn).toBeVisible();
         await accountsPage.addAccountBtn.click();
 
-        await accountsPage.inputFieldById('accountName').clear();
-        await accountsPage.inputFieldById('accountName').pressSequentially(accountName);
-        await accountsPage.inputFieldById('balance').clear();
-        await accountsPage.inputFieldById('balance').pressSequentially("1000");
+        await accountsPage.inputFieldById('accountName').fill(accountName);
+        await accountsPage.inputFieldById('balance').fill("1000");
+        await accountsPage.saveButton.click();
+        await page.waitForResponse((response: any) => response.url().includes('/api/account/new') && response.status() === 201 &&  response.request().method() === 'POST', { timeout: 15000 });
 
 
 
