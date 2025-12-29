@@ -325,22 +325,25 @@ export const deleteAllTransactions = async (req, res) => {
   }
 };
 
-// Delete TEST transactions
+//DELETE ALL TEST TXN
 export const deleteTestTransactions = async (req, res) => {
   try {
-    // Find all TEST transactions
-    const transactions = await Transaction.find({ category: "TEST"|"TEST1" });
+    // Find all test transactions
+    const testCategories = ["TEST", "TEST1"];
+    const testTransactions = await Transaction.find({
+      category: { $in: testCategories }
+    });
 
-    if (!transactions.length) {
-      return res.status(404).json({ message: "No TEST transactions found" });
+    if (!testTransactions || testTransactions.length === 0) {
+      return res.status(404).json({ message: "No test transactions found" });
     }
 
-    for (const txn of transactions) {
+    // Revert balance changes for each transaction
+    for (const txn of testTransactions) {
       const account = await Account.findById(txn.account);
       if (!account) continue;
 
       const amount = Number(txn.amount);
-
       if (txn.type.toLowerCase() === "income") {
         account.balance -= amount;
       } else if (txn.type.toLowerCase() === "expense") {
@@ -350,9 +353,10 @@ export const deleteTestTransactions = async (req, res) => {
       await account.save();
     }
 
-    await Transaction.deleteMany({ parentCategory: "TEST" });
+    // Delete all test transactions
+    await Transaction.deleteMany({ category: { $in: testCategories } });
 
-    res.status(200).json({ message: "TEST transactions deleted successfully" });
+    res.status(200).json({ message: "Test transactions deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

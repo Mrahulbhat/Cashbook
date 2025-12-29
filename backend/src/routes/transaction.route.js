@@ -41,8 +41,6 @@ router.delete("/delete-test", deleteTestTransactions);
 router.delete("/delete-all", deleteAllTransactions);
 router.delete("/:id", deleteTransaction);
 
-router.delete("/delete-all", deleteAllTransactions);
-router.delete("/transaction/:id", deleteTransaction);
 
 // Route for transferring amounts between accounts
 router.post("/transfer", transferAmount);
