@@ -15,7 +15,7 @@ const transactionSchema = new mongoose.Schema(
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Categories",
+      ref: "Category",
       required: true
     },
     date: {
