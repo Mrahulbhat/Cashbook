@@ -81,9 +81,9 @@ const Transactions = () => {
     await loadData();
   };
 
-  const handleDeleteTest = async () => {
+  const handleDeleteTestTransactions = async () => {
     const confirmed = window.confirm(
-      "This will delete only TEST transactions. Are you sure?"
+      "This will permanently delete ALL transactions. Are you sure?"
     );
 
     if (!confirmed) return;
@@ -277,7 +277,7 @@ const Transactions = () => {
                   ))}
                 </tbody>
               </table>
-              <button onClick={handleDeleteTest}>
+              <button onClick={handleDeleteTestTransactions}>
                 Delete Test Transactions
               </button>
 
