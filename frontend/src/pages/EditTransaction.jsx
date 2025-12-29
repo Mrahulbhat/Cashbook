@@ -334,6 +334,7 @@ const EditTransaction = () => {
                   id="updateBtn"
                   type="submit"
                   disabled={loading || isFormValid}
+                  aria-disabled={loading || !isFormValid}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:from-gray-400 disabled:to-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
                 >
                   {loading ? (

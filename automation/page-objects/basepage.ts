@@ -65,6 +65,7 @@ export class BasePage {
 
     async enterAmount(amount: string) {
         await expect(this.inputFieldById('Amount')).toBeVisible();
+        await this.inputFieldById('Amount').clear();
         await this.inputFieldById('Amount').pressSequentially(amount);
         await expect(this.inputFieldById('Amount')).toHaveValue(amount);
     }

@@ -110,6 +110,7 @@ test.describe('Transaction Related Tests', () => {
         await transactionPage.selectAccount(updated_accountName);
         await transactionPage.selectCategory(updated_categoryName);
         await transactionPage.selectDate(updated_date);
+        await transactionPage.inputFieldById('description').clear();
         await transactionPage.inputFieldById('description').pressSequentially(updated_description);
         await expect(transactionPage.cancelButton).toBeVisible();
         await expect(transactionPage.updateButton).toBeEnabled();
