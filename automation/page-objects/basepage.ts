@@ -13,7 +13,7 @@ export class BasePage {
         return this.page.locator('table[data-testid="resultsTable"]');
     }
     get firstRowOfGrid(): Locator {
-        return this.resultsTable.locator('tr.tablebody').first();
+        return this.page.locator('tr.tablebody').first();
     }
     get editRecordButton(): Locator {
         return this.page.locator('#editRecordBtn');

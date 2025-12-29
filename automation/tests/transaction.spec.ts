@@ -73,18 +73,17 @@ test.describe('Transaction Related Tests', () => {
         expect(parseInt(postCreationTxnCountText)).toBe(parseInt(initialTxnCountText) + 1);
 
         // Verify if all details are correct in the latest transaction row
-        const latestRow = page.locator('tr.tablebody').first();
-        await expect(latestRow).toContainText(type.toLowerCase());
-        await expect(latestRow).toContainText(categoryName);
-        await expect(latestRow).toContainText(accountName);
-        await expect(latestRow).toContainText(`₹${Number(amount).toLocaleString('en-IN')}`);
-        await expect(latestRow).toContainText(description);
+        await expect(transactionPage.firstRowOfGrid).toContainText(type.toLowerCase());
+        await expect(transactionPage.firstRowOfGrid).toContainText(categoryName);
+        await expect(transactionPage.firstRowOfGrid).toContainText(accountName);
+        await expect(transactionPage.firstRowOfGrid).toContainText(`₹${Number(amount).toLocaleString('en-IN')}`);
+        await expect(transactionPage.firstRowOfGrid).toContainText(description);
         const formattedDate = new Date(date).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",
         });
-        await expect(latestRow).toContainText(formattedDate);
+        await expect(transactionPage.firstRowOfGrid).toContainText(formattedDate);
 
         // EDIT THE RECORD===================================================================================
 
@@ -125,6 +124,19 @@ test.describe('Transaction Related Tests', () => {
         // Verify if it stays on the same page and count remains the same
         await expect(transactionPage.addTransactionBtn).toBeVisible();
         await expect(transactionPage.txnCountOnTable).toHaveText(postCreationTxnCountText);
+
+        // Verify if all details are correct in the latest transaction row
+        await expect(transactionPage.firstRowOfGrid).toContainText(updated_type.toLowerCase());
+        await expect(transactionPage.firstRowOfGrid).toContainText(updated_categoryName);
+        await expect(transactionPage.firstRowOfGrid).toContainText(updated_accountName);
+        await expect(transactionPage.firstRowOfGrid).toContainText(`₹${Number(updated_amount).toLocaleString('en-IN')}`);
+        await expect(transactionPage.firstRowOfGrid).toContainText(updated_description);
+        const formattedDate1 = new Date(updated_date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+        await expect(transactionPage.firstRowOfGrid).toContainText(formattedDate1);
 
     });
 
