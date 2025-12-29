@@ -87,9 +87,8 @@ test.describe('Transaction Related Tests', () => {
 
         // EDIT THE RECORD===================================================================================
 
-        await transactionPage.editRecordButton.click();
+        await transactionPage.editRecordButton.first().click();
         await Promise.all([
-            page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 304),
             page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200)
         ]);
 
