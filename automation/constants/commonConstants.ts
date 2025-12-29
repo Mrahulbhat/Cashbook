@@ -21,7 +21,10 @@ const commonConstants = {
         TRANSACTION_ADDED_SUCCESSFULLY: 'Transaction added successfully',
         TRANSACTION_UPDATED_SUCCESSFULLY: 'Transaction updated successfully',
         TRANSACTION_DELETED_SUCCESSFULLY: 'Transaction deleted successfully'
-    }
+    },
+
+    TEST_ACCOUNT_NAME:"Account Name Test",
+    TEST_AMOUNT_1000:1000
 };
 
 export default commonConstants;
