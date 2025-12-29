@@ -63,8 +63,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     const filteredTransactions = [...getFilteredTransactions()].sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
     if (filteredTransactions && filteredTransactions.length > 0) {
       // Sort by date (most recent first) and get last 5

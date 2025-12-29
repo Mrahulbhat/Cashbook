@@ -103,6 +103,7 @@ test.describe('Transaction Related Tests', () => {
         await expect(transactionPage.expenseRadioBox).toBeChecked();
 
         await transactionPage.incomeRadioBox.click();
+        await expect(transactionPage.incomeRadioBox).toBeChecked();
         await transactionPage.enterAmount(updated_amount);
         await transactionPage.selectAccount(updated_accountName);
         await transactionPage.selectCategory(updated_categoryName);

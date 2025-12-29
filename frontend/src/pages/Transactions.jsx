@@ -67,7 +67,7 @@ const Transactions = () => {
   };
 
   const filteredTransactions = [...getFilteredTransactions()].sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
 
@@ -167,7 +167,7 @@ const Transactions = () => {
                 </thead>
                 <tbody>
                   {filteredTransactions.map((transaction) => (
-                    <tr 
+                    <tr
                       key={transaction._id}
                       className="tablebody border-b border-gray-200 hover:bg-gray-100 transition-colors duration-200"
                     >
@@ -232,7 +232,7 @@ const Transactions = () => {
                       <td className="px-8 py-4">
                         <div className="flex gap-2">
                           <button
-                          id="editRecordBtn"
+                            id="editRecordBtn"
                             onClick={() =>
                               navigate(`/edit-transaction/${transaction._id}`)
                             }
