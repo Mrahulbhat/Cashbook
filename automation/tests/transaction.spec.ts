@@ -20,7 +20,7 @@ test.describe('Transaction Related Tests', () => {
         // Navigate to Transactions Page
         await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
 
-        const initialTxnCountText = await transactionPage.txnCountOnTable.innerText();
+        const initialTxnCountText = await transactionPage.recordCountOnTable.innerText();
 
         // Create a Transaction 
         await expect(transactionPage.addTransactionBtn).toBeVisible();
@@ -67,7 +67,7 @@ test.describe('Transaction Related Tests', () => {
         // Navigate back to Transactions Page to verify creation
         await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
 
-        const postCreationTxnCountText = await transactionPage.txnCountOnTable.innerText();
+        const postCreationTxnCountText = await transactionPage.recordCountOnTable.innerText();
 
         // Verify that transaction count has increased by 1
         expect(parseInt(postCreationTxnCountText)).toBe(parseInt(initialTxnCountText) + 1);
@@ -123,7 +123,7 @@ test.describe('Transaction Related Tests', () => {
 
         // Verify if it stays on the same page and count remains the same
         await expect(transactionPage.addTransactionBtn).toBeVisible();
-        await expect(transactionPage.txnCountOnTable).toHaveText(postCreationTxnCountText);
+        await expect(transactionPage.recordCountOnTable).toHaveText(postCreationTxnCountText);
 
         // Verify if all details are correct in the latest transaction row
         await expect(transactionPage.firstRowOfGrid).toContainText(updated_type.toLowerCase());

@@ -15,6 +15,9 @@ export class BasePage {
     get firstRowOfGrid(): Locator {
         return this.page.locator('tr.tablebody').first();
     }
+    get recordCountOnTable(): Locator {
+        return this.page.locator('#txnCount');
+    }
     get editRecordButton(): Locator {
         return this.page.locator('#editRecordBtn');
     }
@@ -101,10 +104,8 @@ export class BasePage {
             text => text === optionText
         );
         expect(optionIndex).toBeGreaterThanOrEqual(0);
-        await this.page.pause();
         await this.categoryDropdownContainer.selectOption({ index: optionIndex + 1 });
         await this.page.waitForTimeout(500);
-        await this.page.pause();
         await expect(this.categoryDropdownContainer).toContainText(optionText);
     }
 
