@@ -18,11 +18,11 @@ export const getTransactionData = async (req, res) => {
   try {
     const { id } = req.params;
     const transaction = await Transaction.findById(id).populate("account");
-    
+
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
-    
+
     res.status(200).json(transaction);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -71,7 +71,7 @@ export const addTransaction = async (req, res) => {
     } else if (type.toLowerCase() === "expense") {
       accountExists.balance -= numAmount;
     }
-    
+
     await accountExists.save();
 
     res.status(201).json(savedTransaction);
@@ -93,8 +93,8 @@ export const updateTransaction = async (req, res) => {
     }
 
     // Get the old account to revert balance changes
-    const oldAccount = await Account.findById(transaction.account);
-    
+    let oldAccount = await Account.findById(transaction.account);
+
     // Revert old transaction from account balance
     const oldAmount = Number(transaction.amount);
     if (transaction.type.toLowerCase() === "income") {
