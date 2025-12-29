@@ -325,42 +325,22 @@ export const deleteAllTransactions = async (req, res) => {
   }
 };
 
-//DELETE ALL TEST TXN
+//delete test txn
 export const deleteTestTransactions = async (req, res) => {
   try {
-    // Find all test transactions
-    const testCategories = ["TEST", "TEST1"];
-    const testTransactions = await Transaction.find({
-      category: { $in: testCategories }
+    // Delete transactions where category is "TEST" or "TEST1"
+    const result = await Transaction.deleteMany({
+      category: { $in: ["TEST", "TEST1"] },
     });
 
-    if (!testTransactions || testTransactions.length === 0) {
-      return res.status(404).json({ message: "No test transactions found" });
-    }
-
-    // Revert balance changes for each transaction
-    for (const txn of testTransactions) {
-      const account = await Account.findById(txn.account);
-      if (!account) continue;
-
-      const amount = Number(txn.amount);
-      if (txn.type.toLowerCase() === "income") {
-        account.balance -= amount;
-      } else if (txn.type.toLowerCase() === "expense") {
-        account.balance += amount;
-      }
-
-      await account.save();
-    }
-
-    // Delete all test transactions
-    await Transaction.deleteMany({ category: { $in: testCategories } });
-
-    res.status(200).json({ message: "Test transactions deleted successfully" });
+    res.status(200).json({
+      message: `${result.deletedCount} test transaction(s) deleted successfully`,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 
