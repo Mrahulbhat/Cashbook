@@ -44,9 +44,9 @@ const AddAccount = () => {
       };
 
       const response = await axiosInstance.post("/account/new", accountData);
-      
+
       toast.success("Account created successfully!");
-      
+
       // Reset form
       setFormData({
         name: "",
@@ -78,6 +78,7 @@ const AddAccount = () => {
       <div className="relative z-10 p-4 pb-20">
         {/* Back button */}
         <button
+          id="BackBtn"
           className="group flex items-center gap-3 ml-2 mb-6 bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-700/50 hover:border-blue-500/30 text-white px-6 py-3 rounded-xl hover:from-blue-600/20 hover:to-cyan-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"
           onClick={() => navigate(-1)}
         >
@@ -111,6 +112,7 @@ const AddAccount = () => {
                   Account Name *
                 </label>
                 <input
+                  id="accountNameInputField"
                   type="text"
                   name="name"
                   placeholder="e.g., Savings Account, Checking Account"
@@ -134,6 +136,7 @@ const AddAccount = () => {
                     ₹
                   </span>
                   <input
+                  id="balanceInputField"
                     type="number"
                     name="balance"
                     placeholder="0.00"
