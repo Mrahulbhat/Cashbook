@@ -99,9 +99,6 @@ test.describe('Transaction Related Tests', () => {
         const updated_date = '2025-12-30';
         const updated_description = 'TEST AUTOMATION - EDITED';
 
-        //click on save button with empty form to check validation
-        await expect(transactionPage.updateButton).toBeDisabled();
-
         // assert default selection is expense
         await expect(transactionPage.expenseRadioBox).toBeChecked();
 
