@@ -83,6 +83,28 @@ test.describe('Transaction Related Tests', () => {
 
         //EDIT THE RECORD
         await transactionPage.editRecordButton.click();
+        await Promise.all([
+            page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 304),
+            page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200)
+        ]);
+
+        const updated_type = 'Income';
+        const updated_amount = '2000';
+        const updated_accountName = 'Canara Bank';
+        const updated_categoryName = 'Junk Food';
+        const updated_date = '2025-12-30';
+        const updated_description = 'TEST AUTOMATION - EDITED';
+
+        await transactionPage.incomeRadioBox.click();
+        await transactionPage.enterAmount(updated_amount);
+        await transactionPage.selectAccount(updated_accountName);
+        await transactionPage.selectCategory(updated_categoryName);
+        await transactionPage.selectDate(updated_date);
+        await transactionPage.inputFieldById('description').pressSequentially(updated_description);
+        await expect(transactionPage.cancelButton).toBeVisible();
+        await expect(transactionPage.saveButton).toBeEnabled();
+        await transactionPage.saveButton.click();
+
 
     });
 

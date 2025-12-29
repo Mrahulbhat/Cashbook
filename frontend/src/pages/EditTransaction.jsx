@@ -35,13 +35,13 @@ const EditTransaction = () => {
         ]);
         setAccounts(accountsRes.data);
         setCategories(categoriesRes.data);
-        
+
         const trans = transactionRes.data;
         setTransaction(trans);
-        
+
         // Format date for input
         const formattedDate = trans.date.split("T")[0];
-        
+
         setFormData({
           amount: trans.amount,
           type: trans.type,
@@ -108,7 +108,7 @@ const EditTransaction = () => {
       };
 
       await updateTransaction(id, transactionData);
-      
+
       // Navigate back
       setTimeout(() => {
         navigate("/transactions");
@@ -155,7 +155,7 @@ const EditTransaction = () => {
 
       <div className="relative z-10 p-4 pb-20">
         {/* Back button */}
-        <button
+        <button id="BackBtn"
           className="group flex items-center gap-3 ml-2 mb-6 bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-700/50 hover:border-blue-500/30 text-white px-6 py-3 rounded-xl hover:from-blue-600/20 hover:to-cyan-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"
           onClick={() => navigate(-1)}
         >
@@ -180,7 +180,7 @@ const EditTransaction = () => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form id="editTransactionForm" onSubmit={handleSubmit} className="space-y-6">
               {/* Type Selection */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -189,6 +189,7 @@ const EditTransaction = () => {
                 <div className="flex gap-4">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
+                      id="incomeRadioBox"
                       type="radio"
                       name="type"
                       value="income"
@@ -200,6 +201,7 @@ const EditTransaction = () => {
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
+                      id="expenseRadioBox"
                       type="radio"
                       name="type"
                       value="expense"
@@ -218,6 +220,7 @@ const EditTransaction = () => {
                   Amount *
                 </label>
                 <input
+                  id="AmountInputField"
                   type="number"
                   name="amount"
                   placeholder="Enter amount"
@@ -236,6 +239,7 @@ const EditTransaction = () => {
                   Account *
                 </label>
                 <select
+                  id="accountDropdown"
                   name="account"
                   value={formData.account}
                   onChange={handleInputChange}
@@ -244,7 +248,7 @@ const EditTransaction = () => {
                 >
                   <option value="">Select an account</option>
                   {accounts.map((acc) => (
-                    <option key={acc._id} value={acc._id}>
+                    <option id="accountDropdownOptions" key={acc._id} value={acc._id}>
                       {acc.name} (₹{acc.balance})
                     </option>
                   ))}
@@ -258,6 +262,7 @@ const EditTransaction = () => {
                 </label>
                 <select
                   name="category"
+                  id="categoryDropdown"
                   value={formData.category}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border-2 border-gray-300 bg-white text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors"
@@ -265,7 +270,7 @@ const EditTransaction = () => {
                 >
                   <option value="">Select a category</option>
                   {filteredCategories.map((cat) => (
-                    <option key={cat._id} value={cat.name}>
+                    <option id="categoryDropdownOptions" key={cat._id} value={cat.name}>
                       {cat.name}
                     </option>
                   ))}
@@ -278,6 +283,7 @@ const EditTransaction = () => {
                   Date *
                 </label>
                 <input
+                  id="dateInputField"
                   type="date"
                   name="date"
                   value={formData.date}
@@ -293,6 +299,7 @@ const EditTransaction = () => {
                   Description (Optional)
                 </label>
                 <textarea
+                  id="descriptionInputField"
                   name="description"
                   placeholder="Add any notes about this transaction..."
                   value={formData.description}
@@ -305,6 +312,7 @@ const EditTransaction = () => {
               {/* Action Buttons */}
               <div className="flex gap-4 pt-4">
                 <button
+                  id="cancelBtn"
                   type="button"
                   onClick={() => navigate(-1)}
                   className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
@@ -312,6 +320,7 @@ const EditTransaction = () => {
                   Cancel
                 </button>
                 <button
+                id="updateBtn"
                   type="submit"
                   disabled={loading}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:from-gray-400 disabled:to-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"

@@ -18,7 +18,6 @@ export class BasePage {
     get editRecordButton(): Locator {
         return this.page.locator('#editRecordBtn');
     }
-
     inputFieldById(name: string): Locator {
         return this.page.locator(`#${name}InputField`);
     }
@@ -41,6 +40,9 @@ export class BasePage {
 
     get saveButton(): Locator {
         return this.page.locator('#saveBtn');
+    }
+    get updateButton(): Locator {
+        return this.page.locator('#updateBtn');
     }
     get backButton(): Locator {
         return this.page.locator('#BackBtn');
