@@ -66,7 +66,7 @@ const Accounts = () => {
             <p className="text-gray-400">Manage your financial accounts</p>
           </div>
           <button
-          id="addAccountBtn"
+            id="addAccountBtn"
             onClick={() => navigate("/addAccount")}
             className="mt-4 sm:mt-0 group bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25"
           >
@@ -94,13 +94,15 @@ const Accounts = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {accounts.map((account) => (
             <div
+              id={"accountDiv" + account.name}
               key={account._id}
               className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/50 rounded-2xl p-6 backdrop-blur-sm hover:border-blue-500/30 transition-all duration-300"
             >
               <div className="flex items-start justify-between mb-4">
-                <h3 className="text-white font-bold text-lg">{account.name}</h3>
+                <h3 id="accountNameDisplay" className="text-white font-bold text-lg">{account.name}</h3>
                 <div className="flex gap-2">
                   <button
+                    id="editBtn"
                     onClick={() => navigate(`/edit-account/${account._id}`)}
                     className="p-2 hover:bg-blue-100/10 rounded-lg transition-colors duration-200"
                     title="Edit account"
@@ -108,6 +110,7 @@ const Accounts = () => {
                     <Edit2 className="w-4 h-4 text-blue-400" />
                   </button>
                   <button
+                    id="deleteBtn"
                     onClick={() => handleDelete(account._id)}
                     className="p-2 hover:bg-red-100/10 rounded-lg transition-colors duration-200"
                     title="Delete account"

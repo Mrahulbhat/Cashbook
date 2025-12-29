@@ -21,7 +21,11 @@ const commonConstants = {
     toastMessages:{
         TRANSACTION_ADDED_SUCCESSFULLY: 'Transaction added successfully',
         TRANSACTION_UPDATED_SUCCESSFULLY: 'Transaction updated successfully',
-        TRANSACTION_DELETED_SUCCESSFULLY: 'Transaction deleted successfully'
+        TRANSACTION_DELETED_SUCCESSFULLY: 'Transaction deleted successfully',
+
+        ACCOUNT_ADDED_SUCCESSFULLY:'Account added successfully',
+        ACCOUNT_ALREADY_EXISTS:'Account with this name already exists',
+        ACCOUNT_DELETED_SUCCESSFULLY: 'Account deleted successfully',
     },
 
     TEST_ACCOUNT_NAME:"Account Name Test",

@@ -5,22 +5,47 @@ import { waitForResponse } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Account Related Tests', () => {
-    test('Create an Account @BAT @ACCOUNT', async ({ page, accountsPage, dashboardPage }) => {
+    test('Account CRUD operations @BAT @ACCOUNT', async ({ page, accountsPage, dashboardPage }) => {
 
-        const accountName = commonConstants.TEST_ACCOUNT_NAME
-        const initialBalance = commonConstants.TEST_AMOUNT_1000;
+        // Create a new account
 
-        await navigateToPage(page,commonConstants.pageName.ACCOUNTS);
+        const accountName = commonConstants.TEST_ACCOUNT_NAME;
+        const initialBalance = "1000";
+
+        await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
 
         await expect(accountsPage.addAccountBtn).toBeVisible();
         await accountsPage.addAccountBtn.click();
 
         await accountsPage.inputFieldById('accountName').fill(accountName);
-        await accountsPage.inputFieldById('balance').fill("1000");
+        await accountsPage.inputFieldById('balance').fill(initialBalance);
         await accountsPage.saveButton.click();
-        await page.waitForResponse((response: any) => response.url().includes('/api/account/new') && response.status() === 201 &&  response.request().method() === 'POST', { timeout: 15000 });
+        await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newAccountAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
+        await page.getByText(commonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY);
 
+        //Create again with same name; expected to fail with message record already exists!
 
+        await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
+
+        await expect(accountsPage.addAccountBtn).toBeVisible();
+        await accountsPage.addAccountBtn.click();
+
+        await accountsPage.inputFieldById('accountName').fill(accountName);
+        await accountsPage.inputFieldById('balance').fill(initialBalance);
+        await accountsPage.saveButton.click();
+
+        //get status code 400 saying record name already exists
+        await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newAccountAPI) && response.status() === 400 && response.request().method() === "POST", { timeout: 15000 });
+        await expect(page.getByText(commonConstants.toastMessages.ACCOUNT_ALREADY_EXISTS)).toBeVisible();
+
+        //DELETE THE ACCOUNT CREATED
+
+        await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
+        await expect(accountsPage.addAccountBtn).toBeVisible();
+        await accountsPage.deleteAccountBtn(accountName).click();
+        await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200 && response.request().method() === "DELETE", { timeout: 15000 });
+        await expect(page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
+        await expect(accountsPage.deleteAccountBtn(accountName)).not.toBeVisible();
 
     });
 });
