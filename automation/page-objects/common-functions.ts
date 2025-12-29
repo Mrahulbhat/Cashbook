@@ -14,8 +14,8 @@ export async function navigateToPage(page: any, pageName: string) {
         case commonConstants.pageName.DASHBOARD:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.DASHBOARD}`);
             await Promise.all([
-                waitForResponse(page, commonConstants.urls.accountsAPI),
-                waitForResponse(page, commonConstants.urls.transactionAPI)
+                page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200, { timeout:15000 }),
+                page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200, { timeout:15000 }),
             ]);
             break;
 

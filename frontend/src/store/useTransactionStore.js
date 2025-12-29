@@ -137,4 +137,23 @@ export const useTransactionStore = create((set) => ({
       set({ loading: false });
     }
   },
+
+  // Delete TEST transactions
+  deleteTestTransactions: async () => {
+    set({ loading: true });
+    try {
+      await axiosInstance.delete("/transaction/delete-test");
+      set((state) => ({
+        transactions: state.transactions.filter(
+          (t) => t.parentCategory !== "TEST"
+        ),
+        loading: false,
+      }));
+      toast.success("TEST transactions deleted");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete TEST transactions");
+      set({ loading: false });
+    }
+  },
+
 }));

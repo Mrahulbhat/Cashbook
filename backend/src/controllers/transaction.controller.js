@@ -325,4 +325,38 @@ export const deleteAllTransactions = async (req, res) => {
   }
 };
 
+// Delete TEST transactions
+export const deleteTestTransactions = async (req, res) => {
+  try {
+    // Find all TEST transactions
+    const transactions = await Transaction.find({ parentCategory: "TEST" });
+
+    if (!transactions.length) {
+      return res.status(404).json({ message: "No TEST transactions found" });
+    }
+
+    for (const txn of transactions) {
+      const account = await Account.findById(txn.account);
+      if (!account) continue;
+
+      const amount = Number(txn.amount);
+
+      if (txn.type.toLowerCase() === "income") {
+        account.balance -= amount;
+      } else if (txn.type.toLowerCase() === "expense") {
+        account.balance += amount;
+      }
+
+      await account.save();
+    }
+
+    await Transaction.deleteMany({ parentCategory: "TEST" });
+
+    res.status(200).json({ message: "TEST transactions deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 

@@ -10,6 +10,7 @@ import {
   getTransactionsByCategory,
   transferAmount,
   deleteAllTransactions,
+  deleteTestTransactions
 } from "../controllers/transaction.controller.js";
 
 const router = express.Router();
@@ -36,6 +37,10 @@ router.post("/new", addTransaction);
 router.put("/:id", updateTransaction);
 
 // IMPORTANT: keep this ABOVE '/:id'
+router.delete("/delete-test", deleteTestTransactions);
+router.delete("/delete-all", deleteAllTransactions);
+router.delete("/:id", deleteTransaction);
+
 router.delete("/delete-all", deleteAllTransactions);
 router.delete("/transaction/:id", deleteTransaction);
 
