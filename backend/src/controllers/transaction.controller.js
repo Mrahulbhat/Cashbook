@@ -329,7 +329,7 @@ export const deleteAllTransactions = async (req, res) => {
 export const deleteTestTransactions = async (req, res) => {
   try {
     // Find all TEST transactions
-    const transactions = await Transaction.find({ category: "TEST" });
+    const transactions = await Transaction.find({ category: "TEST"|"TEST1" });
 
     if (!transactions.length) {
       return res.status(404).json({ message: "No TEST transactions found" });
