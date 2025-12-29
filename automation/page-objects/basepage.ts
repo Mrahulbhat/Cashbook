@@ -12,6 +12,12 @@ export class BasePage {
     get resultsTable(): Locator {
         return this.page.locator('table[data-testid="resultsTable"]');
     }
+    get firstRowOfGrid(): Locator {
+        return this.resultsTable.locator('tr.tablebody').first();
+    }
+    get editRecordButton(): Locator {
+        return this.page.locator('#editRecordBtn');
+    }
 
     inputFieldById(name: string): Locator {
         return this.page.locator(`#${name}InputField`);

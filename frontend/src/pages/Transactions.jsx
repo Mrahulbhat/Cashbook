@@ -232,6 +232,7 @@ const Transactions = () => {
                       <td className="px-8 py-4">
                         <div className="flex gap-2">
                           <button
+                          id="editRecordBtn"
                             onClick={() =>
                               navigate(`/edit-transaction/${transaction._id}`)
                             }

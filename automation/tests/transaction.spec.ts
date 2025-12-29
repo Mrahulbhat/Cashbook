@@ -5,7 +5,7 @@ import { waitForResponse } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Transaction Related Tests', () => {
-    test('Transaction CRUD Operation @BAT', async ({ page, transactionPage, dashboardPage }) => {
+    test('Transaction CRUD Operation @BAT @BUG', async ({ page, transactionPage, dashboardPage }) => {
 
         const type = 'Expense';
         const amount = '1000';
@@ -54,6 +54,8 @@ test.describe('Transaction Related Tests', () => {
             expect(page.getByText(commonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
         ]);
 
+        //BUG01
+
         //page will be redirected to dashboard page after creation
         await expect(dashboardPage.totalExpense).toBeVisible();
 
@@ -78,5 +80,11 @@ test.describe('Transaction Related Tests', () => {
             day: "numeric",
         });
         await expect(latestRow).toContainText(formattedDate);
+
+        //EDIT THE RECORD
+        await transactionPage.editRecordButton.click();
+
     });
+
+    
 });
