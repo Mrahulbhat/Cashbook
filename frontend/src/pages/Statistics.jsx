@@ -94,6 +94,33 @@ const Statistics = () => {
       categoryMap[categoryName].amount += amount;
       categoryMap[categoryName].count += 1;
     });
+    
+    filteredTransactions.forEach((t) => {
+      const amount = Number(t.amount);
+
+      const categoryName =
+        typeof t.category === "object" ? t.category.name : t.category;
+
+      if (t.type.toLowerCase() === "income") {
+        totalIncome += amount;
+      } else if (t.type.toLowerCase() === "expense") {
+        totalExpense += amount;
+      }
+
+      if (!categoryMap[categoryName]) {
+        categoryMap[categoryName] = {
+          category: categoryName,
+          amount: 0,
+          count: 0,
+          type: t.type,
+          budget: 0,
+        };
+      }
+
+      categoryMap[categoryName].amount += amount;
+      categoryMap[categoryName].count += 1;
+    });
+
 
 
     // Add budget info from categories
@@ -192,8 +219,8 @@ const Statistics = () => {
             <button
               onClick={() => setFilter("monthly")}
               className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "monthly"
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
             >
               Monthly
@@ -201,8 +228,8 @@ const Statistics = () => {
             <button
               onClick={() => setFilter("yearly")}
               className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "yearly"
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
             >
               Yearly
@@ -210,8 +237,8 @@ const Statistics = () => {
             <button
               onClick={() => setFilter("lifetime")}
               className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "lifetime"
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
             >
               Lifetime
@@ -326,8 +353,8 @@ const Statistics = () => {
                       <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                         <div
                           className={`h-full transition-all duration-300 ${isOverBudget
-                              ? "bg-red-500"
-                              : "bg-gradient-to-r from-blue-500 to-blue-400"
+                            ? "bg-red-500"
+                            : "bg-gradient-to-r from-blue-500 to-blue-400"
                             }`}
                           style={{
                             width: `${Math.min(getTotalPercentage(category.amount), 100)}%`,
