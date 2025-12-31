@@ -8,13 +8,14 @@ import { useEffect, useState } from "react";
 import AddTransaction from "./pages/AddTransaction";
 import EditTransaction from "./pages/EditTransaction";
 import Dashboard from "./pages/Dashboard";
+import Accounts from "./pages/Accounts";
 import AddAccount from "./pages/AddAccount";
+import EditAccount from "./pages/EditAccount";
+import Categories from "./pages/Categories";
 import AddCategory from "./pages/AddCategory";
 import Statistics from "./pages/Statistics";
 import Transactions from "./pages/Transactions";
-import Accounts from "./pages/Accounts";
-import Categories from "./pages/Categories";
-import Transfer from "./pages/Transfer"; 
+import Transfer from "./pages/Transfer";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -45,16 +46,23 @@ const App = () => {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/transactions" element={<Transactions />} />
+
             <Route path="/accounts" element={<Accounts />} />
+            <Route path="/addAccount" element={<AddAccount />} />
+            <Route path="/edit-account/:id" element={<EditAccount />} />
+
             <Route path="/categories" element={<Categories />} />
+            <Route path="/addCategory" element={<AddCategory />} />
+            {/* create one for edit Category */}
+
+            <Route path="/transactions" element={<Transactions />} />
             <Route path="/addTransaction" element={<AddTransaction />} />
             <Route path="/edit-transaction/:id" element={<EditTransaction />} />
-            <Route path="/addAccount" element={<AddAccount />} />
-            <Route path="/addCategory" element={<AddCategory />} />
+
             <Route path="/transfer" element={<Transfer />} />
-            <Route path='/stats' element={<Statistics/>}/>
-          </Routes> 
+            <Route path='/stats' element={<Statistics />} />
+
+          </Routes>
           <Toaster />
         </div>
       </div>

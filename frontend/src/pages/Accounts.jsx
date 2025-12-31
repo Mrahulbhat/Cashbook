@@ -1,40 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Trash2, Edit2 } from "lucide-react";
-import { axiosInstance } from "../lib/axios";
-import toast from "react-hot-toast";
+import { Plus, Trash2, Edit2, Loader } from "lucide-react";
+import { useAccountStore } from "../store/useAccountStore";
 
 const Accounts = () => {
   const navigate = useNavigate();
-  const [accounts, setAccounts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { accounts, fetchAccounts, deleteAccount, loading } = useAccountStore();
 
   useEffect(() => {
-    loadAccounts();
-  }, []);
-
-  const loadAccounts = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get("/account");
-      setAccounts(response.data || []);
-    } catch (error) {
-      console.error("Error fetching accounts:", error);
-      toast.error("Failed to load accounts");
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchAccounts();
+  }, [fetchAccounts]);
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this account?")) {
-      try {
-        await axiosInstance.delete(`/account/${id}`);
-        toast.success("Account deleted successfully");
-        await loadAccounts();
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to delete account");
-      }
+      await deleteAccount(id);
     }
   };
 
@@ -75,8 +54,15 @@ const Accounts = () => {
           </button>
         </div>
 
+        {/* Loading */}
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <Loader className="w-12 h-12 animate-spin text-green-400" />
+          </div>
+        )}
+
         {/* Total Balance Card */}
-        {accounts.length > 0 && (
+        {accounts.length > 0 && !loading && (
           <div className="mb-8 bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border border-emerald-500/30 rounded-2xl p-8 backdrop-blur-sm">
             <h3 className="text-emerald-400 font-semibold text-sm mb-2">
               Total Balance
