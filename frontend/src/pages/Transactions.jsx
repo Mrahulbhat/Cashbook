@@ -230,7 +230,7 @@ const Transactions = () => {
                       {/* Category */}
                       <td className="px-8 py-4">
                         <span className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
-                          {transaction.category}
+                          {transaction.category?.name || "N/A"}
                         </span>
                       </td>
 

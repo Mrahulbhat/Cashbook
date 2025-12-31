@@ -55,7 +55,7 @@ const AddAccount = () => {
 
       // Navigate back after success
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/accounts");
       }, 1000);
     } catch (error) {
       toast.error(

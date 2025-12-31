@@ -6,7 +6,8 @@ import mongoose from "mongoose";
 // Get all transactions
 export const getAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find().populate("account");
+    const transactions = await Transaction.find().populate("account").populate("category");
+
     res.status(200).json(transactions);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -17,7 +18,7 @@ export const getAllTransactions = async (req, res) => {
 export const getTransactionData = async (req, res) => {
   try {
     const { id } = req.params;
-    const transaction = await Transaction.findById(id).populate("account");
+    const transaction = await Transaction.findById(id).populate("account").populate("category");
 
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
@@ -46,7 +47,7 @@ export const addTransaction = async (req, res) => {
     }
 
     // Verify category exists
-    const categoryExists = await Category.findOne({ name: category });
+    const categoryExists = await Category.findById(category);
     if (!categoryExists) {
       return res.status(404).json({ message: "Category not found" });
     }
@@ -132,7 +133,8 @@ export const updateTransaction = async (req, res) => {
     await transaction.save();
     await oldAccount.save();
 
-    const updatedTransaction = await Transaction.findById(id).populate("account");
+    const updatedTransaction = await Transaction.findById(id).populate("account").populate("category");
+    ;
     res.status(200).json(updatedTransaction);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -173,7 +175,8 @@ export const getTransactionsByAccount = async (req, res) => {
   try {
     const { accountId } = req.params;
 
-    const transactions = await Transaction.find({ account: accountId }).populate("account");
+    const transactions = await Transaction.find({ account: accountId }).populate("account").populate("category");
+    ;
     res.status(200).json(transactions);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -194,7 +197,8 @@ export const getTransactionsByDateRange = async (req, res) => {
         $gte: new Date(startDate),
         $lte: new Date(endDate),
       },
-    }).populate("account");
+    }).populate("account").populate("category");
+    ;
 
     res.status(200).json(transactions);
   } catch (error) {
@@ -207,7 +211,8 @@ export const getTransactionsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
 
-    const transactions = await Transaction.find({ category }).populate("account");
+    const transactions = await Transaction.find({ category }).populate("account").populate("category");
+    ;
     res.status(200).json(transactions);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -267,23 +272,22 @@ export const transferAmount = async (req, res) => {
 
       const date = new Date();
 
-      // Create expense on fromAccount
       const expense = new Transaction({
         amount: amountNum,
         type: "expense",
-        category: categoryName,
+        category: category._id, 
         date,
         account: fromAccountId,
       });
 
-      // Create income on toAccount
       const income = new Transaction({
         amount: amountNum,
         type: "income",
-        category: categoryName,
+        category: category._id,
         date,
         account: toAccountId,
       });
+
 
       await expense.save({ session });
       await income.save({ session });
@@ -304,7 +308,8 @@ export const transferAmount = async (req, res) => {
 
 export const deleteAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find().populate("account");
+    const transactions = await Transaction.find().populate("account").populate("category");
+    ;
 
     for (const tx of transactions) {
       const amount = Number(tx.amount);

@@ -71,25 +71,30 @@ const Statistics = () => {
 
     filteredTransactions.forEach((t) => {
       const amount = Number(t.amount);
+
+      const categoryName =
+        typeof t.category === "object" ? t.category.name : t.category;
+
       if (t.type.toLowerCase() === "income") {
         totalIncome += amount;
       } else if (t.type.toLowerCase() === "expense") {
         totalExpense += amount;
       }
 
-      // Group by category
-      if (!categoryMap[t.category]) {
-        categoryMap[t.category] = {
-          category: t.category,
+      if (!categoryMap[categoryName]) {
+        categoryMap[categoryName] = {
+          category: categoryName,
           amount: 0,
           count: 0,
           type: t.type,
           budget: 0,
         };
       }
-      categoryMap[t.category].amount += amount;
-      categoryMap[t.category].count += 1;
+
+      categoryMap[categoryName].amount += amount;
+      categoryMap[categoryName].count += 1;
     });
+
 
     // Add budget info from categories
     categories.forEach((cat) => {
@@ -186,31 +191,28 @@ const Statistics = () => {
           <div className="mb-8 flex flex-wrap gap-3">
             <button
               onClick={() => setFilter("monthly")}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
-                filter === "monthly"
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "monthly"
                   ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              }`}
+                }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setFilter("yearly")}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
-                filter === "yearly"
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "yearly"
                   ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              }`}
+                }`}
             >
               Yearly
             </button>
             <button
               onClick={() => setFilter("lifetime")}
-              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${
-                filter === "lifetime"
+              className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${filter === "lifetime"
                   ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              }`}
+                }`}
             >
               Lifetime
             </button>
@@ -323,11 +325,10 @@ const Statistics = () => {
                       {/* Progress Bar */}
                       <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                         <div
-                          className={`h-full transition-all duration-300 ${
-                            isOverBudget
+                          className={`h-full transition-all duration-300 ${isOverBudget
                               ? "bg-red-500"
                               : "bg-gradient-to-r from-blue-500 to-blue-400"
-                          }`}
+                            }`}
                           style={{
                             width: `${Math.min(getTotalPercentage(category.amount), 100)}%`,
                           }}

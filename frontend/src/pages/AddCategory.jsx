@@ -64,7 +64,7 @@ const AddCategory = () => {
 
       // Navigate back after success
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/categories");
       }, 1000);
     } catch (error) {
       toast.error(

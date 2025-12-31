@@ -112,7 +112,7 @@ const AddTransaction = () => {
 
       // Navigate back
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/transactions");
       }, 1000);
     } catch (error) {
       console.error("Error creating transaction:", error);
@@ -255,7 +255,7 @@ const AddTransaction = () => {
                 >
                   <option value="">Select a category</option>
                   {filteredCategories.map((cat) => (
-                    <option id="categoryDropdownOptions" key={cat._id} value={cat.name}>
+                    <option id="categoryDropdownOptions" key={cat._id} value={cat._id}>
                       {cat.name}
                     </option>
                   ))}
@@ -284,7 +284,7 @@ const AddTransaction = () => {
                   Description (Optional)
                 </label>
                 <textarea
-                id="descriptionInputField"
+                  id="descriptionInputField"
                   name="description"
                   placeholder="Add any notes about this transaction..."
                   value={formData.description}
@@ -297,7 +297,7 @@ const AddTransaction = () => {
               {/* Action Buttons */}
               <div className="flex gap-4 pt-4">
                 <button
-                id="cancelBtn"
+                  id="cancelBtn"
                   type="button"
                   onClick={() => navigate(-1)}
                   className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
@@ -305,7 +305,7 @@ const AddTransaction = () => {
                   Cancel
                 </button>
                 <button
-                id="saveBtn"
+                  id="saveBtn"
                   type="submit"
                   disabled={loading || !isFormValid}
                   aria-disabled={loading || !isFormValid}
