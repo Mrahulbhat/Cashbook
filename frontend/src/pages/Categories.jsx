@@ -3,12 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, Edit2 } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
+import ModalContent from '../components/ModalContent';
 
 const Categories = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+
 
   useEffect(() => {
     loadCategories();
@@ -27,15 +31,15 @@ const Categories = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      try {
-        await axiosInstance.delete(`/category/${id}`);
-        toast.success("Category deleted successfully");
-        await loadCategories();
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to delete category");
-      }
+  const handleDelete = async () => {
+    try {
+      await axiosInstance.delete(`/category/${selectedCategoryId}`);
+      toast.success("Category deleted successfully");
+      setShowConfirm(false);
+      setSelectedCategoryId(null);
+      await loadCategories();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete category");
     }
   };
 
@@ -101,41 +105,48 @@ const Categories = () => {
         <div className="mb-8 flex flex-wrap gap-3">
           <button
             onClick={() => setFilter("all")}
-            className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
-              filter === "all"
-                ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-            }`}
+            className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${filter === "all"
+              ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25"
+              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
           >
             All
           </button>
           <button
             onClick={() => setFilter("income")}
-            className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
-              filter === "income"
-                ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-            }`}
+            className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${filter === "income"
+              ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25"
+              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
           >
             Income
           </button>
           <button
             onClick={() => setFilter("expense")}
-            className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
-              filter === "expense"
-                ? "bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-lg shadow-red-500/25"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-            }`}
+            className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${filter === "expense"
+              ? "bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-lg shadow-red-500/25"
+              : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
           >
             Expense
           </button>
         </div>
+        <ModalContent
+          open={showConfirm}
+          title="Delete Category"
+          message="Are you sure you want to delete this category?"
+          onCancel={() => {
+            setShowConfirm(false);
+            setSelectedCategoryId(null);
+          }}
+          onConfirm={handleDelete}
+        />
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCategories.map((category) => (
             <div
-            id="categoryDiv"
+              id="categoryDiv"
               key={category._id}
               className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/50 rounded-2xl p-6 backdrop-blur-sm hover:border-purple-500/30 transition-all duration-300"
             >
@@ -143,11 +154,10 @@ const Categories = () => {
                 <div>
                   <h3 className="text-white font-bold text-lg">{category.name}</h3>
                   <span
-                    className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold ${
-                      category.type.toLowerCase() === "income"
-                        ? "bg-green-100/20 text-green-400"
-                        : "bg-red-100/20 text-red-400"
-                    }`}
+                    className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold ${category.type.toLowerCase() === "income"
+                      ? "bg-green-100/20 text-green-400"
+                      : "bg-red-100/20 text-red-400"
+                      }`}
                   >
                     {category.type}
                   </span>
@@ -161,7 +171,10 @@ const Categories = () => {
                     <Edit2 className="w-4 h-4 text-blue-400" />
                   </button>
                   <button
-                    onClick={() => handleDelete(category._id)}
+                    onClick={() => {
+                      setSelectedCategoryId(category._id);
+                      setShowConfirm(true);
+                    }}
                     className="p-2 hover:bg-red-100/10 rounded-lg transition-colors duration-200"
                     title="Delete category"
                   >
