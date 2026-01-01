@@ -234,7 +234,7 @@ const AddTransaction = () => {
                   <option value="">Select an account</option>
                   {accounts.map((acc) => (
                     <option id="accountDropdownOptions" key={acc._id} value={acc._id}>
-                      {acc.name} (₹{acc.balance})
+                      {acc.name}
                     </option>
                   ))}
                 </select>

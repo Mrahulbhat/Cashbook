@@ -28,6 +28,5 @@ test.describe('Transaction Related Tests', () => {
         // EDIT THE RECORD===================================================================================
 
         await transactionPage.editTransaction(page,transaction);
-
-
+    });
 });

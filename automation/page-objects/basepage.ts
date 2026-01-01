@@ -41,7 +41,7 @@ export class BasePage {
 
     // buttons =======================================================================================      
 
-    get modalOkBtn():Locator{
+    get modalOkBtn(): Locator {
         return this.page.locator('#confirmDeleteBtn');
     }
     get saveButton(): Locator {
@@ -74,49 +74,58 @@ export class BasePage {
 
     async enterAmount(amount: string) {
         await expect(this.inputFieldById('Amount')).toBeVisible();
-        await this.inputFieldById('Amount').clear();
-        await this.inputFieldById('Amount').pressSequentially(amount);
+        await this.inputFieldById('Amount').fill(amount);
         await expect(this.inputFieldById('Amount')).toHaveValue(amount);
     }
     async selectAccount(optionText: string) {
         await this.accountDropdownContainer.click();
-        const dropdownOptions = this.accountDropdownOptions;
-        await dropdownOptions.first().waitFor({ state: 'attached' });
-        const rawOptions = await dropdownOptions.allTextContents();
-        // Normalize text (remove amount in brackets)
-        const normalizedOptions = rawOptions.map(text =>
-            text.replace(/\s*\(.*?\)/, '').trim()
-        );
-        expect(normalizedOptions).toContain('Cash');
-        const optionIndex = normalizedOptions.findIndex(
-            text => text === optionText
-        );
-        expect(optionIndex).toBeGreaterThanOrEqual(0);
-        await this.accountDropdownContainer.selectOption({ index: optionIndex + 1 });
-        await this.page.waitForTimeout(500);
-        await expect(this.accountDropdownContainer).toContainText(optionText);
+        try {
+            await this.accountDropdownContainer.selectOption(optionText);
+        }
+        catch {
+            const dropdownOptions = this.accountDropdownOptions;
+            await dropdownOptions.first().waitFor({ state: 'attached' });
+            const rawOptions = await dropdownOptions.allTextContents();
+            // Normalize text (remove amount in brackets)
+            const normalizedOptions = rawOptions.map(text =>
+                text.replace(/\s*\(.*?\)/, '').trim()
+            );
+            expect(normalizedOptions).toContain('Cash');
+            const optionIndex = normalizedOptions.findIndex(
+                text => text === optionText
+            );
+            expect(optionIndex).toBeGreaterThanOrEqual(0);
+            await this.accountDropdownContainer.selectOption({ index: optionIndex + 1 });
+            await this.page.waitForTimeout(500);
+            await expect(this.accountDropdownContainer).toContainText(optionText);
+        }
     }
 
     async selectCategory(optionText: string) {
         await this.categoryDropdownContainer.click();
-        const dropdownOptions = this.categoryDropdownOptions;
-        await dropdownOptions.first().waitFor({ state: 'attached' });
-        const rawOptions = await dropdownOptions.allTextContents();
-        console.log('Category Options:', rawOptions);
+        try {
+            await this.categoryDropdownContainer.selectOption(optionText);
+        }
+        catch {
+            const dropdownOptions = this.categoryDropdownOptions;
+            await dropdownOptions.first().waitFor({ state: 'attached' });
+            const rawOptions = await dropdownOptions.allTextContents();
+            console.log('Category Options:', rawOptions);
 
-        // Normalize text (remove amount in brackets)
-        const normalizedOptions = rawOptions.map(text =>
-            text.replace(/\s*\(.*?\)/, '').trim()
-        );
-        console.log('Normalized Category Options:', normalizedOptions);
-        expect(normalizedOptions).toContain(optionText);
-        const optionIndex = normalizedOptions.findIndex(
-            text => text === optionText
-        );
-        expect(optionIndex).toBeGreaterThanOrEqual(0);
-        await this.categoryDropdownContainer.selectOption({ index: optionIndex + 1 });
-        await this.page.waitForTimeout(500);
-        await expect(this.categoryDropdownContainer).toContainText(optionText);
+            // Normalize text (remove amount in brackets)
+            const normalizedOptions = rawOptions.map(text =>
+                text.replace(/\s*\(.*?\)/, '').trim()
+            );
+            console.log('Normalized Category Options:', normalizedOptions);
+            expect(normalizedOptions).toContain(optionText);
+            const optionIndex = normalizedOptions.findIndex(
+                text => text === optionText
+            );
+            expect(optionIndex).toBeGreaterThanOrEqual(0);
+            await this.categoryDropdownContainer.selectOption({ index: optionIndex + 1 });
+            await this.page.waitForTimeout(500);
+            await expect(this.categoryDropdownContainer).toContainText(optionText);
+        }
     }
 
     async selectDate(dateString: string = new Date().toISOString().split('T')[0]) {

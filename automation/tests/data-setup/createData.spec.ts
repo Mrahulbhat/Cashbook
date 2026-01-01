@@ -26,6 +26,8 @@ test.describe('Create Data Setup', () => {
         for (const category of categories) {
             await categoryPage.createCategory(page, category);
         }
+
+        await expect(categoryPage.totalCategoryCount).toHaveText(String(categories.length));
     });
 
     // create default transactions
@@ -33,7 +35,7 @@ test.describe('Create Data Setup', () => {
         const transactions = commonConstants.TRANSACTIONS;
 
         for (const transaction of transactions) {
-            await transactionPage.createTransaction(page, transactions);
+            await transactionPage.createTransaction(page, transaction);
         }
     });
 });

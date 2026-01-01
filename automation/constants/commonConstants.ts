@@ -42,7 +42,7 @@ const commonConstants = {
         { name: "SIP", type: "expense", parentCategory: "Savings/Investment", budget: "1000" },
         { name: "Salary", type: "income", parentCategory: "Income" },
         { name: "TEST", type: "expense", parentCategory: "TEST", budget: "1000" },
-        { name: "TEST1", type: "income", parentCategory: "Income", budget: "1000" },
+        { name: "TEST1", type: "income", parentCategory: "Income" },
     ],
 
     //update all to test once testing is complete

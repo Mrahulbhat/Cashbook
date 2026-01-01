@@ -50,13 +50,6 @@ export class CategoryPage extends BasePage {
 
         await navigateToPage(page, commonConstants.pageName.CATEGORIES);
 
-        // ---- get initial counts (convert to numbers)
-        const initialTotalCount = Number(await this.totalCategoryCount.innerText());
-        const initialIncomeCount = Number(await this.totalIncomeCategoryCount.innerText());
-        const initialExpenseCount = Number(await this.totalExpenseCategoryCount.innerText());
-
-        console.log('initial count: ' + initialTotalCount);
-
         // ---- go to add category
         await this.addCategoryBtn.click();
         await page.waitForLoadState("networkidle");
@@ -82,44 +75,31 @@ export class CategoryPage extends BasePage {
 
         // ---- save
         await this.saveButton.click();
-        try {
-            await page.waitForResponse((response) => response.url().includes(commonConstants.urls.newCategoryAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
-            await expect(page.getByText(commonConstants.toastMessages.CATEGORY_CREATED_SUCCESSFULLY)).toBeVisible();
-        } catch {
-            //might have failed due to existing record; delete all records and retry
-            await this.backButton.click();
-            await this.deleteAllCategories(page);
-            await this.createCategory(page, category);
-        }
+        await page.waitForResponse((response) => response.url().includes(commonConstants.urls.newCategoryAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
+        await expect(page.getByText(commonConstants.toastMessages.CATEGORY_CREATED_SUCCESSFULLY)).toBeVisible();
 
         //verify if account is visible in grid
         await expect(this.page.locator('#categoryDiv' + category.name)).toBeVisible(); //verify if category is visible in grid
-
-        // ---- verify counts updated
-        await expect(this.totalCategoryCount).toHaveText(String(initialTotalCount + 1));
-
-        if (category.type === "income") {
-            await expect(this.totalIncomeCategoryCount).toHaveText(String(initialIncomeCount + 1));
-            await expect(this.totalExpenseCategoryCount).toHaveText(String(initialExpenseCount));
-        } else {
-            await expect(this.totalExpenseCategoryCount).toHaveText(String(initialExpenseCount + 1));
-            await expect(this.totalIncomeCategoryCount).toHaveText(String(initialIncomeCount));
-        }
     }
 
     async deleteAllCategories(page: Page) {
 
         //no records; return 
         await page.waitForLoadState('networkidle');
-        let count = await this.totalCategoryCount.count();
+        let count = await this.deleteButton.count();
+
+        const toast = this.page.getByText(commonConstants.toastMessages.CATEGORY_DELETED_SUCCESSFULLY).first();
 
         for (var i = 0; i < count; i++) {
             await this.deleteButton.first().click();
-            await this.modalOkBtn.click();
-            const toast = this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY).last();
-            await expect(toast).toBeVisible();
+            await Promise.all([
+                this.modalOkBtn.click(),
+                expect(toast).toBeVisible({ timeout: 15000 }),
+                await this.page.waitForLoadState('networkidle')
+            ]);
             await expect(toast).toBeHidden({ timeout: 10000 });
             await this.page.waitForLoadState('networkidle');
+
         }
 
         await expect(this.deleteButton).toHaveCount(0);

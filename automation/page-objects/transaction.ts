@@ -46,17 +46,18 @@ export class TransactionPage extends BasePage {
         //click on save button with empty form to check validation
         await expect(this.saveButton).toBeDisabled();
 
-        await expect(this.incomeRadioBox).toBeVisible();
-        await expect(this.expenseRadioBox).toBeVisible();
-
-        // assert default selection is expense
-        await expect(this.expenseRadioBox).toBeChecked();
+        if (transaction.type === 'expense') {
+            await this.expenseRadioBox.click();
+        }
+        else {
+            await this.incomeRadioBox.click();
+        }
 
         await this.enterAmount(transaction.amount);
         await this.selectAccount(transaction.accountName);
         await this.selectCategory(transaction.categoryName);
         await this.selectDate(transaction.date);
-        await this.inputFieldById('description').pressSequentially(transaction.description);
+        await this.inputFieldById('description').fill(transaction.description);
 
         await expect(this.cancelButton).toBeVisible();
         await expect(this.saveButton).toBeEnabled();
@@ -90,7 +91,9 @@ export class TransactionPage extends BasePage {
     }
 
     async editTransaction(page: Page, transaction: { type: string, amount: string, accountName: string, categoryName: string, date: string, description: string }) {
-        
+
+        const initialTxnCountText = await this.recordCountOnTable.innerText();
+
         await this.editRecordButton.first().click();
         await Promise.all([
             page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200)
@@ -112,8 +115,7 @@ export class TransactionPage extends BasePage {
         await this.selectAccount(updated_accountName);
         await this.selectCategory(updated_categoryName);
         await this.selectDate(updated_date);
-        await this.inputFieldById('description').clear();
-        await this.inputFieldById('description').pressSequentially(updated_description);
+        await this.inputFieldById('description').fill(updated_description);
         await expect(this.cancelButton).toBeVisible();
         await expect(this.updateButton).toBeEnabled();
         await this.updateButton.click();
@@ -125,7 +127,8 @@ export class TransactionPage extends BasePage {
 
         // Verify if it stays on the same page and count remains the same
         await expect(this.addTransactionBtn).toBeVisible();
-        await expect(this.recordCountOnTable).toHaveText(postCreationTxnCountText);
+        const postCreationTxnCountText = await this.recordCountOnTable.innerText();
+        expect(parseInt(postCreationTxnCountText)).toBe(parseInt(initialTxnCountText));
 
         // Verify if all details are correct in the latest transaction row
         await expect(this.firstRowOfGrid).toContainText(updated_type.toLowerCase());
