@@ -39,10 +39,9 @@ const commonConstants = {
     CATEGORIES: [
         { name: "Food", type: "expense", parentCategory: "Needs", budget: "1000" },
         { name: "Shopping", type: "expense", parentCategory: "Wants", budget: "1000" },
+        { name: "Fuel", type: "expense", parentCategory: "Needs", budget: "1000" },
         { name: "SIP", type: "expense", parentCategory: "Savings/Investment", budget: "1000" },
         { name: "Salary", type: "income", parentCategory: "Income" },
-        { name: "TEST", type: "expense", parentCategory: "TEST", budget: "1000" },
-        { name: "TEST1", type: "income", parentCategory: "Income" },
     ],
 
     //update all to test once testing is complete
@@ -54,17 +53,16 @@ const commonConstants = {
     ],
 
     TRANSACTIONS: [
-        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "income", accountName: "Cash", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "income", accountName: "Cash", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
-
+        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "Cash", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "Cash", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Food", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "Shopping", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Fuel", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "Shopping", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Fuel", date: '2025-12-29', description: 'TEST AUTOMATION' },
     ]
 };
 

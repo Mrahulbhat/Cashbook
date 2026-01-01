@@ -330,22 +330,6 @@ export const deleteAllTransactions = async (req, res) => {
   }
 };
 
-//delete test txn
-export const deleteTestTransactions = async (req, res) => {
-  try {
-    // Delete transactions where category is "TEST" or "TEST1"
-    const result = await Transaction.deleteMany({
-      category: { $in: ["TEST", "TEST1"] },
-    });
-
-    res.status(200).json({
-      message: `${result.deletedCount} test transaction(s) deleted successfully`,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 
 
 

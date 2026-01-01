@@ -137,20 +137,4 @@ export const useTransactionStore = create((set) => ({
       set({ loading: false });
     }
   },
-
-  // Delete test transactions
-  deleteTestTransactions: async () => {
-    set({ loading: true });
-    try {
-      const response = await axiosInstance.delete("/transaction/delete-test");
-      toast.success(response.data.message || "Test transactions deleted successfully");
-      // Refetch to update local state
-      const allTxns = await axiosInstance.get("/transaction");
-      set({ transactions: allTxns.data, loading: false });
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete test transactions");
-      set({ loading: false });
-    }
-  },
-
 }));

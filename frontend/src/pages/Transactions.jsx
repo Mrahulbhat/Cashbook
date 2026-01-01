@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Edit2, Trash2, Loader, ArrowUpRight, ArrowDownLeft, Divide } from "lucide-react";
 import { useTransactionStore } from "../store/useTransactionStore";
-import { axiosInstance } from "../lib/axios";
-import toast from "react-hot-toast";
 
 const Transactions = () => {
   const navigate = useNavigate();
-  const { transactions, fetchTransactions, deleteTransaction, deleteAllTransactions, deleteTestTransactions } =
+  const { transactions, fetchTransactions, deleteTransaction, deleteAllTransactions } =
     useTransactionStore();
   const [filter, setFilter] = useState("monthly");
 
@@ -277,10 +275,6 @@ const Transactions = () => {
                   ))}
                 </tbody>
               </table>
-              <button onClick={handleDeleteTestTransactions}>
-                Delete Test Transactions
-              </button>
-
               <button onClick={handleDeleteAll}>
                 Delete All Transactions
               </button>
