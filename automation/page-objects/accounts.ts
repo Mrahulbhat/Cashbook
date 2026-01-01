@@ -37,6 +37,10 @@ export class AccountsPage extends BasePage {
         return this.page.locator('#accountDiv' + name).locator('#editBtn');
     }
 
+    //balance container
+    get balanceContainer(): Locator {
+        return this.page.locator('#balanceContainer');
+    }
     //used to create a single account
 
     async createAccount(page: Page, account: { name: string; balance: string }) {
@@ -59,15 +63,15 @@ export class AccountsPage extends BasePage {
     }
 
     async deleteAllAccounts(page:Page) {
-        await this.page.pause();
         const accountCount = await this.deleteAccBtn.count();
+        await expect(this.balanceContainer).toBeVisible();
         console.log("account count: ",accountCount);
         for (let i = 0; i < accountCount; i++) {
             await this.deleteAccBtn.nth(i).click();
-            await this.page.waitForLoadState('networkidle');
             await this.modalOkBtn.click();
             await this.page.waitForLoadState('networkidle');
             await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
+            await page.waitForTimeout(1000);
         }
         await expect(this.deleteAccBtn).toHaveCount(0);
     }

@@ -75,7 +75,7 @@ const Accounts = () => {
 
         {/* Total Balance Card */}
         {accounts.length > 0 && !loading && (
-          <div className="mb-8 bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border border-emerald-500/30 rounded-2xl p-8 backdrop-blur-sm">
+          <div id="balanceContainer" className="mb-8 bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border border-emerald-500/30 rounded-2xl p-8 backdrop-blur-sm">
             <h3 className="text-emerald-400 font-semibold text-sm mb-2">
               Total Balance
             </h3>
