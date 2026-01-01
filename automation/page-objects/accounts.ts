@@ -77,6 +77,9 @@ export class AccountsPage extends BasePage {
             await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
             await page.waitForTimeout(1000);
         }
+
+        //verify if all accounts are deleted
         await expect(this.deleteAccBtn).toHaveCount(0);
+        await expect(this.balanceContainer).not.toBeVisible(); //is displayed only if acc>0
     }
 }
