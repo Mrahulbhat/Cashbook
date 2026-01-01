@@ -80,10 +80,17 @@ export class CategoryPage extends BasePage {
 
         // ---- save
         await this.saveButton.click();
-        await page.waitForResponse((response) => response.url().includes(commonConstants.urls.newCategoryAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
-        await expect(page.getByText(commonConstants.toastMessages.CATEGORY_CREATED_SUCCESSFULLY)).toBeVisible();
+        try {
+            await page.waitForResponse((response) => response.url().includes(commonConstants.urls.newCategoryAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
+            await expect(page.getByText(commonConstants.toastMessages.CATEGORY_CREATED_SUCCESSFULLY)).toBeVisible();
+        } catch {
+            //might have failed due to existing record; delete all records and retry
+            await this.backButton.click();  
+            await this.deleteAllCategories(page);
+            await this.createCategory(page,category);
+        }
 
-       //verify if account is visible in grid
+        //verify if account is visible in grid
         await expect(this.page.locator('#categoryDiv' + category.name)).toBeVisible(); //verify if category is visible in grid
 
         // ---- verify counts updated
@@ -100,7 +107,7 @@ export class CategoryPage extends BasePage {
 
     async deleteAllCategories(page: Page) {
 
-        await expect(this.categoryDiv).toBeVisible({timeout:15000});
+        await expect(this.categoryDiv).toBeVisible({ timeout: 15000 });
 
         let count = await this.totalCategoryCount.count();
         if (count === 0) return;

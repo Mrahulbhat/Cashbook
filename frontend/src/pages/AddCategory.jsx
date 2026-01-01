@@ -87,6 +87,7 @@ const AddCategory = () => {
       <div className="relative z-10 p-4 pb-20">
         {/* Back button */}
         <button
+        id="BackBtn"
           className="group flex items-center gap-3 ml-2 mb-6 bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-700/50 hover:border-purple-500/30 text-white px-6 py-3 rounded-xl hover:from-purple-600/20 hover:to-pink-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"
           onClick={() => navigate(-1)}
         >
