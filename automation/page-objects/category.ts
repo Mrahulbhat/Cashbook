@@ -31,11 +31,11 @@ export class CategoryPage extends BasePage {
     get budgetInputField(): Locator {
         return this.page.locator('#budgetInputField');
     }
-    get categoryDiv():Locator{
+    get categoryDiv(): Locator {
         return this.page.locator('#categoryDiv');
     }
 
-    async createCategory(page: Page, category: { name: string; type: string; parentCategory: string, budget: string }) {
+    async createCategory(page: Page, category: { name: string; type: string; parentCategory: string, budget?: string }) {
         await navigateToPage(page, commonConstants.pageName.CATEGORIES);
         await this.addCategoryBtn.click();
         await page.waitForLoadState("networkidle");
@@ -50,7 +50,9 @@ export class CategoryPage extends BasePage {
         await this.parentCategoryDropdown.selectOption(category.parentCategory);
 
         await expect(this.budgetInputField).toBeVisible();
-        await this.budgetInputField.fill(category.budget);
+        if (category.budget) {
+            await this.budgetInputField.fill(category.budget);
+        }
 
         await this.saveButton.click();
         await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newAccountAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });

@@ -23,13 +23,13 @@ test.describe('Data Setup', () => {
         await accountsPage.deleteAllAccounts(page);
     });
 
-    test.skip('TC01 - Setup default categories', async ({ page, categoryPage }) => {
+    test('TC01 - Setup default categories @TEST', async ({ page, categoryPage }) => {
 
         const categories = [
             { name: "CANARA_BANK", type: "expense", parentCategory:"Needs",budget:"1000"},
-            { name: "CANARA_BANK", type: "expense", parentCategory:"Wants",budget:"1000"},
+            { name: "Cash", type: "expense", parentCategory:"Wants",budget:"1000"},
             { name: "CANARA_BANK", type: "expense", parentCategory:"Savings/Investment",budget:"1000"},
-            { name: "CANARA_BANK", type: "income", parentCategory:"Income",budget:"1000"},
+            { name: "Cash", type: "income", parentCategory:"Income"},
             { name: "CANARA_BANK", type: "expense", parentCategory:"TEST",budget:"1000"},
         ];
 
