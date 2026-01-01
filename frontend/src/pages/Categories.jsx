@@ -89,15 +89,15 @@ const Categories = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/50 rounded-xl p-4 backdrop-blur-sm">
             <p className="text-gray-400 text-sm font-semibold">Total Categories</p>
-            <p className="text-3xl font-bold text-white mt-1">{categories.length}</p>
+            <p id="totalCategoryCount" className="text-3xl font-bold text-white mt-1">{categories.length}</p>
           </div>
           <div className="bg-gradient-to-br from-green-900/40 to-green-800/20 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm">
             <p className="text-green-400 text-sm font-semibold">Income Categories</p>
-            <p className="text-3xl font-bold text-white mt-1">{incomeCount}</p>
+            <p id="totalIncomeCategoryCount" className="text-3xl font-bold text-white mt-1">{incomeCount}</p>
           </div>
           <div className="bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
             <p className="text-red-400 text-sm font-semibold">Expense Categories</p>
-            <p className="text-3xl font-bold text-white mt-1">{expenseCount}</p>
+            <p id="totalExpenseCategoryCount" className="text-3xl font-bold text-white mt-1">{expenseCount}</p>
           </div>
         </div>
 

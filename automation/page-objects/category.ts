@@ -35,8 +35,25 @@ export class CategoryPage extends BasePage {
         return this.page.locator('#categoryDiv');
     }
 
+    //count cards
+    get totalCategoryCount(): Locator {
+        return this.page.locator('#totalCategoryCount');
+    }
+    get totalIncomeCategoryCount(): Locator {
+        return this.page.locator('#totalIncomeCategoryCount');
+    }
+    get totalExpenseCategoryCount(): Locator {
+        return this.page.locator('#totalExpenseCategoryCount');
+    }
+
     async createCategory(page: Page, category: { name: string; type: string; parentCategory: string, budget?: string }) {
+        
         await navigateToPage(page, commonConstants.pageName.CATEGORIES);
+
+        const initialTotalcount = await this.totalCategoryCount.innerText();
+        const totalIncomeCategoryCount = await this.totalCategoryCount.innerText();
+        const totalExpenseCategoryCount = await this.totalCategoryCount.innerText();
+
         await this.addCategoryBtn.click();
         await page.waitForLoadState("networkidle");
 
