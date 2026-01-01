@@ -1,6 +1,6 @@
 import React from "react";
 
-const ConfirmModal = ({ open, title, message, onConfirm, onCancel }) => {
+const ModalContent = ({ open, title, message, onConfirm, onCancel }) => {
   if (!open) return null;
 
   return (
@@ -35,4 +35,4 @@ const ConfirmModal = ({ open, title, message, onConfirm, onCancel }) => {
   );
 };
 
-export default ConfirmModal;
+export default ModalContent;

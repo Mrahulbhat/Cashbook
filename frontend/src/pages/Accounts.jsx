@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import ConfirmModal from "../components/confirmModal";
+import { useEffect, useState } from "react";
+import ModalContent from "../components/ModalContent";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, Edit2, Loader } from "lucide-react";
 import { useAccountStore } from "../store/useAccountStore";
@@ -131,7 +131,7 @@ const Accounts = () => {
             </div>
           ))}
         </div>
-        <ConfirmModal
+        <ModalContent
           open={showConfirm}
           title="Delete Account"
           message="Are you sure you want to delete this account? This action cannot be undone."
