@@ -9,9 +9,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { transactions, fetchTransactions, deleteTransaction, loading } =
     useTransactionStore();
+
   const [accounts, setAccounts] = useState([]);
   const [lastTransactions, setLastTransactions] = useState([]);
-  const [filter, setFilter] = useState("monthly"); // lifetime, yearly, monthly
+  const [filter, setFilter] = useState("monthly");
+  const [pageLoading, setPageLoading] = useState(true);
+
   const [stats, setStats] = useState({
     totalIncome: 0,
     totalExpense: 0,
@@ -23,8 +26,14 @@ const Dashboard = () => {
   }, []);
 
   const loadData = async () => {
-    await fetchTransactions();
-    await fetchAccounts();
+    try {
+      setPageLoading(true);
+      await Promise.all([fetchTransactions(), fetchAccounts()]);
+    } catch (error) {
+      toast.error("Failed to load dashboard");
+    } finally {
+      setPageLoading(false);
+    }
   };
 
   const fetchAccounts = async () => {
@@ -66,14 +75,12 @@ const Dashboard = () => {
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
 
-    if (filteredTransactions && filteredTransactions.length > 0) {
-      // Sort by date (most recent first) and get last 5
+    if (filteredTransactions.length > 0) {
       const sorted = [...filteredTransactions].sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
       setLastTransactions(sorted.slice(0, 5));
 
-      // Calculate stats
       let totalIncome = 0;
       let totalExpense = 0;
 
@@ -81,7 +88,7 @@ const Dashboard = () => {
         const amount = Number(t.amount);
         if (t.type.toLowerCase() === "income") {
           totalIncome += amount;
-        } else if (t.type.toLowerCase() === "expense") {
+        } else {
           totalExpense += amount;
         }
       });
@@ -104,25 +111,27 @@ const Dashboard = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-  };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-IN", {
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
       minimumFractionDigits: 2,
     }).format(amount);
-  };
 
-  const getTotalAccountsBalance = () => {
-    return accounts.reduce((sum, acc) => sum + (Number(acc.balance) || 0), 0);
-  };
+  if (pageLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex justify-center items-center">
+        <Loader className="w-12 h-12 animate-spin text-green-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden">
