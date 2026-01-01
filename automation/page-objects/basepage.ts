@@ -47,6 +47,12 @@ export class BasePage {
     get saveButton(): Locator {
         return this.page.locator('#saveBtn');
     }
+    get editButton(): Locator {
+        return this.page.locator('#editBtn');
+    }
+    get deleteButton(): Locator {
+        return this.page.locator('#deleteBtn');
+    }
     get updateButton(): Locator {
         return this.page.locator('#updateBtn');
     }

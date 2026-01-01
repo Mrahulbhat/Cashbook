@@ -29,10 +29,10 @@ const commonConstants = {
         ACCOUNT_DELETED_SUCCESSFULLY: 'Account deleted successfully',
         ACCOUNT_UPDATED_SUCCESSFULLY: 'Account updated successfully',
 
-        CATEGORY_CREATED_SUCCESSFULLY:'Account created successfully',
-        CATEGORY_ALREADY_EXISTS:'Account with this name already exists',
-        CATEGORY_DELETED_SUCCESSFULLY: 'Account deleted successfully',
-        CATEGORY_UPDATED_SUCCESSFULLY: 'Transaction updated successfully',
+        CATEGORY_CREATED_SUCCESSFULLY:'Category created successfully',
+        CATEGORY_ALREADY_EXISTS:'Category with this name already exists',
+        CATEGORY_DELETED_SUCCESSFULLY: 'Category deleted successfully',
+        CATEGORY_UPDATED_SUCCESSFULLY: 'Category updated successfully',
     },
 
     CATEGORIES:{

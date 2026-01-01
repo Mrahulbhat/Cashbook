@@ -163,14 +163,14 @@ const Categories = () => {
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <button
+                  <button id="editBtn"
                     onClick={() => navigate(`/edit-category/${category._id}`)}
                     className="p-2 hover:bg-blue-100/10 rounded-lg transition-colors duration-200"
                     title="Edit category"
                   >
                     <Edit2 className="w-4 h-4 text-blue-400" />
                   </button>
-                  <button
+                  <button id="deleteBtn"
                     onClick={() => {
                       setSelectedCategoryId(category._id);
                       setShowConfirm(true);
