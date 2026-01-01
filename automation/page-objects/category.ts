@@ -83,8 +83,8 @@ export class CategoryPage extends BasePage {
         await page.waitForResponse((response) => response.url().includes(commonConstants.urls.newCategoryAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
         await expect(page.getByText(commonConstants.toastMessages.CATEGORY_CREATED_SUCCESSFULLY)).toBeVisible();
 
-        // ---- verify category card is visible
-        await expect(this.categoryDiv).toHaveText(category.name);
+       //verify if account is visible in grid
+        await expect(this.page.locator('#categoryDiv' + category.name)).toBeVisible(); //verify if category is visible in grid
 
         // ---- verify counts updated
         await expect(this.totalCategoryCount).toHaveText(String(initialTotalCount + 1));

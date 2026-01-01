@@ -181,7 +181,7 @@ const Categories = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCategories.map((category) => (
               <div
-                id={`categoryDiv-${category._id}`}
+                id={`categoryDiv${category.name}`}
                 key={category._id}
                 className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/50 rounded-2xl p-6 backdrop-blur-sm hover:border-purple-500/30 transition-all duration-300"
               >
