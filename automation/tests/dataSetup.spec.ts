@@ -19,7 +19,8 @@ test.describe('Data Setup', () => {
 
     test('Delete all accounts in DB @TEST', async ({ page, accountsPage }) => {
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
-        await accountsPage.deleteAllAccounts();
+        await expect(accountsPage.addAccountBtn).toBeVisible();
+        await accountsPage.deleteAllAccounts(page);
     });
 
     // test.skip('TC01 - Setup default categories', async ({ page, accountsPage }) => {

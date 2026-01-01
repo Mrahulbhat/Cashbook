@@ -58,9 +58,10 @@ export class AccountsPage extends BasePage {
         await expect(this.page.locator('#accountDiv' + account.name)).toBeVisible();
     }
 
-    async deleteAllAccounts() {
-        await navigateToPage(this.page, commonConstants.pageName.ACCOUNTS);
+    async deleteAllAccounts(page:Page) {
+        await this.page.pause();
         const accountCount = await this.deleteAccBtn.count();
+        console.log("account count: ",accountCount);
         for (let i = 0; i < accountCount; i++) {
             await this.deleteAccBtn.nth(i).click();
             await this.page.waitForLoadState('networkidle');

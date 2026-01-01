@@ -26,7 +26,12 @@ export async function navigateToPage(page: any, pageName: string) {
 
         case commonConstants.pageName.ACCOUNTS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.ACCOUNTS}`);
-            await waitForResponse(page, commonConstants.urls.accountsAPI);
+            try {
+                await waitForResponse(page, commonConstants.urls.accountsAPI);
+            }
+            catch{
+                console.log('Intercept might have arrived before');
+            }
             break;
 
         case commonConstants.pageName.TRANSFER:
