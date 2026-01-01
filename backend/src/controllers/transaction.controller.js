@@ -47,7 +47,14 @@ export const addTransaction = async (req, res) => {
     }
 
     // Verify category exists
-    const categoryExists = await Category.findById(category);
+    const categoryId =
+      typeof category === "object" ? category._id : category;
+
+    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+      return res.status(400).json({ message: "Invalid category id" });
+    }
+
+    const categoryExists = await Category.findById(categoryId);
     if (!categoryExists) {
       return res.status(404).json({ message: "Category not found" });
     }
@@ -275,7 +282,7 @@ export const transferAmount = async (req, res) => {
       const expense = new Transaction({
         amount: amountNum,
         type: "expense",
-        category: category._id, 
+        category: category._id,
         date,
         account: fromAccountId,
       });
