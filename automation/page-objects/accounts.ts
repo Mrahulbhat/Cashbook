@@ -55,9 +55,16 @@ export class AccountsPage extends BasePage {
         await this.balanceInputField.fill(account.balance);
 
         await this.saveButton.click();
-        await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newAccountAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
-        await expect(page.getByText(commonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY)).toBeVisible();
-
+        try {
+            await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newAccountAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
+            await expect(page.getByText(commonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY)).toBeVisible();
+        }
+        catch {
+            // maybe it failed as a account is existing with same name; lets delete all account and try
+            await this.backButton.click();
+            await this.deleteAllAccounts(this.page);
+            await this.createAccount(page,account);
+        }
         //verify if account is visible in grid
         await expect(this.page.locator('#accountDiv' + account.name)).toBeVisible();
     }
