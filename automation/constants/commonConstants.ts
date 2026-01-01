@@ -1,3 +1,5 @@
+const test_date='2026-01-28';
+
 const commonConstants = {
 
     urls: {
@@ -53,16 +55,16 @@ const commonConstants = {
     ],
 
     TRANSACTIONS: [
-        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "income", accountName: "Cash", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "income", accountName: "Cash", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "Salary", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Food", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "Shopping", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Fuel", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "Shopping", date: '2025-12-29', description: 'TEST AUTOMATION' },
-        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Fuel", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "Salary", date: test_date, description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "Cash", categoryName: "Salary", date: test_date, description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "Salary", date: test_date, description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "Cash", categoryName: "Salary", date: test_date, description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "Salary", date: test_date, description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Food", date: test_date, description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "Shopping", date: test_date, description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Fuel", date: test_date, description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "Shopping", date: test_date, description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Fuel", date: test_date, description: 'TEST AUTOMATION' },
     ]
 };
 

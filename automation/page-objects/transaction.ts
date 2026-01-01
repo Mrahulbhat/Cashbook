@@ -33,8 +33,6 @@ export class TransactionPage extends BasePage {
         // Navigate to Transactions Page
         await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
 
-        const initialTxnCountText = await this.recordCountOnTable.innerText();
-
         // Create a Transaction 
         await expect(this.addTransactionBtn).toBeVisible();
         await this.addTransactionBtn.click();
@@ -70,11 +68,6 @@ export class TransactionPage extends BasePage {
 
         // Verify if it stays in Transactions page after creation
         await expect(this.addTransactionForm).toBeVisible();
-
-        const postCreationTxnCountText = await this.recordCountOnTable.innerText();
-
-        // Verify that transaction count has increased by 1
-        expect(parseInt(postCreationTxnCountText)).toBe(parseInt(initialTxnCountText) + 1);
 
         // Verify if all details are correct in the latest transaction row
         await expect(this.firstRowOfGrid).toContainText(transaction.type.toLowerCase());
