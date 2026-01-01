@@ -7,7 +7,7 @@ import commonConstants from '../../constants/commonConstants.js';
 //CAUTION : THIS IS FOR DATA SETUP
 //ONLY FOR TESTING
 
-test.describe('Data Setup', () => {
+test.describe('Delete Data Setup', () => {
 
     // delete all accounts
     test('Delete all accounts in DB @TEST', async ({ page, accountsPage }) => {

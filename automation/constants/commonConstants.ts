@@ -35,20 +35,37 @@ const commonConstants = {
         CATEGORY_UPDATED_SUCCESSFULLY: 'Category updated successfully',
     },
 
+    //update all to test once testing is complete
     CATEGORIES: [
         { name: "Food", type: "expense", parentCategory: "Needs", budget: "1000" },
         { name: "Shopping", type: "expense", parentCategory: "Wants", budget: "1000" },
         { name: "SIP", type: "expense", parentCategory: "Savings/Investment", budget: "1000" },
         { name: "Salary", type: "income", parentCategory: "Income" },
         { name: "TEST", type: "expense", parentCategory: "TEST", budget: "1000" },
+        { name: "TEST1", type: "income", parentCategory: "Income", budget: "1000" },
     ],
 
+    //update all to test once testing is complete
     ACCOUNTS: [
         { name: "CANARA_BANK", balance: "1000" },
         { name: "Cash", balance: "1000" },
         { name: "SIP", balance: "1000" },
         { name: "PPF", balance: "1000" }
     ],
+
+    TRANSACTIONS: [
+        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "Cash", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "Cash", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "income", accountName: "CANARA_BANK", categoryName: "TEST1", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
+        { amount: "1000", type: "expense", accountName: "Cash", categoryName: "TEST", date: '2025-12-29', description: 'TEST AUTOMATION' },
+
+    ]
 };
 
 export default commonConstants;

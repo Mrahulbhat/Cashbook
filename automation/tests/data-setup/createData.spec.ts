@@ -7,10 +7,10 @@ import commonConstants from '../../constants/commonConstants.js';
 //CAUTION : THIS IS FOR DATA SETUP
 //ONLY FOR TESTING
 
-test.describe('Data Setup', () => {
+test.describe('Create Data Setup', () => {
 
     // create default accounts
-    test('TC01 - Setup default accounts @TEST', async ({ page, accountsPage }) => {
+    test('Setup default accounts @TEST', async ({ page, accountsPage }) => {
 
         const accounts = commonConstants.ACCOUNTS
 
@@ -20,11 +20,20 @@ test.describe('Data Setup', () => {
     });
 
     // create default categories
-    test('TC01 - Setup default categories @TEST', async ({ page, categoryPage }) => {
+    test('Setup default categories @TEST', async ({ page, categoryPage }) => {
         const categories = commonConstants.CATEGORIES;
 
         for (const category of categories) {
             await categoryPage.createCategory(page, category);
+        }
+    });
+
+    // create default transactions
+    test('Setup default transactions @TEST', async ({ page, transactionPage }) => {
+        const transactions = commonConstants.TRANSACTIONS;
+
+        for (const transaction of transactions) {
+            await transactionPage.createTransaction(page, transactions);
         }
     });
 });
