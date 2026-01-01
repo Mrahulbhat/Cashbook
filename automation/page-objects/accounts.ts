@@ -62,12 +62,16 @@ export class AccountsPage extends BasePage {
         await expect(this.page.locator('#accountDiv' + account.name)).toBeVisible();
     }
 
-    async deleteAllAccounts(page:Page) {
-        const accountCount = await this.deleteAccBtn.count();
+    async deleteAllAccounts(page: Page) {
         await expect(this.balanceContainer).toBeVisible();
-        console.log("account count: ",accountCount);
+        const accountCount = await this.deleteAccBtn.count();
+        if(accountCount===0){
+            console.error("No accounts to delete");
+            return;
+        }
+        console.log("account count: ", accountCount);
         for (let i = 0; i < accountCount; i++) {
-            await this.deleteAccBtn.nth(i).click();
+            await this.deleteAccBtn.nth(0).click(); //every time we delete 1 acc reduces, so everytime we will go by deleting 1st account
             await this.modalOkBtn.click();
             await this.page.waitForLoadState('networkidle');
             await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
