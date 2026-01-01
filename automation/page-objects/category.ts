@@ -55,6 +55,8 @@ export class CategoryPage extends BasePage {
         const initialIncomeCount = Number(await this.totalIncomeCategoryCount.innerText());
         const initialExpenseCount = Number(await this.totalExpenseCategoryCount.innerText());
 
+        console.log('initial count: ' + initialTotalCount);
+
         // ---- go to add category
         await this.addCategoryBtn.click();
         await page.waitForLoadState("networkidle");
@@ -85,9 +87,9 @@ export class CategoryPage extends BasePage {
             await expect(page.getByText(commonConstants.toastMessages.CATEGORY_CREATED_SUCCESSFULLY)).toBeVisible();
         } catch {
             //might have failed due to existing record; delete all records and retry
-            await this.backButton.click();  
+            await this.backButton.click();
             await this.deleteAllCategories(page);
-            await this.createCategory(page,category);
+            await this.createCategory(page, category);
         }
 
         //verify if account is visible in grid
@@ -107,12 +109,11 @@ export class CategoryPage extends BasePage {
 
     async deleteAllCategories(page: Page) {
 
-        await expect(this.categoryDiv).toBeVisible({ timeout: 15000 });
-
+        //no records; return 
+        await page.waitForLoadState('networkidle');
         let count = await this.totalCategoryCount.count();
-        if (count === 0) return;
 
-        while (await this.deleteButton.count() > 0) {
+        for (var i = 0; i < count; i++) {
             await this.deleteButton.first().click();
             await this.modalOkBtn.click();
             const toast = this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY).last();
