@@ -7,12 +7,10 @@ test.describe('Account Related Tests', () => {
     test('Account CRUD operations @BAT @ACCOUNT', async ({ page, accountsPage }) => {
 
         // Create a new account
-
         const accountName = "TEST";
         const initialBalance = "1000";
 
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
-
         await expect(accountsPage.addAccountBtn).toBeVisible();
 
         //check if any account exists; if yes delete it
