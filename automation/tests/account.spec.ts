@@ -35,7 +35,7 @@ test.describe('Account Related Tests', () => {
         await expect(page.getByText(commonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY)).toBeVisible();
 
         //Create again with same name; expected to fail with message record already exists!
-
+        
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
 
         await expect(accountsPage.addAccountBtn).toBeVisible();
@@ -50,7 +50,6 @@ test.describe('Account Related Tests', () => {
         await expect(page.getByText(commonConstants.toastMessages.ACCOUNT_ALREADY_EXISTS)).toBeVisible();
 
         //DELETE THE ACCOUNT CREATED
-
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
         await expect(accountsPage.addAccountBtn).toBeVisible();
         await accountsPage.deleteAccountBtn(accountName).click();

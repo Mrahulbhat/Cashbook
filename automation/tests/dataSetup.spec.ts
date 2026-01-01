@@ -6,30 +6,36 @@ import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Data Setup', () => {
 
-    test.skip('TC01 - Setup 5 accounts', async ({ page, accountsPage }) => {
+    //CAUTION : THIS IS FOR DATA SETUP
+    //ONLY FOR TESTING
+    test('TC01 - Setup default accounts @TEST', async ({ page, accountsPage }) => {
 
-        const accounts = [{name:"Bank Account",balance:"1000"},{name:"Cash",balance:"1000"},{name:"SIP",balance:"1000"},{name:"PPF",balance:"1000"}];
+        const accounts = [{ name: "CANARA_BANK", balance: "1000" }, { name: "Cash", balance: "1000" }, { name: "SIP", balance: "1000" }, { name: "PPF", balance: "1000" }];
 
-        for(account in accounts){
-            await accountsPage.addAccountBtn.click();
-            await accountsPage.inputFieldById()
+        for (const account of accounts) {
+            await accountsPage.createAccount(page, account);
         }
-
-       
     });
+
+    test('Delete all accounts in DB @TEST', async ({ page, accountsPage }) => {
+        await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
+        await accountsPage.deleteAllAccounts();
+    });
+
+    // test.skip('TC01 - Setup default categories', async ({ page, accountsPage }) => {
+
+    //     const categories = [
+    //         { name: "Bank Account", balance: "1000" },
+    //         { name: "Cash", balance: "1000" },
+    //         { name: "SIP", balance: "1000" },
+    //         { name: "PPF", balance: "1000" }
+    //     ];
+
+    //     for (const category of categories) {
+    //         await accountsPage.createAccount(page, category);
+    //     }
+    // });
 
     //create a feature to delete all accounts
 
-    // test.skip('', async ({ page, dashboardPage }) => {
-
-    //     const accounts = [{name:"Bank Account",balance:"1000"},{name:"Cash",balance:"1000"},{name:"SIP",balance:"1000"},{name:"PPF",balance:"1000"}];
-
-    //     await navigateToPage(page,commonConstants.pageName.ACCOUNTS);
-
-    //     for(account in accounts){
-            
-    //     }
-
-       
-    // });
 });

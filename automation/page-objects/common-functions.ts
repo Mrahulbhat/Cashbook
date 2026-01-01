@@ -1,7 +1,7 @@
 import commonConstants from '../constants/commonConstants.js';
 
 export async function waitForResponse(page: any, urlPart: string) {
-    page.waitForResponse((response: any) => response.url().includes(urlPart) && response.status() === 200, { timeout: 15000 });
+    await page.waitForResponse((response: any) => response.url().includes(urlPart) && response.status() === 200 || 304, { timeout: 15000 });
 }
 
 export async function navigateToPage(page: any, pageName: string) {

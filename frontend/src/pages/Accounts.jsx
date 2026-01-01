@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import ConfirmModal from "../components/confirmModal";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, Edit2, Loader } from "lucide-react";
 import { useAccountStore } from "../store/useAccountStore";
@@ -6,16 +7,27 @@ import { useAccountStore } from "../store/useAccountStore";
 const Accounts = () => {
   const navigate = useNavigate();
   const { accounts, fetchAccounts, deleteAccount, loading } = useAccountStore();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [selectedAccountId, setSelectedAccountId] = useState(null);
+
 
   useEffect(() => {
     fetchAccounts();
   }, [fetchAccounts]);
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this account?")) {
-      await deleteAccount(id);
-    }
+  const handleDeleteClick = (id) => {
+    setSelectedAccountId(id);
+    setShowConfirm(true);
   };
+
+  const handleConfirmDelete = async () => {
+    if (selectedAccountId) {
+      await deleteAccount(selectedAccountId);
+    }
+    setShowConfirm(false);
+    setSelectedAccountId(null);
+  };
+
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-IN", {
@@ -97,7 +109,7 @@ const Accounts = () => {
                   </button>
                   <button
                     id="deleteBtn"
-                    onClick={() => handleDelete(account._id)}
+                    onClick={() => handleDeleteClick(account._id)}
                     className="p-2 hover:bg-red-100/10 rounded-lg transition-colors duration-200"
                     title="Delete account"
                   >
@@ -119,6 +131,14 @@ const Accounts = () => {
             </div>
           ))}
         </div>
+        <ConfirmModal
+          open={showConfirm}
+          title="Delete Account"
+          message="Are you sure you want to delete this account? This action cannot be undone."
+          onCancel={() => setShowConfirm(false)}
+          onConfirm={handleConfirmDelete}
+        />
+
 
         {/* Empty State */}
         {accounts.length === 0 && !loading && (

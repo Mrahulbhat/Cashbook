@@ -14,7 +14,7 @@ export class AccountsPage extends BasePage {
     get addAccountBtn(): Locator {
         return this.page.locator('#addAccountBtn');
     }
-     
+
     //add account form elements
     get accountNameInputField(): Locator {
         return this.page.locator('#accountNameInputField');
@@ -24,6 +24,12 @@ export class AccountsPage extends BasePage {
     }
 
     //edit and delete account buttons in accounts tab grid
+    get deleteAccBtn(): Locator {
+        return this.page.locator('#deleteBtn');
+    }
+    get editAccBtn(): Locator {
+        return this.page.locator('#editBtn');
+    }
     deleteAccountBtn(name: string): Locator {
         return this.page.locator('#accountDiv' + name).locator('#deleteBtn');
     }
@@ -50,5 +56,18 @@ export class AccountsPage extends BasePage {
 
         //verify if account is visible in grid
         await expect(this.page.locator('#accountDiv' + account.name)).toBeVisible();
+    }
+
+    async deleteAllAccounts() {
+        await navigateToPage(this.page, commonConstants.pageName.ACCOUNTS);
+        const accountCount = await this.deleteAccBtn.count();
+        for (let i = 0; i < accountCount; i++) {
+            await this.deleteAccBtn.nth(i).click();
+            await this.page.waitForLoadState('networkidle');
+            await this.modalOkBtn.click();
+            await this.page.waitForLoadState('networkidle');
+            await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
+        }
+        await expect(this.deleteAccBtn).toHaveCount(0);
     }
 }

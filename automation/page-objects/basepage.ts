@@ -41,6 +41,9 @@ export class BasePage {
 
     // buttons =======================================================================================      
 
+    get modalOkBtn():Locator{
+        return this.page.locator('#confirmDeleteBtn');
+    }
     get saveButton(): Locator {
         return this.page.locator('#saveBtn');
     }
