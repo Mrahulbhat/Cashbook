@@ -23,20 +23,21 @@ test.describe('Data Setup', () => {
         await accountsPage.deleteAllAccounts(page);
     });
 
-    // test.skip('TC01 - Setup default categories', async ({ page, accountsPage }) => {
+    test.skip('TC01 - Setup default categories', async ({ page, categoryPage }) => {
 
-    //     const categories = [
-    //         { name: "Bank Account", balance: "1000" },
-    //         { name: "Cash", balance: "1000" },
-    //         { name: "SIP", balance: "1000" },
-    //         { name: "PPF", balance: "1000" }
-    //     ];
+        const categories = [
+            { name: "CANARA_BANK", type: "expense", parentCategory:"Needs",budget:"1000"},
+            { name: "CANARA_BANK", type: "expense", parentCategory:"Wants",budget:"1000"},
+            { name: "CANARA_BANK", type: "expense", parentCategory:"Savings/Investment",budget:"1000"},
+            { name: "CANARA_BANK", type: "income", parentCategory:"Income",budget:"1000"},
+            { name: "CANARA_BANK", type: "expense", parentCategory:"TEST",budget:"1000"},
+        ];
 
-    //     for (const category of categories) {
-    //         await accountsPage.createAccount(page, category);
-    //     }
-    // });
+        for (const category of categories) {
+            await categoryPage.createCategory(page, category);
+        }
+    });
 
-    //create a feature to delete all accounts
+    //create a feature to delete all accounts and categories
 
 });
