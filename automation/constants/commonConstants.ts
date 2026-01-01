@@ -7,6 +7,7 @@ const commonConstants = {
         categoriesAPI: '/api/category',
         newTransactionAPI: '/api/transaction/new', 
         newAccountAPI:'/api/account/new',
+        newCategoryAPI:'/api/category/new',
     },
 
     pageName: {
@@ -33,6 +34,14 @@ const commonConstants = {
         CATEGORY_DELETED_SUCCESSFULLY: 'Account deleted successfully',
         CATEGORY_UPDATED_SUCCESSFULLY: 'Transaction updated successfully',
     },
+
+    CATEGORIES:{
+
+    },
+
+    ACCOUNTS:{
+        
+    }
 
 };
 

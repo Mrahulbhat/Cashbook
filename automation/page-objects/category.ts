@@ -55,7 +55,7 @@ export class CategoryPage extends BasePage {
         }
 
         await this.saveButton.click();
-        await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newAccountAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
+        await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newCategoryAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
         await expect(page.getByText(commonConstants.toastMessages.CATEGORY_CREATED_SUCCESSFULLY)).toBeVisible();
 
         //verify if account is visible in grid
