@@ -33,6 +33,8 @@ export const getTransactionData = async (req, res) => {
 // Add new transaction
 export const addTransaction = async (req, res) => {
   try {
+    console.log("RAW category from req.body:", req.body.category);
+    console.log("Type of category:", typeof req.body.category);
     const { amount, type, description, category, date, account } = req.body;
 
     // Validate required fields
@@ -64,7 +66,7 @@ export const addTransaction = async (req, res) => {
       amount,
       type,
       description,
-      category,
+      category: categoryId,
       date,
       account,
     });
