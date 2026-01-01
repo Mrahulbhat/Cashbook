@@ -26,11 +26,11 @@ test.describe('Data Setup', () => {
     test('TC01 - Setup default categories @TEST', async ({ page, categoryPage }) => {
 
         const categories = [
-            { name: "CANARA_BANK", type: "expense", parentCategory:"Needs",budget:"1000"},
-            { name: "Cash", type: "expense", parentCategory:"Wants",budget:"1000"},
-            { name: "CANARA_BANK", type: "expense", parentCategory:"Savings/Investment",budget:"1000"},
-            { name: "Cash", type: "income", parentCategory:"Income"},
-            { name: "CANARA_BANK", type: "expense", parentCategory:"TEST",budget:"1000"},
+            { name: "Food", type: "expense", parentCategory:"Needs",budget:"1000"},
+            { name: "Shopping", type: "expense", parentCategory:"Wants",budget:"1000"},
+            { name: "SIP", type: "expense", parentCategory:"Savings/Investment",budget:"1000"},
+            { name: "Salary", type: "income", parentCategory:"Income"},
+            { name: "TEST", type: "expense", parentCategory:"TEST",budget:"1000"},
         ];
 
         for (const category of categories) {
