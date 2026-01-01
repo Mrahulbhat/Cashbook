@@ -100,6 +100,8 @@ export class CategoryPage extends BasePage {
 
     async deleteAllCategories(page: Page) {
 
+        await expect(this.categoryDiv).toBeVisible({timeout:15000});
+
         let count = await this.totalCategoryCount.count();
         if (count === 0) return;
 

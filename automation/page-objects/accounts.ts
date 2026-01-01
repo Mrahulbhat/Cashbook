@@ -63,7 +63,7 @@ export class AccountsPage extends BasePage {
     }
 
     async deleteAllAccounts(page: Page) {
-        await expect(this.balanceContainer).toBeVisible();
+        await expect(this.balanceContainer).toBeVisible(); //added this else count will be 0 before data loads hence test will pass without doing anything which is wrong
 
         let count = await this.deleteAccBtn.count();
         if (count === 0) return;
