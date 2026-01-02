@@ -23,6 +23,14 @@ export class AccountsPage extends BasePage {
         return this.page.locator('#balanceInputField');
     }
 
+    // edit account form elements
+    get editAccNameInputField(): Locator {
+        return this.page.locator('#editAccNameInputField');
+    }
+    get editBalanceInputField(): Locator {
+        return this.page.locator('#editBalanceInputField');
+    }
+
     //edit and delete account buttons in accounts tab grid
     get deleteAccBtn(): Locator {
         return this.page.locator('#deleteBtn');
@@ -59,6 +67,42 @@ export class AccountsPage extends BasePage {
         await expect(page.getByText(commonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY)).toBeVisible();
         //verify if account is visible in grid
         await expect(this.page.locator('#accountDiv' + account.name)).toBeVisible();
+    }
+
+    async deleteAccount(page: Page, accountName: string) {
+        await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
+        const targetAccount = this.page.locator('#accountDiv' + accountName).locator('#deleteBtn');
+        await expect(targetAccount).toBeVisible();
+        await targetAccount.click();
+        await this.modalOkBtn.click();
+        await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
+        await this.page.waitForLoadState('networkidle');
+
+        await expect(targetAccount).toHaveCount(0);
+    }
+
+    async updateAccount(page: Page, accountName: string, name: string, balance?: string) {
+        await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
+        const targetAccount = this.page.locator('#accountDiv' + accountName).locator('#editBtn');
+        await expect(targetAccount).toBeVisible();
+        await targetAccount.click();
+
+        await expect(this.editAccNameInputField).toBeVisible();
+        await expect(this.editAccNameInputField).toHaveValue(accountName);
+        await expect(this.editBalanceInputField).toBeVisible();
+        await expect(this.editBalanceInputField).not.toHaveValue('');
+
+        await this.editAccNameInputField.fill(name);
+
+        if (balance) {
+            await this.editBalanceInputField.fill(balance);
+        }
+
+        await this.saveButton.click();
+        await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
+        await this.page.waitForLoadState('networkidle');
+
+        await expect(this.page.locator('#accountDiv' + name)).toBeVisible();
     }
 
     async deleteAllAccounts(page: Page) {

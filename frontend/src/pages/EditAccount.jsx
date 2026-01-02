@@ -104,6 +104,7 @@ const EditAccount = () => {
                                     Account Name *
                                 </label>
                                 <input
+                                id="editAccNameInputField"
                                     type="text"
                                     name="name"
                                     value={accountData.name}
@@ -118,6 +119,7 @@ const EditAccount = () => {
                                     Balance *
                                 </label>
                                 <input
+                                id="editBalanceInputField"
                                     type="number"
                                     name="balance"
                                     value={accountData.balance}
@@ -138,6 +140,7 @@ const EditAccount = () => {
                                     Cancel
                                 </button>
                                 <button
+                                id="saveBtn"
                                     type="submit"
                                     disabled={loading}
                                     className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
