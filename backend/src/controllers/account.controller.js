@@ -1,4 +1,6 @@
 import Account from "../models/account.model.js";
+import Transaction from "../models/transaction.model.js";
+import Category from "../models/category.model.js";
 
 // Get all accounts
 export const getAllAccounts = async (req, res) => {
@@ -15,11 +17,11 @@ export const getAccountData = async (req, res) => {
   try {
     const { id } = req.params;
     const account = await Account.findById(id);
-    
+
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
-    
+
     res.status(200).json(account);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -31,64 +33,79 @@ export const addAccount = async (req, res) => {
   try {
     const { name, balance } = req.body;
 
-    // Validate required fields
     if (!name || balance === undefined) {
       return res.status(400).json({ message: "Missing required fields: name, balance" });
     }
 
-    // Validate balance is a number and non-negative
     if (typeof balance !== "number" || balance < 0) {
       return res.status(400).json({ message: "Balance must be a non-negative number" });
     }
 
-    // Check if account with same name already exists
     const existingAccount = await Account.findOne({ name });
     if (existingAccount) {
       return res.status(400).json({ message: "Account with this name already exists" });
     }
 
-    // Create account
-    const account = new Account({
-      name,
-      balance,
-    });
-
-    // Save account
+    const account = new Account({ name, balance });
     const savedAccount = await account.save();
+
     res.status(201).json(savedAccount);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Update account
+// Update account (NAME + MANUAL BALANCE ADJUSTMENT)
 export const updateAccount = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, balance } = req.body;
 
-    // Find the existing account
     const account = await Account.findById(id);
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
 
-    // If name is being updated, check for duplicates
+    // Rename account
     if (name && name !== account.name) {
       const existingAccount = await Account.findOne({ name });
       if (existingAccount) {
         return res.status(400).json({ message: "Account with this name already exists" });
       }
+      account.name = name;
     }
 
-    // Validate balance if provided
-    if (balance !== undefined && (typeof balance !== "number" || balance < 0)) {
-      return res.status(400).json({ message: "Balance must be a non-negative number" });
-    }
+    // Manual balance change → create Balance Adjustment transaction
+    if (balance !== undefined && balance !== account.balance) {
+      if (typeof balance !== "number" || balance < 0) {
+        return res.status(400).json({ message: "Balance must be a non-negative number" });
+      }
 
-    // Update account fields
-    account.name = name || account.name;
-    account.balance = balance !== undefined ? balance : account.balance;
+      const difference = balance - account.balance;
+      const type = difference > 0 ? "income" : "expense";
+
+      const category = await Category.findOne({
+        name: "Balance Adjustment",
+        type,
+      });
+
+      if (!category) {
+        return res.status(500).json({
+          message: "Balance Adjustment category missing",
+        });
+      }
+
+      await Transaction.create({
+        amount: Math.abs(difference),
+        type,
+        description: "Balance Adjustment",
+        account: account._id,
+        category: category._id,
+        date: new Date(),
+      });
+
+      account.balance = balance;
+    }
 
     const updatedAccount = await account.save();
     res.status(200).json(updatedAccount);
@@ -130,19 +147,13 @@ export const getAccountByName = async (req, res) => {
   }
 };
 
-// Update account balance (for transactions)
+// Used ONLY when adding/editing transactions
 export const updateAccountBalance = async (req, res) => {
   try {
     const { id } = req.params;
     const { amount } = req.body;
 
-    // Validate required fields
-    if (amount === undefined) {
-      return res.status(400).json({ message: "Amount is required" });
-    }
-
-    // Validate amount is a number
-    if (typeof amount !== "number") {
+    if (amount === undefined || typeof amount !== "number") {
       return res.status(400).json({ message: "Amount must be a number" });
     }
 
@@ -151,10 +162,8 @@ export const updateAccountBalance = async (req, res) => {
       return res.status(404).json({ message: "Account not found" });
     }
 
-    // Update balance
     account.balance += amount;
 
-    // Ensure balance doesn't go negative
     if (account.balance < 0) {
       return res.status(400).json({ message: "Insufficient balance" });
     }
