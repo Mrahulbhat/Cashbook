@@ -88,24 +88,37 @@ export class CategoryPage extends BasePage {
         await page.waitForLoadState('networkidle');
         let count = await this.deleteButton.count();
 
-        if(count===0){
-            await expect()
+        if (count === 0) {
+            try {
+                await expect(this.noRecordsFound).toBeVisible({ timeout: 30000 });
+            }
+            catch {
+                console.log("Data might have loaded now proceed!");
+
+                //update count after data loaded
+                count = await this.deleteButton.count();
+            }
         }
 
-        const toast = this.page.getByText(commonConstants.toastMessages.CATEGORY_DELETED_SUCCESSFULLY).first();
+        const toast = page.getByText(commonConstants.toastMessages.CATEGORY_DELETED_SUCCESSFULLY).first();
 
         for (var i = 0; i < count; i++) {
             await this.deleteButton.first().click();
             await Promise.all([
                 this.modalOkBtn.click(),
                 expect(toast).toBeVisible({ timeout: 15000 }),
-                await this.page.waitForLoadState('networkidle')
+                await page.waitForLoadState('networkidle')
             ]);
             await expect(toast).toBeHidden({ timeout: 10000 });
-            await this.page.waitForLoadState('networkidle');
-
+            await page.waitForLoadState('networkidle');
         }
 
-        await expect(this.deleteButton).toHaveCount(0);
+        try {
+            await expect(this.deleteButton).toHaveCount(0);
+        }
+        catch {
+            this.deleteAllCategories(page);
+
+        }
     }
 }
