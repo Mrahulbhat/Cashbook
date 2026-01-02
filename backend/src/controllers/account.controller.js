@@ -84,8 +84,13 @@ export const updateAccount = async (req, res) => {
       const difference = balance - account.balance;
       const type = difference > 0 ? "income" : "expense";
 
+      const categoryName =
+        type === "income"
+          ? "Balance_Adjustment_Income"
+          : "Balance_Adjustment_Expense";
+
       const category = await Category.findOne({
-        name: "Balance Adjustment",
+        name: categoryName,
         type,
       });
 
