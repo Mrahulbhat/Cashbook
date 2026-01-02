@@ -25,6 +25,11 @@ export class BasePage {
         return this.page.locator(`#${name}InputField`);
     }
 
+    // when no records found
+    get noRecordsFound(): Locator {
+        return this.page.locator('#noRecordsFound');
+    }
+
     //dropdown containers=============================================================================
     get accountDropdownContainer(): Locator {
         return this.page.locator('#accountDropdown');

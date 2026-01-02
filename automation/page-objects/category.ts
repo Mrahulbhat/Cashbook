@@ -88,6 +88,10 @@ export class CategoryPage extends BasePage {
         await page.waitForLoadState('networkidle');
         let count = await this.deleteButton.count();
 
+        if(count===0){
+            await expect()
+        }
+
         const toast = this.page.getByText(commonConstants.toastMessages.CATEGORY_DELETED_SUCCESSFULLY).first();
 
         for (var i = 0; i < count; i++) {

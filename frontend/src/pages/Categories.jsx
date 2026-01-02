@@ -250,7 +250,7 @@ const Categories = () => {
         ) : (
           <div className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/50 rounded-2xl p-16 text-center backdrop-blur-sm">
             <div className="mb-6 text-5xl">📂</div>
-            <h3 className="text-2xl font-bold text-white mb-3">
+            <h3 id="noRecordsFound" className="text-2xl font-bold text-white mb-3">
               No Categories Yet
             </h3>
             <p className="text-gray-400 mb-8 max-w-md mx-auto">
