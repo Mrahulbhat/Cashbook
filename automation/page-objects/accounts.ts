@@ -69,18 +69,6 @@ export class AccountsPage extends BasePage {
         await expect(this.page.locator('#accountDiv' + account.name)).toBeVisible();
     }
 
-    async deleteAccount(page: Page, accountName: string) {
-        await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
-        const targetAccount = this.page.locator('#accountDiv' + accountName).locator('#deleteBtn');
-        await expect(targetAccount).toBeVisible();
-        await targetAccount.click();
-        await this.modalOkBtn.click();
-        await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
-        await this.page.waitForLoadState('networkidle');
-
-        await expect(targetAccount).toHaveCount(0);
-    }
-
     async updateAccount(page: Page, accountName: string, name: string, balance?: string) {
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
         const targetAccount = this.page.locator('#accountDiv' + accountName).locator('#editBtn');
@@ -93,19 +81,31 @@ export class AccountsPage extends BasePage {
         await expect(this.editBalanceInputField).not.toHaveValue('');
 
         await this.editAccNameInputField.fill(name);
-
         if (balance) {
             await this.editBalanceInputField.fill(balance);
         }
 
         await this.saveButton.click();
-        await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
+        await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_UPDATED_SUCCESSFULLY)).toBeVisible();
         await this.page.waitForLoadState('networkidle');
 
         await expect(this.page.locator('#accountDiv' + name)).toBeVisible();
     }
 
+    async deleteAccount(page: Page, accountName: string) {
+        await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
+        const targetAccount = this.page.locator('#accountDiv' + accountName).locator('#deleteBtn');
+        await expect(targetAccount).toBeVisible();
+        await targetAccount.click();
+        await this.modalOkBtn.click();
+        await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY)).toBeVisible();
+        await this.page.waitForLoadState('networkidle');
+
+        await expect(targetAccount).toHaveCount(0);
+    }
+
     async deleteAllAccounts(page: Page) {
+
         await expect(this.balanceContainer).toBeVisible(); //added this else count will be 0 before data loads hence test will pass without doing anything which is wrong
 
         let count = await this.deleteAccBtn.count();

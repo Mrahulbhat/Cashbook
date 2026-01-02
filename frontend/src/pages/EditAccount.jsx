@@ -59,7 +59,6 @@ const EditAccount = () => {
 
         try {
             await updateAccount(id, { ...accountData, balance: balanceNumber });
-            toast.success("Account updated successfully");
             navigate("/accounts");
         } catch (error) {
             console.error(error);

@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 import { navigateToPage } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
-test.describe('Account Related Tests', () => {
+test.describe.serial('Account Related Tests', () => {
     const account = { name: "TEST", balance: '1000' };
 
     test('Create Account @BAT @ACCOUNT', async ({ page, accountsPage }) => {
@@ -30,9 +30,11 @@ test.describe('Account Related Tests', () => {
 
         // update the account created
         await accountsPage.updateAccount(page, account.name, account.name + "_Edited");
+        await page.waitForTimeout(4000);
 
         // update with both name and balance
         await accountsPage.updateAccount(page, account.name + "_Edited", account.name + "_Updated", "500");
+        await page.waitForTimeout(4000);
 
         // reset it back
         await accountsPage.updateAccount(page, account.name + "_Updated", account.name, account.balance);
