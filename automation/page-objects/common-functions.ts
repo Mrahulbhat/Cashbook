@@ -1,9 +1,5 @@
 import commonConstants from '../constants/commonConstants.js';
 
-export async function waitForResponse(page: any, urlPart: string) {
-    await page.waitForResponse((response: any) => response.url().includes(urlPart) && response.status() === 200 || 304, { timeout: 15000 });
-}
-
 export async function navigateToPage(page: any, pageName: string) {
     switch (pageName) {
 
@@ -21,34 +17,35 @@ export async function navigateToPage(page: any, pageName: string) {
 
         case commonConstants.pageName.TRANSACTIONS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSACTIONS}`);
-            await waitForResponse(page, commonConstants.urls.transactionAPI);
+            await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200 || 304, { timeout: 15000 });
+
             break;
 
         case commonConstants.pageName.ACCOUNTS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.ACCOUNTS}`);
             try {
-                await waitForResponse(page, commonConstants.urls.accountsAPI);
+                await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200 || 304, { timeout: 15000 });
             }
-            catch{
+            catch {
                 console.log('Intercept might have arrived before');
             }
             break;
 
         case commonConstants.pageName.TRANSFER:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSFER}`);
-            await waitForResponse(page, commonConstants.urls.accountsAPI);
+            await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200 || 304, { timeout: 15000 });
             break;
 
         case commonConstants.pageName.CATEGORIES:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.CATEGORIES}`);
-            await waitForResponse(page, commonConstants.urls.categoriesAPI);
+            await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 200 || 304, { timeout: 15000 });
             break;
 
         case commonConstants.pageName.STATISTICS:
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.STATISTICS}`);
             await Promise.all([
-                waitForResponse(page, commonConstants.urls.categoriesAPI),
-                waitForResponse(page, commonConstants.urls.transactionAPI)
+                await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 200 || 304, { timeout: 15000 }),
+            await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200 || 304, { timeout: 15000 }),
             ]);
             break;
 

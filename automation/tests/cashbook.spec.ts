@@ -1,7 +1,6 @@
 import { test } from '../fixtures/test-base.js';
 import { expect } from '@playwright/test';
 import { navigateToPage } from '../page-objects/common-functions.js';
-import { waitForResponse } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Cashbook Application Basic Tests', () => {
@@ -17,7 +16,7 @@ test.describe('Cashbook Application Basic Tests', () => {
         await page.locator('#getStarted').click();
 
         // wait for last url to load which confirms page is loaded with data from backend
-        await waitForResponse(page, commonConstants.urls.accountsAPI);
+        await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200 || 304, { timeout: 15000 });
 
         //check if expense value is greater than zero which indicates data is loaded from backend
         await expect(dashboardPage.totalExpense).toBeVisible();
@@ -48,7 +47,7 @@ test.describe('Cashbook Application Basic Tests', () => {
             await expect(tabLocator).toBeVisible();
             await tabLocator.click();
             try {
-                await waitForResponse(page, `/api/${tab.api}`, 10000);
+                await page.waitForResponse((response: any) => response.url().includes(`/api/${tab.api}`) && response.status() === 200 || 304, { timeout: 15000 });
             }
             catch {
                 console.log('Its okay if no response is found for transfer tab');
