@@ -20,7 +20,7 @@ const AddCategory = () => {
     "Wants",
     "Savings/Investment",
     "Income",
-    "TEST"
+    "System"
   ];
 
   const handleInputChange = (e) => {

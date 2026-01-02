@@ -1,4 +1,4 @@
-const test_date='2026-01-28';
+const test_date = '2026-01-28';
 
 const commonConstants = {
 
@@ -44,6 +44,8 @@ const commonConstants = {
         { name: "Fuel", type: "expense", parentCategory: "Needs", budget: "1000" },
         { name: "SIP", type: "expense", parentCategory: "Savings/Investment", budget: "1000" },
         { name: "Salary", type: "income", parentCategory: "Income" },
+        { name: "Balance_Adjustment_Income", type: "income", parentCategory: "System" },
+        { name: "Balance_Adjustment_Expense", type: "expense", parentCategory: "System" }
     ],
 
     //update all to test once testing is complete
