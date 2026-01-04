@@ -20,8 +20,24 @@ app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:5173",
   "https://cashbook-kappa.vercel.app",
-  "https://cashbook-test.netlify.app"
+  "https://cashbook-test.netlify.app",
 ];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false); // block silently, no 500
+    },
+    credentials: true,
+  })
+);
+
+app.options("*", cors());
+
 
 app.use(
   cors({
