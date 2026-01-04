@@ -2,7 +2,6 @@ import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './basepage';
 import commonConstants from '../constants/commonConstants';
 import { navigateToPage } from './common-functions';
-import { waitForResponse } from './common-functions';
 
 export class TransactionPage extends BasePage {
     readonly page: Page;
@@ -36,7 +35,7 @@ export class TransactionPage extends BasePage {
         // Create a Transaction 
         await expect(this.addTransactionBtn).toBeVisible();
         await this.addTransactionBtn.click();
-        await waitForResponse(page, commonConstants.urls.categoriesAPI);
+        page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 200||304, { timeout: 15000 }),
 
         await expect(this.backButton).toBeVisible();
         await expect(this.addTransactionForm).toBeVisible();

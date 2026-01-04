@@ -42,6 +42,7 @@ const commonConstants = {
         { name: "Food", type: "expense", parentCategory: "Needs", budget: "1000" },
         { name: "Shopping", type: "expense", parentCategory: "Wants", budget: "1000" },
         { name: "Fuel", type: "expense", parentCategory: "Needs", budget: "1000" },
+        { name: 'Service', type: 'expense', parentCategory: "Needs", budget: "1000" },
         { name: "SIP", type: "expense", parentCategory: "Savings/Investment", budget: "1000" },
         { name: "Salary", type: "income", parentCategory: "Income" },
         { name: "Balance_Adjustment_Income", type: "income", parentCategory: "System" },
@@ -53,7 +54,8 @@ const commonConstants = {
         { name: "CANARA_BANK", balance: "1000" },
         { name: "Cash", balance: "1000" },
         { name: "SIP", balance: "1000" },
-        { name: "PPF", balance: "1000" }
+        { name: "PPF", balance: "1000" },
+        { name: 'PLI', balance: '1000' }
     ],
 
     TRANSACTIONS: [
