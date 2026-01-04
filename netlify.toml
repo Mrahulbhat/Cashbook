@@ -1,0 +1,15 @@
+[build]
+  # Tell Netlify to enter your frontend folder
+  base = "frontend"
+  
+  # Run the build command inside that folder
+  command = "npm run build"
+  
+  # The folder Vite creates (relative to the 'base' folder above)
+  publish = "dist"
+
+[[redirects]]
+  # The FIX for the 404 refresh error
+  from = "/*"
+  to = "/index.html"
+  status = 200

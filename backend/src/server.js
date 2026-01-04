@@ -19,7 +19,7 @@ app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:5173",//dev
   "https://cashbook-kappa.vercel.app",//prod
-  "https://cashbook-test.netlify.app",//test
+  "https://test-cashbook.netlify.app",//test
 ];
 
 app.use(
