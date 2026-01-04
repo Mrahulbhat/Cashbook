@@ -1,44 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, Edit2 } from "lucide-react";
-import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import ModalContent from "../components/ModalContent";
+import { useCategoryStore } from "../store/useCategoryStore";
 
 const Categories = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  // Zustand
+  const {
+    categories,
+    loading,
+    loadCategories,
+    deleteCategory,
+  } = useCategoryStore();
+
+  // Local UI state
   const [filter, setFilter] = useState("all");
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   useEffect(() => {
     loadCategories();
-  }, []);
-
-  const loadCategories = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get("/category");
-      setCategories(response.data || []);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      toast.error("Failed to load categories");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [loadCategories]);
 
   const handleDelete = async () => {
     try {
-      await axiosInstance.delete(`/category/${selectedCategoryId}`);
-      toast.success("Category deleted successfully");
+      await deleteCategory(selectedCategoryId);
       setShowConfirm(false);
       setSelectedCategoryId(null);
-      await loadCategories();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete category");
+      toast.error("Failed to delete category");
     }
   };
 
