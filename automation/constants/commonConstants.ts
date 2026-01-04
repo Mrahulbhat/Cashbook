@@ -4,7 +4,7 @@ const commonConstants = {
 
     urls: {
         // baseURL: 'https://cashbook-kappa.vercel.app', //prod url
-        baseURL: 'https://cashbook-test.netlify.app', //test url
+        baseURL: 'https://test-cashbook.netlify.app/accounts', //test url
         accountsAPI: '/api/account',
         transactionAPI: '/api/transaction',
         categoriesAPI: '/api/category',
