@@ -16,6 +16,7 @@ import AddCategory from "./pages/AddCategory";
 import Statistics from "./pages/Statistics";
 import Transactions from "./pages/Transactions";
 import Transfer from "./pages/Transfer";
+import EditCategory from "./pages/EditCategory";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -53,7 +54,7 @@ const App = () => {
 
             <Route path="/categories" element={<Categories />} />
             <Route path="/addCategory" element={<AddCategory />} />
-            {/* create one for edit Category */}
+            <Route path="/edit-category/:id" element={<EditCategory/>}/>
 
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/addTransaction" element={<AddTransaction />} />
