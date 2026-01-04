@@ -6,7 +6,7 @@ import commonConstants from '../../constants/commonConstants.js';
 //CAUTION : THIS IS FOR DATA SETUP
 //ONLY FOR TESTING
 
-test.describe('Create Data Setup', () => {
+test.describe.serial('Create Data Setup', () => {
 
     // create default accounts
     test('Setup default accounts @TEST', async ({ page, accountsPage }) => {
