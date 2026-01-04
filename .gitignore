@@ -16,7 +16,6 @@ backend/.env.test
 frontend/.env.production
 frontend/.env.test
 
-
 dist
 dist-ssr
 *.local
