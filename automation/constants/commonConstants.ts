@@ -3,7 +3,8 @@ const test_date = '2026-01-28';
 const commonConstants = {
 
     urls: {
-        baseURL: 'https://cashbook-kappa.vercel.app',
+        // baseURL: 'https://cashbook-kappa.vercel.app', //prod url
+        baseURL: 'https://cashbook-test.netlify.app', //test url
         accountsAPI: '/api/account',
         transactionAPI: '/api/transaction',
         categoriesAPI: '/api/category',
