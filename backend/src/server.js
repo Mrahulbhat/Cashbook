@@ -10,7 +10,6 @@ import categoryRoute from "./routes/category.route.js";
 dotenv.config();
 
 const app = express();
-
 const PORT = process.env.PORT || 5001;
 
 app.use(express.json({ limit: "10mb" }));
@@ -27,38 +26,13 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(null, false); // block silently, no 500
+      return callback(null, allowedOrigins.includes(origin));
     },
     credentials: true,
   })
 );
 
-app.options("*", cors());
-
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (Postman, mobile apps)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-
-// Connect to database
+// DB
 connectDB();
 
 // Routes
@@ -66,7 +40,6 @@ app.use("/api/transaction", transactionRoute);
 app.use("/api/account", accountRoute);
 app.use("/api/category", categoryRoute);
 
-// Health check endpoint
 app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Server is running" });
 });
