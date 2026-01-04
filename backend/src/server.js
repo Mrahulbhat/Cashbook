@@ -20,6 +20,7 @@ app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:5173",
   "https://cashbook-kappa.vercel.app",
+  "https://cashbooktest.vercel.app"
 ];
 
 app.use(
