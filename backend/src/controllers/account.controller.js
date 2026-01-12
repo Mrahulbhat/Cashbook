@@ -2,52 +2,90 @@ import Account from "../models/account.model.js";
 import Transaction from "../models/transaction.model.js";
 import Category from "../models/category.model.js";
 
-// Get all accounts
+import {
+  getCache,
+  setCache,
+  clearCache,
+  clearCacheByPrefix,
+} from "../config/cache.js";
+
+/* =========================
+   GET ALL ACCOUNTS
+========================= */
 export const getAllAccounts = async (req, res) => {
   try {
+    const cacheKey = "accounts:all";
+    const cached = getCache(cacheKey);
+
+    if (cached) {
+      return res.status(200).json(cached);
+    }
+
     const accounts = await Account.find();
+    setCache(cacheKey, accounts);
+
     res.status(200).json(accounts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get account by ID
+/* =========================
+   GET ACCOUNT BY ID
+========================= */
 export const getAccountData = async (req, res) => {
   try {
     const { id } = req.params;
-    const account = await Account.findById(id);
+    const cacheKey = `accounts:${id}`;
 
+    const cached = getCache(cacheKey);
+    if (cached) {
+      return res.status(200).json(cached);
+    }
+
+    const account = await Account.findById(id);
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
 
+    setCache(cacheKey, account);
     res.status(200).json(account);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Add new account
+/* =========================
+   ADD NEW ACCOUNT
+========================= */
 export const addAccount = async (req, res) => {
   try {
     const { name, balance } = req.body;
 
     if (!name || balance === undefined) {
-      return res.status(400).json({ message: "Missing required fields: name, balance" });
+      return res
+        .status(400)
+        .json({ message: "Missing required fields: name, balance" });
     }
 
     if (typeof balance !== "number" || balance < 0) {
-      return res.status(400).json({ message: "Balance must be a non-negative number" });
+      return res
+        .status(400)
+        .json({ message: "Balance must be a non-negative number" });
     }
 
     const existingAccount = await Account.findOne({ name });
     if (existingAccount) {
-      return res.status(400).json({ message: "Account with this name already exists" });
+      return res
+        .status(400)
+        .json({ message: "Account with this name already exists" });
     }
 
     const account = new Account({ name, balance });
     const savedAccount = await account.save();
+
+    // invalidate account caches
+    clearCacheByPrefix("accounts");
 
     res.status(201).json(savedAccount);
   } catch (error) {
@@ -55,7 +93,9 @@ export const addAccount = async (req, res) => {
   }
 };
 
-// Update account (NAME + MANUAL BALANCE ADJUSTMENT)
+/* =========================
+   UPDATE ACCOUNT
+========================= */
 export const updateAccount = async (req, res) => {
   try {
     const { id } = req.params;
@@ -70,15 +110,19 @@ export const updateAccount = async (req, res) => {
     if (name && name !== account.name) {
       const existingAccount = await Account.findOne({ name });
       if (existingAccount) {
-        return res.status(400).json({ message: "Account with this name already exists" });
+        return res
+          .status(400)
+          .json({ message: "Account with this name already exists" });
       }
       account.name = name;
     }
 
-    // Manual balance change → create Balance Adjustment transaction
+    // Manual balance adjustment
     if (balance !== undefined && balance !== account.balance) {
       if (typeof balance !== "number" || balance < 0) {
-        return res.status(400).json({ message: "Balance must be a non-negative number" });
+        return res
+          .status(400)
+          .json({ message: "Balance must be a non-negative number" });
       }
 
       const difference = balance - account.balance;
@@ -95,9 +139,9 @@ export const updateAccount = async (req, res) => {
       });
 
       if (!category) {
-        return res.status(500).json({
-          message: "Balance Adjustment category missing",
-        });
+        return res
+          .status(500)
+          .json({ message: "Balance Adjustment category missing" });
       }
 
       await Transaction.create({
@@ -113,13 +157,19 @@ export const updateAccount = async (req, res) => {
     }
 
     const updatedAccount = await account.save();
+
+    // invalidate caches
+    clearCacheByPrefix("accounts");
+
     res.status(200).json(updatedAccount);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Delete account
+/* =========================
+   DELETE ACCOUNT
+========================= */
 export const deleteAccount = async (req, res) => {
   try {
     const { id } = req.params;
@@ -130,29 +180,43 @@ export const deleteAccount = async (req, res) => {
     }
 
     await Account.findByIdAndDelete(id);
+
+    clearCacheByPrefix("accounts");
+
     res.status(200).json({ message: "Account deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get account by name
+/* =========================
+   GET ACCOUNT BY NAME
+========================= */
 export const getAccountByName = async (req, res) => {
   try {
     const { name } = req.params;
+    const cacheKey = `accounts:name:${name}`;
+
+    const cached = getCache(cacheKey);
+    if (cached) {
+      return res.status(200).json(cached);
+    }
 
     const account = await Account.findOne({ name });
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
 
+    setCache(cacheKey, account);
     res.status(200).json(account);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Used ONLY when adding/editing transactions
+/* =========================
+   UPDATE ACCOUNT BALANCE
+========================= */
 export const updateAccountBalance = async (req, res) => {
   try {
     const { id } = req.params;
@@ -174,6 +238,9 @@ export const updateAccountBalance = async (req, res) => {
     }
 
     const updatedAccount = await account.save();
+
+    clearCacheByPrefix("accounts");
+
     res.status(200).json(updatedAccount);
   } catch (error) {
     res.status(500).json({ message: error.message });
