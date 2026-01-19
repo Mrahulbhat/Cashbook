@@ -66,6 +66,7 @@ const AppContent = () => {
         {showSidebar && <Sidebar />}
         <div className="flex-1 overflow-auto">
           <Routes>
+            <Route path="/" element={<LoginPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route
