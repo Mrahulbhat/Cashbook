@@ -57,7 +57,7 @@ const AppContent = () => {
   }
 
   // Show sidebar only on dashboard and management pages (not on homepage)
-  const showSidebar = location.pathname !== "/";
+  const showSidebar = location.pathname !== "/login" && location.pathname !== "/signup"&& location.pathname !== "/";
 
   return (
     <div className="h-screen flex flex-col">
@@ -66,7 +66,7 @@ const AppContent = () => {
         {showSidebar && <Sidebar />}
         <div className="flex-1 overflow-auto">
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route
               path="/dashboard"
