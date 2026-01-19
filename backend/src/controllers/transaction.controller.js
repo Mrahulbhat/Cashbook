@@ -309,6 +309,7 @@ export const transferAmount = async (req, res) => {
   const session = await mongoose.startSession();
   try {
     const { fromAccount, toAccount, amount, description, date } = req.body;
+    const userId = req.user.userId;
 
     if (!fromAccount || !toAccount || amount == null) {
       return res.status(400).json({ message: "fromAccount, toAccount and amount are required" });
@@ -327,8 +328,8 @@ export const transferAmount = async (req, res) => {
 
     let result;
     await session.withTransaction(async () => {
-      const src = await Account.findById(fromAccount).session(session);
-      const dst = await Account.findById(toAccount).session(session);
+      const src = await Account.findOne({ _id: fromAccount, userId }).session(session);
+      const dst = await Account.findOne({ _id: toAccount, userId }).session(session);
 
       if (!src || !dst) {
         throw new Error("Account not found");
@@ -347,6 +348,7 @@ export const transferAmount = async (req, res) => {
 
       const txDate = date ? new Date(date) : new Date();
       const outTx = new Transaction({
+        userId,
         amount: numAmount,
         type: "expense",
         description: description ? `${description} (transfer to ${dst.name || toAccount})` : `Transfer to ${dst.name || toAccount}`,
@@ -356,6 +358,7 @@ export const transferAmount = async (req, res) => {
       });
 
       const inTx = new Transaction({
+        userId,
         amount: numAmount,
         type: "income",
         description: description ? `${description} (transfer from ${src.name || fromAccount})` : `Transfer from ${src.name || fromAccount}`,
