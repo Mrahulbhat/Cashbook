@@ -17,12 +17,18 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   );
 }
 
+// Determine callback URL based on environment
+const getCallbackURL = () => {
+  const backendURL = process.env.BACKEND_URL || "http://localhost:5001";
+  return `${backendURL}/api/auth/google/callback`;
+};
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5001/api/auth/google/callback"
+      callbackURL: getCallbackURL()
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
