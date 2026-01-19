@@ -23,18 +23,17 @@ const userSchema = new mongoose.Schema(
 );
 
 // Hash password before saving
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function () {
   // Skip if password is not modified or doesn't exist (e.g., Google OAuth)
   if (!this.isModified("password") || !this.password) {
-    return next();
+    return;
   }
   
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    return next();
   } catch (error) {
-    return next(error);
+    throw error;
   }
 });
 
