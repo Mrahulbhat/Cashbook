@@ -6,7 +6,11 @@ import mongoose from "mongoose";
 // Get all transactions
 export const getAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find().populate("account").populate("category");
+    const userId = req.user.userId;
+    const transactions = await Transaction.find({ userId })
+      .populate("account")
+      .populate("category")
+      .sort({ date: -1 });
 
     res.status(200).json(transactions);
   } catch (error) {
@@ -18,7 +22,11 @@ export const getAllTransactions = async (req, res) => {
 export const getTransactionData = async (req, res) => {
   try {
     const { id } = req.params;
-    const transaction = await Transaction.findById(id).populate("account").populate("category");
+    const userId = req.user.userId;
+
+    const transaction = await Transaction.findOne({ _id: id, userId })
+      .populate("account")
+      .populate("category");
 
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
@@ -33,22 +41,18 @@ export const getTransactionData = async (req, res) => {
 // Add new transaction
 export const addTransaction = async (req, res) => {
   try {
-    console.log("RAW category from req.body:", req.body.category);
-    console.log("Type of category:", typeof req.body.category);
     const { amount, type, description, category, date, account } = req.body;
+    const userId = req.user.userId;
 
-    // Validate required fields
     if (!amount || !type || !category || !date || !account) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Verify account exists
-    const accountExists = await Account.findById(account);
+    const accountExists = await Account.findOne({ _id: account, userId });
     if (!accountExists) {
       return res.status(404).json({ message: "Account not found" });
     }
 
-    // Verify category exists
     const categoryId =
       typeof category === "object" ? category._id : category;
 
@@ -56,29 +60,27 @@ export const addTransaction = async (req, res) => {
       return res.status(400).json({ message: "Invalid category id" });
     }
 
-    const categoryExists = await Category.findById(categoryId);
+    const categoryExists = await Category.findOne({ _id: categoryId, userId });
     if (!categoryExists) {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    // Create transaction
     const transaction = new Transaction({
+      userId,
       amount,
-      type,
+      type: type.toLowerCase(),
       description,
       category: categoryId,
       date,
       account,
     });
 
-    // Save transaction
     const savedTransaction = await transaction.save();
 
-    // Update account balance
     const numAmount = Number(amount);
-    if (type.toLowerCase() === "income") {
+    if (transaction.type === "income") {
       accountExists.balance += numAmount;
-    } else if (type.toLowerCase() === "expense") {
+    } else {
       accountExists.balance -= numAmount;
     }
 
@@ -95,27 +97,24 @@ export const updateTransaction = async (req, res) => {
   try {
     const { id } = req.params;
     const { amount, type, description, category, date, account } = req.body;
+    const userId = req.user.userId;
 
-    // Find the existing transaction
-    const transaction = await Transaction.findById(id);
+    const transaction = await Transaction.findOne({ _id: id, userId });
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
 
-    // Get the old account to revert balance changes
-    let oldAccount = await Account.findById(transaction.account);
-
-    // Revert old transaction from account balance
+    let oldAccount = await Account.findOne({ _id: transaction.account, userId });
     const oldAmount = Number(transaction.amount);
-    if (transaction.type.toLowerCase() === "income") {
+
+    if (transaction.type === "income") {
       oldAccount.balance -= oldAmount;
-    } else if (transaction.type.toLowerCase() === "expense") {
+    } else {
       oldAccount.balance += oldAmount;
     }
 
-    // If account changed, update the new one
     if (account && account !== transaction.account.toString()) {
-      const newAccount = await Account.findById(account);
+      const newAccount = await Account.findOne({ _id: account, userId });
       if (!newAccount) {
         return res.status(404).json({ message: "New account not found" });
       }
@@ -123,27 +122,27 @@ export const updateTransaction = async (req, res) => {
       oldAccount = newAccount;
     }
 
-    // Update transaction fields
-    transaction.amount = amount || transaction.amount;
-    transaction.type = type || transaction.type;
-    transaction.description = description || transaction.description;
-    transaction.category = category || transaction.category;
-    transaction.date = date || transaction.date;
-    transaction.account = account || transaction.account;
+    transaction.amount = amount ?? transaction.amount;
+    transaction.type = type ? type.toLowerCase() : transaction.type;
+    transaction.description = description ?? transaction.description;
+    transaction.category = category ?? transaction.category;
+    transaction.date = date ?? transaction.date;
+    transaction.account = account ?? transaction.account;
 
-    // Apply new transaction to account balance
     const newAmount = Number(transaction.amount);
-    if (transaction.type.toLowerCase() === "income") {
+    if (transaction.type === "income") {
       oldAccount.balance += newAmount;
-    } else if (transaction.type.toLowerCase() === "expense") {
+    } else {
       oldAccount.balance -= newAmount;
     }
 
     await transaction.save();
     await oldAccount.save();
 
-    const updatedTransaction = await Transaction.findById(id).populate("account").populate("category");
-    ;
+    const updatedTransaction = await Transaction.findById(id)
+      .populate("account")
+      .populate("category");
+
     res.status(200).json(updatedTransaction);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -154,19 +153,19 @@ export const updateTransaction = async (req, res) => {
 export const deleteTransaction = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.userId;
 
-    const transaction = await Transaction.findById(id);
+    const transaction = await Transaction.findOne({ _id: id, userId });
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
 
-    // Get the account and revert balance changes
     const account = await Account.findById(transaction.account);
     const amount = Number(transaction.amount);
 
-    if (transaction.type.toLowerCase() === "income") {
+    if (transaction.type === "income") {
       account.balance -= amount;
-    } else if (transaction.type.toLowerCase() === "expense") {
+    } else {
       account.balance += amount;
     }
 
@@ -179,151 +178,17 @@ export const deleteTransaction = async (req, res) => {
   }
 };
 
-// Get transactions by account
-export const getTransactionsByAccount = async (req, res) => {
-  try {
-    const { accountId } = req.params;
-
-    const transactions = await Transaction.find({ account: accountId }).populate("account").populate("category");
-    ;
-    res.status(200).json(transactions);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get transactions by date range
-export const getTransactionsByDateRange = async (req, res) => {
-  try {
-    const { startDate, endDate } = req.query;
-
-    if (!startDate || !endDate) {
-      return res.status(400).json({ message: "Start date and end date are required" });
-    }
-
-    const transactions = await Transaction.find({
-      date: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      },
-    }).populate("account").populate("category");
-    ;
-
-    res.status(200).json(transactions);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get transactions by category
-export const getTransactionsByCategory = async (req, res) => {
-  try {
-    const { category } = req.params;
-
-    const transactions = await Transaction.find({ category }).populate("account").populate("category");
-    ;
-    res.status(200).json(transactions);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Transfer amounts between accounts
-export const transferAmount = async (req, res) => {
-  const { fromAccountId, toAccountId, amount, category: categoryName = "Investment" } = req.body;
-
-  try {
-    // Validate input
-    if (!fromAccountId || !toAccountId || amount === undefined) {
-      return res.status(400).json({ message: "All fields are required." });
-    }
-
-    const amountNum = Number(amount);
-    if (Number.isNaN(amountNum) || amountNum <= 0) {
-      return res.status(400).json({ message: "Amount must be a positive number." });
-    }
-
-    // Start a mongoose session for atomicity
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
-    try {
-      // Find accounts
-      const fromAccount = await Account.findById(fromAccountId).session(session);
-      const toAccount = await Account.findById(toAccountId).session(session);
-
-      if (!fromAccount || !toAccount) {
-        await session.abortTransaction();
-        session.endSession();
-        return res.status(404).json({ message: "Account not found." });
-      }
-
-      // Check if sufficient balance
-      if (fromAccount.balance < amountNum) {
-        await session.abortTransaction();
-        session.endSession();
-        return res.status(400).json({ message: "Insufficient balance." });
-      }
-
-      // Update balances
-      fromAccount.balance -= amountNum;
-      toAccount.balance += amountNum;
-
-      await fromAccount.save({ session });
-      await toAccount.save({ session });
-
-      // Ensure category exists (create if missing)
-      let category = await Category.findOne({ name: categoryName }).session(session);
-      if (!category) {
-        category = new Category({ name: categoryName, type: "expense", parentCategory: categoryName });
-        await category.save({ session });
-      }
-
-      const date = new Date();
-
-      const expense = new Transaction({
-        amount: amountNum,
-        type: "expense",
-        category: category._id,
-        date,
-        account: fromAccountId,
-      });
-
-      const income = new Transaction({
-        amount: amountNum,
-        type: "income",
-        category: category._id,
-        date,
-        account: toAccountId,
-      });
-
-
-      await expense.save({ session });
-      await income.save({ session });
-
-      await session.commitTransaction();
-      session.endSession();
-
-      res.status(200).json({ message: "Transfer successful.", expense, income });
-    } catch (err) {
-      await session.abortTransaction();
-      session.endSession();
-      throw err;
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
+// Delete all transactions
 export const deleteAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find().populate("account").populate("category");
-    ;
+    const userId = req.user.userId;
+    const transactions = await Transaction.find({ userId })
+      .populate("account");
 
     for (const tx of transactions) {
       const amount = Number(tx.amount);
 
-      if (tx.type.toLowerCase() === "income") {
+      if (tx.type === "income") {
         tx.account.balance -= amount;
       } else {
         tx.account.balance += amount;
@@ -332,13 +197,193 @@ export const deleteAllTransactions = async (req, res) => {
       await tx.account.save();
     }
 
-    await Transaction.deleteMany();
+    await Transaction.deleteMany({ userId });
     res.status(200).json({ message: "All transactions deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+export const getTransactionsByAccount = async (req, res) => {
+  try {
+    const accountId = req.params.accountId || req.params.id || req.query.accountId;
+    const userId = req.user.userId;
+    
+    if (!accountId || !mongoose.Types.ObjectId.isValid(accountId)) {
+      return res.status(400).json({ message: "Invalid account id" });
+    }
 
+    const accountExists = await Account.findOne({ _id: accountId, userId });
+    if (!accountExists) {
+      return res.status(404).json({ message: "Account not found" });
+    }
 
+    const transactions = await Transaction.find({ account: accountId, userId })
+      .populate("account")
+      .populate("category")
+      .sort({ date: -1 });
 
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getTransactionsByCategory = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId || req.params.id || req.query.categoryId;
+    const userId = req.user.userId;
+    
+    if (!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)) {
+      return res.status(400).json({ message: "Invalid category id" });
+    }
+
+    const categoryExists = await Category.findOne({ _id: categoryId, userId });
+    if (!categoryExists) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    const transactions = await Transaction.find({ category: categoryId, userId })
+      .populate("account")
+      .populate("category")
+      .sort({ date: -1 });
+
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getTransactionsByDateRange = async (req, res) => {
+  try {
+    const start = req.query.start || req.query.startDate;
+    const end = req.query.end || req.query.endDate;
+    const userId = req.user.userId;
+
+    if (!start || !end) {
+      return res.status(400).json({ message: "start and end query parameters are required" });
+    }
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return res.status(400).json({ message: "Invalid date format for start or end" });
+    }
+
+    const query = {
+      userId,
+      date: { $gte: startDate, $lte: endDate },
+    };
+
+    // Optional filters
+    const accountId = req.query.accountId;
+    const categoryId = req.query.categoryId;
+
+    if (accountId) {
+      if (!mongoose.Types.ObjectId.isValid(accountId)) {
+        return res.status(400).json({ message: "Invalid account id" });
+      }
+      query.account = accountId;
+    }
+
+    if (categoryId) {
+      if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+        return res.status(400).json({ message: "Invalid category id" });
+      }
+      query.category = categoryId;
+    }
+
+    const transactions = await Transaction.find(query)
+      .populate("account")
+      .populate("category")
+      .sort({ date: -1 });
+
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const transferAmount = async (req, res) => {
+  const session = await mongoose.startSession();
+  try {
+    const { fromAccount, toAccount, amount, description, date } = req.body;
+
+    if (!fromAccount || !toAccount || amount == null) {
+      return res.status(400).json({ message: "fromAccount, toAccount and amount are required" });
+    }
+    if (!mongoose.Types.ObjectId.isValid(fromAccount) || !mongoose.Types.ObjectId.isValid(toAccount)) {
+      return res.status(400).json({ message: "Invalid account id(s)" });
+    }
+    if (fromAccount === toAccount) {
+      return res.status(400).json({ message: "fromAccount and toAccount must be different" });
+    }
+
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    let result;
+    await session.withTransaction(async () => {
+      const src = await Account.findById(fromAccount).session(session);
+      const dst = await Account.findById(toAccount).session(session);
+
+      if (!src || !dst) {
+        throw new Error("Account not found");
+      }
+
+      // Optional: enforce sufficient funds
+      if (src.balance < numAmount) {
+        throw new Error("Insufficient funds");
+      }
+
+      src.balance -= numAmount;
+      dst.balance += numAmount;
+
+      await src.save({ session });
+      await dst.save({ session });
+
+      const txDate = date ? new Date(date) : new Date();
+      const outTx = new Transaction({
+        amount: numAmount,
+        type: "expense",
+        description: description ? `${description} (transfer to ${dst.name || toAccount})` : `Transfer to ${dst.name || toAccount}`,
+        category: undefined,
+        date: txDate,
+        account: fromAccount,
+      });
+
+      const inTx = new Transaction({
+        amount: numAmount,
+        type: "income",
+        description: description ? `${description} (transfer from ${src.name || fromAccount})` : `Transfer from ${src.name || fromAccount}`,
+        category: undefined,
+        date: txDate,
+        account: toAccount,
+      });
+
+      // Bypass validation if schema requires category or other fields not provided
+      await outTx.save({ session, validateBeforeSave: false });
+      await inTx.save({ session, validateBeforeSave: false });
+
+      result = { message: "Transfer successful", fromTransaction: outTx, toTransaction: inTx };
+    });
+
+    session.endSession();
+    res.status(200).json(result);
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
+    if (error.message === "Insufficient funds") {
+      return res.status(400).json({ message: error.message });
+    }
+    if (error.message === "Account not found") {
+      return res.status(404).json({ message: error.message });
+    }
+
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -1,7 +1,6 @@
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
-import HomePage from "./pages/HomePage";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
@@ -17,8 +16,29 @@ import Statistics from "./pages/Statistics";
 import Transactions from "./pages/Transactions";
 import Transfer from "./pages/Transfer";
 import EditCategory from "./pages/EditCategory";
+import LoginPage from "./pages/LoginPage";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
-const App = () => {
+// Protected route component
+const ProtectedRoute = ({ children }) => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader className="size-10 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
+const AppContent = () => {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
@@ -45,24 +65,107 @@ const App = () => {
         {showSidebar && <Sidebar />}
         <div className="flex-1 overflow-auto">
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<LoginPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/accounts" element={<Accounts />} />
-            <Route path="/addAccount" element={<AddAccount />} />
-            <Route path="/edit-account/:id" element={<EditAccount />} />
+            <Route
+              path="/accounts"
+              element={
+                <ProtectedRoute>
+                  <Accounts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/addAccount"
+              element={
+                <ProtectedRoute>
+                  <AddAccount />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-account/:id"
+              element={
+                <ProtectedRoute>
+                  <EditAccount />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/addCategory" element={<AddCategory />} />
-            <Route path="/edit-category/:id" element={<EditCategory/>}/>
+            <Route
+              path="/categories"
+              element={
+                <ProtectedRoute>
+                  <Categories />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/addCategory"
+              element={
+                <ProtectedRoute>
+                  <AddCategory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-category/:id"
+              element={
+                <ProtectedRoute>
+                  <EditCategory />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/transactions" element={<Transactions />} />
-            <Route path="/addTransaction" element={<AddTransaction />} />
-            <Route path="/edit-transaction/:id" element={<EditTransaction />} />
+            <Route
+              path="/transactions"
+              element={
+                <ProtectedRoute>
+                  <Transactions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/addTransaction"
+              element={
+                <ProtectedRoute>
+                  <AddTransaction />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-transaction/:id"
+              element={
+                <ProtectedRoute>
+                  <EditTransaction />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/transfer" element={<Transfer />} />
-            <Route path='/stats' element={<Statistics />} />
-
+            <Route
+              path="/transfer"
+              element={
+                <ProtectedRoute>
+                  <Transfer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stats"
+              element={
+                <ProtectedRoute>
+                  <Statistics />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
           <Toaster />
         </div>
@@ -71,4 +174,13 @@ const App = () => {
   );
 };
 
+const App = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+};
+
 export default App;
+
