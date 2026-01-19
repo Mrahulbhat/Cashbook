@@ -17,6 +17,7 @@ import Transactions from "./pages/Transactions";
 import Transfer from "./pages/Transfer";
 import EditCategory from "./pages/EditCategory";
 import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 // Protected route component
@@ -66,6 +67,7 @@ const AppContent = () => {
         <div className="flex-1 overflow-auto">
           <Routes>
             <Route path="/" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
             <Route
               path="/dashboard"
               element={
