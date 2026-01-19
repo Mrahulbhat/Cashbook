@@ -11,8 +11,12 @@ import {
   transferAmount,
   deleteAllTransactions,
 } from "../controllers/transaction.controller.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
+
+// Apply auth middleware to all routes
+router.use(verifyToken);
 
 // Get all transactions
 router.get("/", getAllTransactions);

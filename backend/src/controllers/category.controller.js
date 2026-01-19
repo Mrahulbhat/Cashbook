@@ -10,14 +10,15 @@ import {
 ========================= */
 export const getAllCategories = async (req, res) => {
   try {
-    const cacheKey = "categories:all";
+    const userId = req.user.userId;
+    const cacheKey = `categories:all:${userId}`;
     const cached = getCache(cacheKey);
 
     if (cached) {
       return res.status(200).json(cached);
     }
 
-    const categories = await Category.find();
+    const categories = await Category.find({ userId });
     setCache(cacheKey, categories);
 
     res.status(200).json(categories);
@@ -32,14 +33,15 @@ export const getAllCategories = async (req, res) => {
 export const getCategoryData = async (req, res) => {
   try {
     const { id } = req.params;
-    const cacheKey = `categories:${id}`;
+    const userId = req.user.userId;
+    const cacheKey = `categories:${id}:${userId}`;
 
     const cached = getCache(cacheKey);
     if (cached) {
       return res.status(200).json(cached);
     }
 
-    const category = await Category.findById(id);
+    const category = await Category.findOne({ _id: id, userId });
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
@@ -57,6 +59,7 @@ export const getCategoryData = async (req, res) => {
 export const addCategory = async (req, res) => {
   try {
     const { name, type, parentCategory, budget } = req.body;
+    const userId = req.user.userId;
 
     if (!name || !type || !parentCategory) {
       return res.status(400).json({
@@ -70,7 +73,7 @@ export const addCategory = async (req, res) => {
       });
     }
 
-    const existingCategory = await Category.findOne({ name });
+    const existingCategory = await Category.findOne({ name, userId });
     if (existingCategory) {
       return res.status(400).json({
         message: "Category with this name already exists",
@@ -78,6 +81,7 @@ export const addCategory = async (req, res) => {
     }
 
     const category = new Category({
+      userId,
       name,
       type: type.toLowerCase(),
       parentCategory,
@@ -87,7 +91,7 @@ export const addCategory = async (req, res) => {
     const savedCategory = await category.save();
 
     // invalidate all category caches
-    clearCacheByPrefix("categories");
+    clearCacheByPrefix(`categories:all:${userId}`);
 
     res.status(201).json(savedCategory);
   } catch (error) {
@@ -102,14 +106,15 @@ export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, type, parentCategory, budget } = req.body;
+    const userId = req.user.userId;
 
-    const category = await Category.findById(id);
+    const category = await Category.findOne({ _id: id, userId });
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
 
     if (name && name !== category.name) {
-      const existingCategory = await Category.findOne({ name });
+      const existingCategory = await Category.findOne({ name, userId });
       if (existingCategory) {
         return res.status(400).json({
           message: "Category with this name already exists",
@@ -130,7 +135,7 @@ export const updateCategory = async (req, res) => {
 
     const updatedCategory = await category.save();
 
-    clearCacheByPrefix("categories");
+    clearCacheByPrefix(`categories:all:${userId}`);
 
     res.status(200).json(updatedCategory);
   } catch (error) {
@@ -144,15 +149,16 @@ export const updateCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.userId;
 
-    const category = await Category.findById(id);
+    const category = await Category.findOne({ _id: id, userId });
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
 
     await Category.findByIdAndDelete(id);
 
-    clearCacheByPrefix("categories");
+    clearCacheByPrefix(`categories:all:${userId}`);
 
     res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
@@ -166,6 +172,7 @@ export const deleteCategory = async (req, res) => {
 export const getCategoriesByType = async (req, res) => {
   try {
     const { type } = req.params;
+    const userId = req.user.userId;
 
     if (!["income", "expense"].includes(type.toLowerCase())) {
       return res.status(400).json({
@@ -173,7 +180,7 @@ export const getCategoriesByType = async (req, res) => {
       });
     }
 
-    const cacheKey = `categories:type:${type.toLowerCase()}`;
+    const cacheKey = `categories:type:${type.toLowerCase()}:${userId}`;
     const cached = getCache(cacheKey);
 
     if (cached) {
@@ -181,6 +188,7 @@ export const getCategoriesByType = async (req, res) => {
     }
 
     const categories = await Category.find({
+      userId,
       type: type.toLowerCase(),
     });
 
@@ -197,14 +205,15 @@ export const getCategoriesByType = async (req, res) => {
 export const getCategoriesByParent = async (req, res) => {
   try {
     const { parentCategory } = req.params;
-    const cacheKey = `categories:parent:${parentCategory}`;
+    const userId = req.user.userId;
+    const cacheKey = `categories:parent:${parentCategory}:${userId}`;
 
     const cached = getCache(cacheKey);
     if (cached) {
       return res.status(200).json(cached);
     }
 
-    const categories = await Category.find({ parentCategory });
+    const categories = await Category.find({ userId, parentCategory });
 
     setCache(cacheKey, categories);
     res.status(200).json(categories);
@@ -219,14 +228,15 @@ export const getCategoriesByParent = async (req, res) => {
 export const getCategoryByName = async (req, res) => {
   try {
     const { name } = req.params;
-    const cacheKey = `categories:name:${name}`;
+    const userId = req.user.userId;
+    const cacheKey = `categories:name:${name}:${userId}`;
 
     const cached = getCache(cacheKey);
     if (cached) {
       return res.status(200).json(cached);
     }
 
-    const category = await Category.findOne({ name });
+    const category = await Category.findOne({ userId, name });
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }

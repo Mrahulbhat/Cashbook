@@ -6,7 +6,8 @@ import mongoose from "mongoose";
 // Get all transactions
 export const getAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find()
+    const userId = req.user.userId;
+    const transactions = await Transaction.find({ userId })
       .populate("account")
       .populate("category")
       .sort({ date: -1 });
@@ -21,8 +22,9 @@ export const getAllTransactions = async (req, res) => {
 export const getTransactionData = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.userId;
 
-    const transaction = await Transaction.findById(id)
+    const transaction = await Transaction.findOne({ _id: id, userId })
       .populate("account")
       .populate("category");
 
@@ -40,12 +42,13 @@ export const getTransactionData = async (req, res) => {
 export const addTransaction = async (req, res) => {
   try {
     const { amount, type, description, category, date, account } = req.body;
+    const userId = req.user.userId;
 
     if (!amount || !type || !category || !date || !account) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const accountExists = await Account.findById(account);
+    const accountExists = await Account.findOne({ _id: account, userId });
     if (!accountExists) {
       return res.status(404).json({ message: "Account not found" });
     }
@@ -57,12 +60,13 @@ export const addTransaction = async (req, res) => {
       return res.status(400).json({ message: "Invalid category id" });
     }
 
-    const categoryExists = await Category.findById(categoryId);
+    const categoryExists = await Category.findOne({ _id: categoryId, userId });
     if (!categoryExists) {
       return res.status(404).json({ message: "Category not found" });
     }
 
     const transaction = new Transaction({
+      userId,
       amount,
       type: type.toLowerCase(),
       description,
@@ -93,13 +97,14 @@ export const updateTransaction = async (req, res) => {
   try {
     const { id } = req.params;
     const { amount, type, description, category, date, account } = req.body;
+    const userId = req.user.userId;
 
-    const transaction = await Transaction.findById(id);
+    const transaction = await Transaction.findOne({ _id: id, userId });
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
 
-    let oldAccount = await Account.findById(transaction.account);
+    let oldAccount = await Account.findOne({ _id: transaction.account, userId });
     const oldAmount = Number(transaction.amount);
 
     if (transaction.type === "income") {
@@ -109,7 +114,7 @@ export const updateTransaction = async (req, res) => {
     }
 
     if (account && account !== transaction.account.toString()) {
-      const newAccount = await Account.findById(account);
+      const newAccount = await Account.findOne({ _id: account, userId });
       if (!newAccount) {
         return res.status(404).json({ message: "New account not found" });
       }
@@ -148,8 +153,9 @@ export const updateTransaction = async (req, res) => {
 export const deleteTransaction = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.userId;
 
-    const transaction = await Transaction.findById(id);
+    const transaction = await Transaction.findOne({ _id: id, userId });
     if (!transaction) {
       return res.status(404).json({ message: "Transaction not found" });
     }
@@ -175,7 +181,8 @@ export const deleteTransaction = async (req, res) => {
 // Delete all transactions
 export const deleteAllTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find()
+    const userId = req.user.userId;
+    const transactions = await Transaction.find({ userId })
       .populate("account");
 
     for (const tx of transactions) {
@@ -190,7 +197,7 @@ export const deleteAllTransactions = async (req, res) => {
       await tx.account.save();
     }
 
-    await Transaction.deleteMany();
+    await Transaction.deleteMany({ userId });
     res.status(200).json({ message: "All transactions deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -200,16 +207,18 @@ export const deleteAllTransactions = async (req, res) => {
 export const getTransactionsByAccount = async (req, res) => {
   try {
     const accountId = req.params.accountId || req.params.id || req.query.accountId;
+    const userId = req.user.userId;
+    
     if (!accountId || !mongoose.Types.ObjectId.isValid(accountId)) {
       return res.status(400).json({ message: "Invalid account id" });
     }
 
-    const accountExists = await Account.findById(accountId);
+    const accountExists = await Account.findOne({ _id: accountId, userId });
     if (!accountExists) {
       return res.status(404).json({ message: "Account not found" });
     }
 
-    const transactions = await Transaction.find({ account: accountId })
+    const transactions = await Transaction.find({ account: accountId, userId })
       .populate("account")
       .populate("category")
       .sort({ date: -1 });
@@ -223,16 +232,18 @@ export const getTransactionsByAccount = async (req, res) => {
 export const getTransactionsByCategory = async (req, res) => {
   try {
     const categoryId = req.params.categoryId || req.params.id || req.query.categoryId;
+    const userId = req.user.userId;
+    
     if (!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)) {
       return res.status(400).json({ message: "Invalid category id" });
     }
 
-    const categoryExists = await Category.findById(categoryId);
+    const categoryExists = await Category.findOne({ _id: categoryId, userId });
     if (!categoryExists) {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    const transactions = await Transaction.find({ category: categoryId })
+    const transactions = await Transaction.find({ category: categoryId, userId })
       .populate("account")
       .populate("category")
       .sort({ date: -1 });
@@ -247,6 +258,7 @@ export const getTransactionsByDateRange = async (req, res) => {
   try {
     const start = req.query.start || req.query.startDate;
     const end = req.query.end || req.query.endDate;
+    const userId = req.user.userId;
 
     if (!start || !end) {
       return res.status(400).json({ message: "start and end query parameters are required" });
@@ -260,6 +272,7 @@ export const getTransactionsByDateRange = async (req, res) => {
     }
 
     const query = {
+      userId,
       date: { $gte: startDate, $lte: endDate },
     };
 

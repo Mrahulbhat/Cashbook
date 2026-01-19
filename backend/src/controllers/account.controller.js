@@ -14,14 +14,15 @@ import {
 ========================= */
 export const getAllAccounts = async (req, res) => {
   try {
-    const cacheKey = "accounts:all";
+    const userId = req.user.userId;
+    const cacheKey = `accounts:all:${userId}`;
     const cached = getCache(cacheKey);
 
     if (cached) {
       return res.status(200).json(cached);
     }
 
-    const accounts = await Account.find();
+    const accounts = await Account.find({ userId });
     setCache(cacheKey, accounts);
 
     res.status(200).json(accounts);
@@ -36,14 +37,15 @@ export const getAllAccounts = async (req, res) => {
 export const getAccountData = async (req, res) => {
   try {
     const { id } = req.params;
-    const cacheKey = `accounts:${id}`;
+    const userId = req.user.userId;
+    const cacheKey = `accounts:${id}:${userId}`;
 
     const cached = getCache(cacheKey);
     if (cached) {
       return res.status(200).json(cached);
     }
 
-    const account = await Account.findById(id);
+    const account = await Account.findOne({ _id: id, userId });
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
@@ -61,6 +63,7 @@ export const getAccountData = async (req, res) => {
 export const addAccount = async (req, res) => {
   try {
     const { name, balance } = req.body;
+    const userId = req.user.userId;
 
     if (!name || balance === undefined) {
       return res
@@ -74,18 +77,18 @@ export const addAccount = async (req, res) => {
         .json({ message: "Balance must be a non-negative number" });
     }
 
-    const existingAccount = await Account.findOne({ name });
+    const existingAccount = await Account.findOne({ name, userId });
     if (existingAccount) {
       return res
         .status(400)
         .json({ message: "Account with this name already exists" });
     }
 
-    const account = new Account({ name, balance });
+    const account = new Account({ userId, name, balance });
     const savedAccount = await account.save();
 
     // invalidate account caches
-    clearCacheByPrefix("accounts");
+    clearCacheByPrefix(`accounts:all:${userId}`);
 
     res.status(201).json(savedAccount);
   } catch (error) {
@@ -100,15 +103,16 @@ export const updateAccount = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, balance } = req.body;
+    const userId = req.user.userId;
 
-    const account = await Account.findById(id);
+    const account = await Account.findOne({ _id: id, userId });
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
 
     // Rename account
     if (name && name !== account.name) {
-      const existingAccount = await Account.findOne({ name });
+      const existingAccount = await Account.findOne({ name, userId });
       if (existingAccount) {
         return res
           .status(400)
@@ -134,6 +138,7 @@ export const updateAccount = async (req, res) => {
           : "Balance_Adjustment_Expense";
 
       const category = await Category.findOne({
+        userId,
         name: categoryName,
         type,
       });
@@ -145,6 +150,7 @@ export const updateAccount = async (req, res) => {
       }
 
       await Transaction.create({
+        userId,
         amount: Math.abs(difference),
         type,
         description: "Balance Adjustment",
@@ -159,7 +165,7 @@ export const updateAccount = async (req, res) => {
     const updatedAccount = await account.save();
 
     // invalidate caches
-    clearCacheByPrefix("accounts");
+    clearCacheByPrefix(`accounts:all:${userId}`);
 
     res.status(200).json(updatedAccount);
   } catch (error) {
@@ -173,15 +179,16 @@ export const updateAccount = async (req, res) => {
 export const deleteAccount = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.userId;
 
-    const account = await Account.findById(id);
+    const account = await Account.findOne({ _id: id, userId });
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
 
     await Account.findByIdAndDelete(id);
 
-    clearCacheByPrefix("accounts");
+    clearCacheByPrefix(`accounts:all:${userId}`);
 
     res.status(200).json({ message: "Account deleted successfully" });
   } catch (error) {
@@ -195,14 +202,15 @@ export const deleteAccount = async (req, res) => {
 export const getAccountByName = async (req, res) => {
   try {
     const { name } = req.params;
-    const cacheKey = `accounts:name:${name}`;
+    const userId = req.user.userId;
+    const cacheKey = `accounts:name:${name}:${userId}`;
 
     const cached = getCache(cacheKey);
     if (cached) {
       return res.status(200).json(cached);
     }
 
-    const account = await Account.findOne({ name });
+    const account = await Account.findOne({ name, userId });
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
@@ -221,12 +229,13 @@ export const updateAccountBalance = async (req, res) => {
   try {
     const { id } = req.params;
     const { amount } = req.body;
+    const userId = req.user.userId;
 
     if (amount === undefined || typeof amount !== "number") {
       return res.status(400).json({ message: "Amount must be a number" });
     }
 
-    const account = await Account.findById(id);
+    const account = await Account.findOne({ _id: id, userId });
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
@@ -239,7 +248,7 @@ export const updateAccountBalance = async (req, res) => {
 
     const updatedAccount = await account.save();
 
-    clearCacheByPrefix("accounts");
+    clearCacheByPrefix(`accounts:all:${userId}`);
 
     res.status(200).json(updatedAccount);
   } catch (error) {
