@@ -186,14 +186,15 @@ export const deleteAllTransactions = async (req, res) => {
     const transactions = await Transaction.find({ userId });
 
     for (const tx of transactions) {
-      if (!tx.account) continue; // 🔑 account already null
+      if (!tx.account) continue;
 
       const account = await Account.findOne({
         _id: tx.account,
         userId
       });
 
-      if (!account) continue; // 🔑 account deleted
+      // 🔑 account might not exist anymore
+      if (!account) continue;
 
       const amount = Number(tx.amount);
 
@@ -212,9 +213,11 @@ export const deleteAllTransactions = async (req, res) => {
       message: "All transactions deleted successfully"
     });
   } catch (error) {
+    console.error("Delete all transactions error:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 export const getTransactionsByAccount = async (req, res) => {
