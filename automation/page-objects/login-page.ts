@@ -17,6 +17,9 @@ export class LoginPage extends BasePage {
     get passwordInputField(): Locator {
         return this.page.locator('#passwordInputField');
     }
+    get confirmPasswordInputField(): Locator {
+        return this.page.locator('#confirmPasswordInputField');
+    }
     get rememberMeCheckbox(): Locator {
         return this.page.locator('#rememberMeCheckbox');
     }
@@ -25,6 +28,44 @@ export class LoginPage extends BasePage {
     }
     get googleLoginButton(): Locator {
         return this.page.locator('#googleLoginButton');
+    }
+    get signupLink(): Locator {
+        return this.page.locator('#signupLink');
+    }
+    get nameInputField(): Locator {
+        return this.page.locator('#nameInputField');
+    }
+    get togglePasswordVisibilityButton(): Locator {
+        return this.page.locator('#togglePasswordVisibilityButton');
+    }
+    get toggleConfirmPasswordVisibilityButton(): Locator {
+        return this.page.locator('#toggleConfirmPasswordVisibilityButton');
+    }
+    get termsConditionsCheckbox(): Locator {
+        return this.page.locator('#termsConditionsCheckbox');
+    }
+    get signupButton(): Locator {
+        return this.page.locator('#signupButton');
+    }
+
+    async createAccount(name: string, email: string, password: string) {
+        await this.page.goto(commonConstants.urls.baseURL);
+        await this.signupLink.click();
+        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + 'signup/');
+        await expect(this.nameInputField).toBeVisible();
+        await this.nameInputField.fill(name);
+        await this.emailInputField.fill(email);
+        await this.passwordInputField.fill(password);
+        await this.confirmPasswordInputField.fill(password);
+        await this.termsConditionsCheckbox.check();
+        await expect(this.termsConditionsCheckbox).toBeChecked();
+
+        await expect(this.passwordInputField).not.toHaveValue(password); //hidden
+        await this.togglePasswordVisibilityButton.click();
+        await expect(this.passwordInputField).toHaveValue(password); //visible
+
+        await this.signupButton.click();
+        await waitForApiResponse(this.page, commonConstants.urls.transactionAPI);
     }
 
     async loginUser() {
@@ -42,7 +83,7 @@ export class LoginPage extends BasePage {
 
         await expect(this.page).toHaveURL(commonConstants.urls.baseURL + 'dashboard');
 
-        
+
     }
 
 

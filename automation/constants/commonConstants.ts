@@ -2,12 +2,12 @@ const test_date = '2026-01-28';
 
 const commonConstants = {
 
-    userEmail: 'TestUser',
-    userPassword: 'Test@1234',
+    userEmail: 'test@gmail.com',
+    userPassword: 'test123',
 
     urls: {
-        // baseURL: 'https://cashbook-kappa.vercel.app', //prod url
-        baseURL: 'https://test-cashbook.netlify.app', //test url
+        baseURL: 'https://cashbook-kappa.vercel.app', //prod url
+        // baseURL: 'https://test-cashbook.netlify.app', //test url
         loginApi: '/api/login',
         accountsAPI: '/api/account',
         transactionAPI: '/api/transaction',

@@ -128,6 +128,7 @@ const SignupPage = () => {
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
+                id="nameInputField"
                   type="text"
                   name="name"
                   value={formData.name}
@@ -147,6 +148,7 @@ const SignupPage = () => {
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
+                id="emailInputField"
                   type="email"
                   name="email"
                   value={formData.email}
@@ -166,6 +168,7 @@ const SignupPage = () => {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
+                id="passwordInputField"
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
@@ -175,6 +178,7 @@ const SignupPage = () => {
                   disabled={isLoading}
                 />
                 <button
+                id="togglePasswordVisibilityButton"
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
@@ -200,6 +204,7 @@ const SignupPage = () => {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
+                id="confirmPasswordInputField"
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
                   value={formData.confirmPassword}
@@ -209,6 +214,7 @@ const SignupPage = () => {
                   disabled={isLoading}
                 />
                 <button
+                id="toggleConfirmPasswordVisibilityButton"
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
@@ -226,6 +232,7 @@ const SignupPage = () => {
             {/* Terms & Conditions */}
             <label className="flex items-center gap-2 text-gray-400 text-sm mt-3 cursor-pointer hover:text-gray-300">
               <input
+              id="termsConditionsCheckbox"
                 type="checkbox"
                 className="w-4 h-4 rounded bg-gray-900/50 border border-gray-700/50 cursor-pointer"
                 disabled={isLoading}
@@ -235,6 +242,7 @@ const SignupPage = () => {
 
             {/* Signup Button */}
             <button
+            id="signupButton"
               type="submit"
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-2 mt-4"

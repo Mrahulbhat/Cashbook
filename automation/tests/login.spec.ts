@@ -5,6 +5,10 @@ import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Login Related Tests', () => {
 
+    test('Create Account / Singup Functionality @BAT', async ({ page, loginPage }) => {
+
+    });
+
     test('Login using email @BAT', async ({ page, loginPage }) => {
         await loginPage.loginUser();
 
