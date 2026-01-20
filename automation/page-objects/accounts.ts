@@ -62,9 +62,14 @@ export class AccountsPage extends BasePage {
         await expect(this.balanceInputField).toBeVisible();
         await this.balanceInputField.fill(account.balance);
 
-        await this.saveButton.click();
-        await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newAccountAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
-        await expect(page.getByText(commonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY)).toBeVisible();
+        await Promise.all([
+            this.saveButton.click(),
+            page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newAccountAPI) &&
+                response.status() === 201
+                && response.request().method() === "POST", { timeout: 15000 }),
+            expect(page.getByText(commonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY)).toBeVisible(),
+        ]);
+
         //verify if account is visible in grid
         await expect(this.page.locator('#accountDiv' + account.name)).toBeVisible();
     }
@@ -88,7 +93,6 @@ export class AccountsPage extends BasePage {
         await this.saveButton.click();
         await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_UPDATED_SUCCESSFULLY)).toBeVisible();
         await this.page.waitForLoadState('networkidle');
-
         await expect(this.page.locator('#accountDiv' + name)).toBeVisible();
     }
 
