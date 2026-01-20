@@ -7,8 +7,8 @@ const commonConstants = {
     userPassword: 'test123',
 
     urls: {
-        baseURL: 'https://cashbook-kappa.vercel.app', //prod url
-        // baseURL: 'https://test-cashbook.netlify.app', //test url
+        baseURL: 'https://cashbook-kappa.vercel.app/', //prod url
+        // baseURL: 'https://test-cashbook.netlify.app/', //test url
         loginApi: '/api/login',
         accountsAPI: '/api/account',
         transactionAPI: '/api/transaction',

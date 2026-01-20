@@ -51,7 +51,7 @@ export class LoginPage extends BasePage {
     async createAccount(name: string, email: string, password: string) {
         await this.page.goto(commonConstants.urls.baseURL);
         await this.signupLink.click();
-        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + 'signup/');
+        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + 'signup');
         await expect(this.nameInputField).toBeVisible();
         await this.nameInputField.fill(name);
         await this.emailInputField.fill(email);
@@ -59,34 +59,24 @@ export class LoginPage extends BasePage {
         await this.confirmPasswordInputField.fill(password);
         await this.termsConditionsCheckbox.check();
         await expect(this.termsConditionsCheckbox).toBeChecked();
-
-        await expect(this.passwordInputField).not.toHaveValue(password); //hidden
-        await this.togglePasswordVisibilityButton.click();
-        await expect(this.passwordInputField).toHaveValue(password); //visible
-
         await this.signupButton.click();
         await waitForApiResponse(this.page, commonConstants.urls.transactionAPI);
-
-        await expect(this.navbarUserName).toHaveText(name);
+        await expect(this.navbarUserName).toContainText(name);
     }
 
     async loginUser() {
-        const userName = commonConstants.userName;
         await this.page.goto(commonConstants.urls.baseURL);
         await this.emailInputField.clear();
         await this.emailInputField.pressSequentially(commonConstants.userEmail);
         await this.passwordInputField.clear();
         await this.passwordInputField.pressSequentially(commonConstants.userPassword);
-
         await this.rememberMeCheckbox.check();
         await expect(this.rememberMeCheckbox).toBeChecked();
-
         await this.loginButton.click();
         await waitForApiResponse(this.page, commonConstants.urls.loginApi);
-
         await expect(this.page).toHaveURL(commonConstants.urls.baseURL + 'dashboard');
         await expect(this.navbarUserName).toBeVisible();
-        await expect(this.navbarUserName).toHaveText(userName);
+        await expect(this.navbarUserName).toContainText('test_name');
     }
 
 

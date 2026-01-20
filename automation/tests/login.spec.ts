@@ -20,10 +20,6 @@ test.describe('Login Related Tests', () => {
 
     });
 
-    test('Singup Functionality @BAT', async ({ page, loginPage }) => {
-
-    });
-
     test('SignOut Functionality @BAT', async ({ page, loginPage }) => {
 
     });
