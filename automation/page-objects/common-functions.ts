@@ -45,7 +45,7 @@ export async function navigateToPage(page: any, pageName: string) {
             await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.STATISTICS}`);
             await Promise.all([
                 await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 200 || 304, { timeout: 15000 }),
-            await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200 || 304, { timeout: 15000 }),
+                await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200 || 304, { timeout: 15000 }),
             ]);
             break;
 
@@ -54,11 +54,21 @@ export async function navigateToPage(page: any, pageName: string) {
     }
 }
 
-export async function waitForApiResponse(page: any,url:string) {
-    try{
+export async function waitForApiResponse(page: any, url: string) {
+    try {
         await page.waitForResponse((response: any) => response.url().includes(url) && response.status() === 200 || 304, { timeout: 15000 });
     }
-    catch{
+    catch {
         console.log('Intercept might have arrived before');
     }
+}
+
+export async function generateRandomPrefix(length: number = 5): Promise<string> {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+    let result = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
 }

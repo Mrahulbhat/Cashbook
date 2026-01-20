@@ -66,9 +66,12 @@ export class LoginPage extends BasePage {
 
         await this.signupButton.click();
         await waitForApiResponse(this.page, commonConstants.urls.transactionAPI);
+
+        await expect(this.navbarUserName).toHaveText(name);
     }
 
     async loginUser() {
+        const userName = commonConstants.userName;
         await this.page.goto(commonConstants.urls.baseURL);
         await this.emailInputField.clear();
         await this.emailInputField.pressSequentially(commonConstants.userEmail);
@@ -82,8 +85,8 @@ export class LoginPage extends BasePage {
         await waitForApiResponse(this.page, commonConstants.urls.loginApi);
 
         await expect(this.page).toHaveURL(commonConstants.urls.baseURL + 'dashboard');
-
-
+        await expect(this.navbarUserName).toBeVisible();
+        await expect(this.navbarUserName).toHaveText(userName);
     }
 
 

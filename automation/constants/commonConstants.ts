@@ -2,6 +2,7 @@ const test_date = '2026-01-28';
 
 const commonConstants = {
 
+    userName: 'Test_UserName',
     userEmail: 'test@gmail.com',
     userPassword: 'test123',
 
