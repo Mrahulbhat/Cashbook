@@ -7,6 +7,9 @@ import commonConstants from '../../constants/commonConstants.js';
 //ONLY FOR TESTING
 
 test.describe('Delete Data Setup', () => {
+    test.beforeEach(async ({ loginPage }) => {
+        await loginPage.loginUser();
+    });
 
     // delete all accounts
     test('Delete all accounts in DB @TEST', async ({ page, accountsPage }) => {

@@ -6,6 +6,10 @@ import commonConstants from '../constants/commonConstants.js';
 test.describe.serial('Account Related Tests', () => {
     const account = { name: "TEST", balance: '1000' };
 
+    test.beforeEach(async ({ loginPage }) => {
+        await loginPage.loginUser();
+    });
+
     test('Create Account @BAT @ACCOUNT', async ({ page, accountsPage }) => {
 
         // create a account

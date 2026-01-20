@@ -4,6 +4,9 @@ import { navigateToPage } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Cashbook Application Basic Tests', () => {
+    test.beforeEach(async ({ loginPage }) => {
+        await loginPage.loginUser();
+    });
 
     test('TC01 - Does the application start @BAT', async ({ page, dashboardPage }) => {
 

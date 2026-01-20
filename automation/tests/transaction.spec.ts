@@ -4,6 +4,9 @@ import { navigateToPage } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Transaction Related Tests', () => {
+    test.beforeEach(async ({ loginPage }) => {
+        await loginPage.loginUser();
+    });
 
     test('Create New Transaction @BAT', async ({ page, transactionPage }) => {
         const transactions = commonConstants.TRANSACTIONS
