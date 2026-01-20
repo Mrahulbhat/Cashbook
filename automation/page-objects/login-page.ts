@@ -51,7 +51,7 @@ export class LoginPage extends BasePage {
     async createAccount(name: string, email: string, password: string) {
         await this.page.goto(commonConstants.urls.baseURL);
         await this.signupLink.click();
-        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + 'signup');
+        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + '/signup');
         await expect(this.nameInputField).toBeVisible();
         await this.nameInputField.fill(name);
         await this.emailInputField.fill(email);
@@ -75,7 +75,7 @@ export class LoginPage extends BasePage {
         await expect(this.rememberMeCheckbox).toBeChecked();
         await this.loginButton.click();
         await waitForApiResponse(this.page, commonConstants.urls.loginApi);
-        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + 'dashboard');
+        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + '/dashboard');
         await expect(this.navbarUserName).toBeVisible();
         await expect(this.navbarUserName).toContainText(userName);
     }

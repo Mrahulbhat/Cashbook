@@ -1,4 +1,4 @@
-const test_date = '2026-01-28';
+const test_date = new Date().toISOString().split('T')[0]; //current date in YYYY-MM-DD format
 
 const commonConstants = {
 
@@ -7,8 +7,8 @@ const commonConstants = {
     userPassword: 'test123',
 
     urls: {
-        baseURL: 'https://cashbook-kappa.vercel.app/', //prod url
-        // baseURL: 'https://test-cashbook.netlify.app/', //test url
+        baseURL: 'https://cashbook-kappa.vercel.app', //prod url
+        // baseURL: 'https://test-cashbook.netlify.app', //test url
         loginApi: '/api/login',
         accountsAPI: '/api/account',
         transactionAPI: '/api/transaction',
