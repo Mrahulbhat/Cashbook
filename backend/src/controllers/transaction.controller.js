@@ -182,27 +182,40 @@ export const deleteTransaction = async (req, res) => {
 export const deleteAllTransactions = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const transactions = await Transaction.find({ userId })
-      .populate("account");
+
+    const transactions = await Transaction.find({ userId });
 
     for (const tx of transactions) {
+      if (!tx.account) continue; // 🔑 account already null
+
+      const account = await Account.findOne({
+        _id: tx.account,
+        userId
+      });
+
+      if (!account) continue; // 🔑 account deleted
+
       const amount = Number(tx.amount);
 
       if (tx.type === "income") {
-        tx.account.balance -= amount;
+        account.balance -= amount;
       } else {
-        tx.account.balance += amount;
+        account.balance += amount;
       }
 
-      await tx.account.save();
+      await account.save();
     }
 
     await Transaction.deleteMany({ userId });
-    res.status(200).json({ message: "All transactions deleted successfully" });
+
+    res.status(200).json({
+      message: "All transactions deleted successfully"
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const getTransactionsByAccount = async (req, res) => {
   try {
