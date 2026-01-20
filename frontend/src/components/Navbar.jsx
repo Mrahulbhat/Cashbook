@@ -34,7 +34,7 @@ const Navbar = () => {
       <div className="relative z-10 flex gap-3">
         {user && (
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-300">
+            <span id="userName_navbar" className="text-sm text-gray-300">
               Welcome, <span className="text-blue-300 font-medium">{user.name}</span>
             </span>
             <button

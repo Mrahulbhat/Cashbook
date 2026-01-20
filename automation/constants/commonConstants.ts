@@ -2,9 +2,13 @@ const test_date = '2026-01-28';
 
 const commonConstants = {
 
+    userEmail: 'TestUser',
+    userPassword: 'Test@1234',
+
     urls: {
         // baseURL: 'https://cashbook-kappa.vercel.app', //prod url
         baseURL: 'https://test-cashbook.netlify.app', //test url
+        loginApi: '/api/login',
         accountsAPI: '/api/account',
         transactionAPI: '/api/transaction',
         categoriesAPI: '/api/category',
@@ -70,7 +74,7 @@ const commonConstants = {
         { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Fuel", date: test_date, description: 'TEST AUTOMATION' },
         { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "Shopping", date: test_date, description: 'TEST AUTOMATION' },
         { amount: "1000", type: "expense", accountName: "Cash", categoryName: "Fuel", date: test_date, description: 'TEST AUTOMATION' },
-    ]
+    ],
 };
 
 export default commonConstants;

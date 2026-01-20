@@ -53,3 +53,12 @@ export async function navigateToPage(page: any, pageName: string) {
             return;
     }
 }
+
+export async function waitForApiResponse(page: any,url:string) {
+    try{
+        await page.waitForResponse((response: any) => response.url().includes(url) && response.status() === 200 || 304, { timeout: 15000 });
+    }
+    catch{
+        console.log('Intercept might have arrived before');
+    }
+}

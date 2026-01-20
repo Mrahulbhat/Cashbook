@@ -6,6 +6,7 @@ import { AccountsPage } from '../page-objects/accounts';
 import { CategoryPage } from '../page-objects/category';
 import { TransferPage } from '../page-objects/transfer';
 import { StatisticsPage } from '../page-objects/statistics';
+import { LoginPage } from '../page-objects/login-page';
 
 type fixtures = {
     basePage: BasePage;
@@ -15,6 +16,7 @@ type fixtures = {
     categoryPage: CategoryPage;
     transferPage: TransferPage;
     statisticsPage: StatisticsPage;
+    loginPage:LoginPage
 }
 
 export const test = base.extend<fixtures>({
@@ -45,5 +47,7 @@ export const test = base.extend<fixtures>({
     statisticsPage: async ({ page }, use) => {
         await use(new StatisticsPage(page));
     },
-
+    loginPage: async ({ page }, use) => {
+        await use(new LoginPage(page));
+    },
 });
