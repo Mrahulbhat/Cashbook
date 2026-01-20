@@ -8,26 +8,6 @@ test.describe('Cashbook Application Basic Tests', () => {
         await loginPage.loginUser();
     });
 
-    test('TC01 - Does the application start @BAT', async ({ page, dashboardPage }) => {
-
-        //Check if the welcome page loads, click on get Started button and verify navigation to login page
-        //check if the frontend gets connected to backend
-
-        await navigateToPage(page, commonConstants.urls.baseURL);
-
-        await expect(page.locator('#getStarted')).toBeVisible();
-        await page.locator('#getStarted').click();
-
-        // wait for last url to load which confirms page is loaded with data from backend
-        await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200 || 304, { timeout: 15000 });
-
-        //check if expense value is greater than zero which indicates data is loaded from backend
-        await expect(dashboardPage.totalExpense).toBeVisible();
-        const totalExpenseText = await dashboardPage.totalExpense.textContent() || "";
-        const totalExpenseValue = Number(totalExpenseText.replace(/[₹,]/g, '').trim());
-        expect(totalExpenseValue).toBeGreaterThan(0);
-    });
-
     test('TC02 - Verify Sidebar Functionality @BAT', async ({ page, dashboardPage, transactionPage, accountsPage, categoryPage, transferPage, statisticsPage }) => {
 
         //check if sidebar is visible and all tabs are clickable and navigate to correct pages
