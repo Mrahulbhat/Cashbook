@@ -100,7 +100,7 @@ const AccountsScreen = () => {
             renderItem={({ item }) => (
               <View style={styles.accountCard}>
                 <View style={styles.cardHeader}>
-                  <Text style={styles.accountName}>{item.name}</Text>
+                  <Text style={styles.accountName}>{item.accountName}</Text>
 
                   <View style={styles.actions}>
                     <TouchableOpacity
@@ -143,7 +143,7 @@ const AccountsScreen = () => {
 
             <TouchableOpacity
               style={styles.createBtn}
-              onPress={() => router.push('/addAccount')}
+              onPress={() => router.push('/accounts/add')}
             >
               <Text style={styles.createBtnText}>
                 + Create Your First Account

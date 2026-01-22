@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
   ActivityIndicator,
   Alert,
-  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useAccountStore } from '@/store/useAccountStore';
 
@@ -64,76 +65,75 @@ export default function AddAccountScreen() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
-      {/* Header */}
-      <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-        <Text style={styles.backText}>← Back</Text>
-      </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+        {/* Header */}
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+          <Text style={styles.backText}>← Back</Text>
+        </TouchableOpacity>
 
-      <View style={styles.card}>
-        <Text style={styles.heading}>Add New Account</Text>
-        <Text style={styles.subheading}>
-          Create a new bank or savings account
-        </Text>
-
-        {/* Account Name */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Account Name *</Text>
-          <TextInput
-            placeholder="e.g., Savings Account"
-            value={formData.name}
-            onChangeText={(text) => handleInputChange('name', text)}
-            style={styles.input}
-          />
-        </View>
-
-        {/* Initial Balance */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Initial Balance *</Text>
-          <TextInput
-            placeholder="0.00"
-            keyboardType="numeric"
-            value={formData.balance}
-            onChangeText={(text) => handleInputChange('balance', text)}
-            style={styles.input}
-          />
-        </View>
-
-        {/* Tip Box */}
-        <View style={styles.tipBox}>
-          <Text style={styles.tipText}>
-            💡 Tip: You can update the balance anytime by adding transactions.
-            Start with your current account balance.
+        <View style={styles.card}>
+          <Text style={styles.heading}>Add New Account</Text>
+          <Text style={styles.subheading}>
+            Create a new bank or savings account
           </Text>
-        </View>
 
-        {/* Buttons */}
-        <View style={styles.buttons}>
-          <TouchableOpacity
-            style={[styles.btn, styles.cancelBtn]}
-            onPress={() => router.back()}
-            disabled={loading}
-          >
-            <Text style={styles.cancelText}>Cancel</Text>
-          </TouchableOpacity>
+          {/* Account Name */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Account Name *</Text>
+            <TextInput
+              placeholder="e.g., Savings Account"
+              value={formData.name}
+              onChangeText={(text) => handleInputChange('name', text)}
+              style={styles.input}
+            />
+          </View>
 
-          <TouchableOpacity
-            style={[styles.btn, styles.saveBtn]}
-            onPress={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.saveText}>Create Account</Text>
-            )}
-          </TouchableOpacity>
+          {/* Initial Balance */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Initial Balance *</Text>
+            <TextInput
+              placeholder="0.00"
+              keyboardType="numeric"
+              value={formData.balance}
+              onChangeText={(text) => handleInputChange('balance', text)}
+              style={styles.input}
+            />
+          </View>
+
+          {/* Tip Box */}
+          <View style={styles.tipBox}>
+            <Text style={styles.tipText}>
+              💡 Tip: You can update the balance anytime by adding transactions.
+              Start with your current account balance.
+            </Text>
+          </View>
+
+          {/* Buttons */}
+          <View style={styles.buttons}>
+            <TouchableOpacity
+              style={[styles.btn, styles.cancelBtn]}
+              onPress={() => router.back()}
+              disabled={loading}
+            >
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.btn, styles.saveBtn]}
+              onPress={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.saveText}>Create Account</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

@@ -1,5 +1,3 @@
-//TRANSACTIONS SCREEN SET AS DEFAULT SCREEN IN TABS
-
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -9,13 +7,12 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTransactionStore } from '@/store/useTransactionStore';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'expo-router';
 
 const TransactionsScreen = () => {
-  const { api, logout } = useAuth();
+  const { api } = useAuth();
   const router = useRouter();
   const {
     transactions,
@@ -102,46 +99,14 @@ const TransactionsScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <View>
-              <Text style={styles.title}>Transactions</Text>
-              <Text style={styles.subtitle}>
-                Manage and view all your transactions
-              </Text>
-            </View>
-
-            <TouchableOpacity
-              style={styles.logoutButton}
-              onPress={() =>
-                Alert.alert('Logout', 'Are you sure you want to logout?', [
-                  { text: 'Cancel', style: 'cancel' },
-                  {
-                    text: 'Logout',
-                    style: 'destructive',
-                    onPress: async () => {
-                      await logout();
-                      router.replace('/auth/login');
-                    },
-                  },
-                ])
-              }
-            >
-              <Text style={styles.logoutText}>Logout</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() =>
-              Alert.alert('Coming Soon', 'Add transaction feature coming soon')
-            }
-          >
-            <Text style={styles.addButtonText}>+ Add Transaction</Text>
-          </TouchableOpacity>
+          <Text style={styles.title}>Transactions</Text>
+          <Text style={styles.subtitle}>
+            {filteredTransactions.length} {filter} transaction{filteredTransactions.length !== 1 ? 's' : ''}
+          </Text>
         </View>
 
         {/* Filter */}
@@ -169,51 +134,85 @@ const TransactionsScreen = () => {
 
         {/* Transactions List */}
         {filteredTransactions.length > 0 ? (
-          <FlatList
-            data={filteredTransactions}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={{ paddingBottom: 100 }}
-            renderItem={({ item }) => (
-              <View style={styles.transactionCard}>
-                <View style={styles.typeContainer}>
-                  <Text style={styles.typeIcon}>
-                    {item.type.toLowerCase() === 'income' ? '↓' : '↑'}
-                  </Text>
-                  <Text style={styles.typeText}>{item.type}</Text>
+          <>
+            <FlatList
+              data={filteredTransactions}
+              keyExtractor={(item) => item._id}
+              contentContainerStyle={{ paddingBottom: 180 }}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <View style={styles.transactionCard}>
+                  <View style={styles.cardHeader}>
+                    <View style={styles.leftSection}>
+                      <View style={[
+                        styles.iconCircle,
+                        item.type.toLowerCase() === 'income' ? styles.incomeCircle : styles.expenseCircle
+                      ]}>
+                        <Text style={styles.typeIcon}>
+                          {item.type.toLowerCase() === 'income' ? '↓' : '↑'}
+                        </Text>
+                      </View>
+                      <View style={styles.infoSection}>
+                        <Text style={styles.categoryText}>
+                          {item.category?.name || 'N/A'}
+                        </Text>
+                        <Text style={styles.accountText}>
+                          {item.account?.name || 'N/A'}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.rightSection}>
+                      <Text
+                        style={[
+                          styles.amountText,
+                          item.type.toLowerCase() === 'income'
+                            ? styles.income
+                            : styles.expense,
+                        ]}
+                      >
+                        {item.type.toLowerCase() === 'income' ? '+' : '-'}
+                        {formatCurrency(item.amount)}
+                      </Text>
+                      <Text style={styles.dateText}>{formatDate(item.date)}</Text>
+                    </View>
+                  </View>
+
+                  {item.description && (
+                    <Text style={styles.descText}>{item.description}</Text>
+                  )}
+
+                  <View style={styles.actions}>
+                    <TouchableOpacity style={styles.actionButton}>
+                      <Text style={styles.editButton}>✏️ Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={styles.actionButton}
+                      onPress={() => handleDelete(item._id)}
+                    >
+                      <Text style={styles.deleteButton}>🗑️ Delete</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-
-                <Text
-                  style={[
-                    styles.amountText,
-                    item.type.toLowerCase() === 'income'
-                      ? styles.income
-                      : styles.expense,
-                  ]}
-                >
-                  {item.type.toLowerCase() === 'income' ? '+' : '-'}
-                  {formatCurrency(item.amount)}
-                </Text>
-
-                <Text style={styles.categoryText}>
-                  {item.category?.name || 'N/A'}
-                </Text>
-                <Text style={styles.accountText}>
-                  {item.account?.name || 'N/A'}
-                </Text>
-                <Text style={styles.descText}>{item.description || '-'}</Text>
-                <Text style={styles.dateText}>{formatDate(item.date)}</Text>
-
-                <View style={styles.actions}>
-                  <TouchableOpacity>
-                    <Text style={styles.editButton}>Edit</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDelete(item._id)}>
-                    <Text style={styles.deleteButton}>Delete</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-          />
+              )}
+            />
+            
+            {/* Action Buttons */}
+            <View style={styles.bottomActions}>
+              <TouchableOpacity
+                style={styles.deleteAllButton}
+                onPress={handleDeleteAll}
+              >
+                <Text style={styles.deleteAllText}>Delete All</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={styles.addBtn}
+                onPress={() => {/* Add your navigation logic */}}
+              >
+                <Text style={styles.addBtnText}>+ Add Transaction</Text>
+              </TouchableOpacity>
+            </View>
+          </>
         ) : (
           <View style={styles.emptyState}>
             <Text style={styles.emptyIcon}>📊</Text>
@@ -221,17 +220,16 @@ const TransactionsScreen = () => {
             <Text style={styles.emptySubtitle}>
               Add your first transaction to get started.
             </Text>
+            <TouchableOpacity
+              style={styles.addBtn}
+              onPress={() => {/* Add your navigation logic */}}
+            >
+              <Text style={styles.addBtnText}>+ Add Transaction</Text>
+            </TouchableOpacity>
           </View>
         )}
-
-        <TouchableOpacity
-          style={styles.deleteAllBtn}
-          onPress={handleDeleteAll}
-        >
-          <Text style={styles.deleteAllText}>Delete All Transactions</Text>
-        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -244,152 +242,208 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   header: {
-    marginBottom: 16,
-  },
-  headerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 20,
   },
   title: {
     color: '#fff',
     fontSize: 28,
     fontWeight: '700',
+    marginBottom: 4,
   },
   subtitle: {
-    color: '#aaa',
+    color: '#888',
     fontSize: 14,
-  },
-  logoutButton: {
-    backgroundColor: '#222',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  logoutText: {
-    color: '#ff4d4d',
-    fontWeight: '600',
-  },
-  addButton: {
-    backgroundColor: 'green',
-    padding: 10,
-    borderRadius: 10,
-    width: 180,
-    alignItems: 'center',
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+    fontWeight: '500',
   },
   filterContainer: {
     flexDirection: 'row',
-    marginBottom: 12,
+    marginBottom: 20,
+    gap: 10,
   },
   filterButton: {
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: '#222',
-    marginRight: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#1a1a1a',
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
   filterButtonActive: {
-    backgroundColor: 'green',
+    backgroundColor: '#1a4d1a',
+    borderColor: '#2d7a2d',
   },
   filterText: {
-    color: '#ccc',
-    fontWeight: '500',
+    color: '#888',
+    fontWeight: '600',
+    fontSize: 14,
   },
   filterTextActive: {
-    color: '#fff',
-    fontWeight: '700',
+    color: '#4ade80',
   },
   transactionCard: {
-    backgroundColor: '#111',
-    padding: 12,
+    backgroundColor: '#1a1a1a',
+    padding: 16,
     marginBottom: 12,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
   },
-  typeContainer: {
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  leftSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    flex: 1,
+  },
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  incomeCircle: {
+    backgroundColor: '#1a4d1a',
+  },
+  expenseCircle: {
+    backgroundColor: '#4d1a1a',
   },
   typeIcon: {
     color: '#fff',
-    marginRight: 6,
-  },
-  typeText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  amountText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
   },
-  income: {
-    color: 'green',
-  },
-  expense: {
-    color: 'red',
+  infoSection: {
+    flex: 1,
   },
   categoryText: {
-    color: '#0f0',
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
   },
   accountText: {
-    color: '#ccc',
+    color: '#888',
+    fontSize: 13,
+  },
+  rightSection: {
+    alignItems: 'flex-end',
+  },
+  amountText: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  income: {
+    color: '#4ade80',
+  },
+  expense: {
+    color: '#f87171',
+  },
+  dateText: {
+    color: '#666',
+    fontSize: 12,
   },
   descText: {
     color: '#aaa',
-  },
-  dateText: {
-    color: '#888',
+    fontSize: 14,
+    marginBottom: 12,
+    fontStyle: 'italic',
   },
   actions: {
     flexDirection: 'row',
     gap: 12,
-    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#2a2a2a',
+    paddingTop: 12,
+  },
+  actionButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#0a0a0a',
   },
   editButton: {
-    color: 'blue',
+    color: '#60a5fa',
     fontWeight: '600',
+    fontSize: 14,
   },
   deleteButton: {
-    color: 'red',
+    color: '#f87171',
     fontWeight: '600',
+    fontSize: 14,
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 40,
   },
   emptyIcon: {
-    fontSize: 48,
-    marginBottom: 8,
+    fontSize: 64,
+    marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: '#fff',
+    marginBottom: 8,
   },
   emptySubtitle: {
-    color: '#aaa',
+    color: '#888',
     textAlign: 'center',
+    fontSize: 15,
+    marginBottom: 32,
   },
-  deleteAllBtn: {
+  bottomActions: {
     position: 'absolute',
-    bottom: 20,
-    left: 16,
-    right: 16,
-    backgroundColor: 'red',
-    padding: 12,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    backgroundColor: '#000',
+    borderTopWidth: 1,
+    borderTopColor: '#1a1a1a',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  deleteAllButton: {
+    flex: 1,
+    backgroundColor: '#4d1a1a',
+    paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#7a2d2d',
   },
   deleteAllText: {
-    color: '#fff',
+    color: '#f87171',
     fontWeight: '700',
+    fontSize: 15,
+  },
+  addBtn: {
+    flex: 2,
+    backgroundColor: '#1a4d1a',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2d7a2d',
+  },
+  addBtnText: {
+    color: '#4ade80',
+    fontWeight: '700',
+    fontSize: 15,
   },
 });
