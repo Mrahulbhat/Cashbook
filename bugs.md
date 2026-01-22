@@ -5,3 +5,4 @@
 
 # future plans 
 - Add today , weekly filters as well for transaction
+- improve toast like in service care / react apps

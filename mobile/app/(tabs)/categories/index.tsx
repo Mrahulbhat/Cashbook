@@ -7,8 +7,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useCategoryStore } from '@/store/useCategoryStore';
 import { useAuth } from '@/context/AuthContext';
@@ -60,33 +60,44 @@ export default function CategoriesScreen() {
   };
 
   const renderItem = ({ item }: any) => (
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <View>
-          <Text style={styles.title}>{item.name}</Text>
-          <Text
-            style={[
-              styles.badge,
-              item.type === 'income' ? styles.income : styles.expense,
-            ]}
-          >
-            {item.type}
-          </Text>
-        </View>
-
-        <View style={styles.actions}>
-          <Pressable
-            onPress={() => router.push(`/categories/edit/${item._id}`)}
-          >
-            <Text style={styles.actionText}>Edit</Text>
-          </Pressable>
-
-          <Pressable onPress={() => confirmDelete(item._id)}>
-            <Text style={[styles.actionText, { color: 'red' }]}>
-              Delete
+    <View style={styles.categoryCard}>
+      <View style={styles.cardContent}>
+        <View style={styles.leftSection}>
+          <View style={[
+            styles.iconCircle,
+            item.type === 'income' ? styles.incomeCircle : styles.expenseCircle
+          ]}>
+            <Text style={styles.categoryIcon}>
+              {item.type === 'income' ? '💰' : '💸'}
             </Text>
-          </Pressable>
+          </View>
+          <View style={styles.infoSection}>
+            <Text style={styles.categoryName}>{item.name}</Text>
+            <Text
+              style={[
+                styles.categoryType,
+                item.type === 'income' ? styles.incomeText : styles.expenseText,
+              ]}
+            >
+              {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+            </Text>
+          </View>
         </View>
+      </View>
+
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => router.push(`/categories/edit/${item._id}`)}
+        >
+          <Text style={styles.editButton}>Edit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => confirmDelete(item._id)}
+        >
+          <Text style={styles.deleteButton}>Delete</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -95,26 +106,38 @@ export default function CategoriesScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.heading}>Categories</Text>
-        <Pressable
-          style={styles.addBtn}
-          onPress={() => router.push('/categories/add')}
-        >
-          <Text style={styles.addText}>+ Add</Text>
-        </Pressable>
+        <View>
+          <Text style={styles.heading}>Categories</Text>
+          <Text style={styles.subtitle}>
+            {filteredCategories.length} {filter !== 'all' ? filter : ''} categor{filteredCategories.length !== 1 ? 'ies' : 'y'}
+          </Text>
+        </View>
       </View>
 
       {/* Stats */}
       <View style={styles.stats}>
-        <Text style={styles.stat}>Total: {categories.length}</Text>
-        <Text style={styles.stat}>Income: {incomeCount}</Text>
-        <Text style={styles.stat}>Expense: {expenseCount}</Text>
+        <View style={styles.statCard}>
+          <Text style={styles.statValue}>{categories.length}</Text>
+          <Text style={styles.statLabel}>Total</Text>
+        </View>
+        <View style={[styles.statCard, styles.incomeStatCard]}>
+          <Text style={[styles.statValue, styles.incomeText]}>
+            {incomeCount}
+          </Text>
+          <Text style={styles.statLabel}>Income</Text>
+        </View>
+        <View style={[styles.statCard, styles.expenseStatCard]}>
+          <Text style={[styles.statValue, styles.expenseText]}>
+            {expenseCount}
+          </Text>
+          <Text style={styles.statLabel}>Expense</Text>
+        </View>
       </View>
 
       {/* Filters */}
       <View style={styles.filters}>
         {['all', 'income', 'expense'].map((f) => (
-          <Pressable
+          <TouchableOpacity
             key={f}
             style={[
               styles.filterBtn,
@@ -122,24 +145,48 @@ export default function CategoriesScreen() {
             ]}
             onPress={() => setFilter(f as FilterType)}
           >
-            <Text style={styles.filterText}>{f}</Text>
-          </Pressable>
+            <Text
+              style={[
+                styles.filterText,
+                filter === f && styles.filterTextActive,
+              ]}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </Text>
+          </TouchableOpacity>
         ))}
       </View>
 
       {/* Content */}
       {loading ? (
-        <ActivityIndicator size="large" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4ade80" />
+        </View>
       ) : filteredCategories.length === 0 ? (
-        <Text style={styles.empty}>No categories found</Text>
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyIcon}>📂</Text>
+          <Text style={styles.emptyTitle}>No Categories Found</Text>
+          <Text style={styles.emptySubtitle}>
+            Create your first category to get started.
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={filteredCategories}
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 40 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
         />
       )}
+
+      {/* Add Button */}
+      <TouchableOpacity
+        style={styles.addBtn}
+        onPress={() => router.push('/categories/add')}
+      >
+        <Text style={styles.addText}>+ Add Category</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -148,87 +195,199 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 24,
+    marginTop: 8,
   },
   heading: {
     color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '700',
+    marginBottom: 6,
   },
-  addBtn: {
-    backgroundColor: '#7c3aed',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  addText: {
-    color: '#fff',
-    fontWeight: '600',
+  subtitle: {
+    color: '#888',
+    fontSize: 15,
+    fontWeight: '500',
   },
   stats: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    gap: 12,
+    marginBottom: 24,
   },
-  stat: {
-    color: '#aaa',
+  statCard: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+    alignItems: 'center',
+  },
+  incomeStatCard: {
+    backgroundColor: '#0d1f0d',
+    borderColor: '#1a4d1a',
+  },
+  expenseStatCard: {
+    backgroundColor: '#1f0d0d',
+    borderColor: '#4d1a1a',
+  },
+  statValue: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  statLabel: {
+    color: '#888',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  incomeText: {
+    color: '#4ade80',
+  },
+  expenseText: {
+    color: '#f87171',
   },
   filters: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
+    marginBottom: 24,
+    gap: 12,
   },
   filterBtn: {
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: '#333',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 24,
+    backgroundColor: '#1a1a1a',
+    borderWidth: 1.5,
+    borderColor: '#2a2a2a',
   },
   filterActive: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#1a4d1a',
+    borderColor: '#2d7a2d',
   },
   filterText: {
-    color: '#fff',
-    textTransform: 'capitalize',
+    color: '#888',
+    fontWeight: '600',
+    fontSize: 15,
   },
-  card: {
-    backgroundColor: '#111',
+  filterTextActive: {
+    color: '#4ade80',
+    fontWeight: '700',
+  },
+  categoryCard: {
+    backgroundColor: '#1a1a1a',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2a2a2a',
+  },
+  cardContent: {
     marginBottom: 12,
   },
-  cardHeader: {
+  leftSection: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  title: {
+  iconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  incomeCircle: {
+    backgroundColor: '#1a4d1a',
+  },
+  expenseCircle: {
+    backgroundColor: '#4d1a1a',
+  },
+  categoryIcon: {
+    fontSize: 24,
+  },
+  infoSection: {
+    flex: 1,
+  },
+  categoryName: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 4,
   },
-  badge: {
-    marginTop: 4,
-    fontSize: 12,
-  },
-  income: {
-    color: '#4ade80',
-  },
-  expense: {
-    color: '#f87171',
+  categoryType: {
+    fontSize: 13,
+    fontWeight: '500',
   },
   actions: {
-    gap: 8,
+    flexDirection: 'row',
+    gap: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#2a2a2a',
+    paddingTop: 12,
   },
-  actionText: {
+  actionButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#0a0a0a',
+  },
+  editButton: {
     color: '#60a5fa',
+    fontWeight: '600',
+    fontSize: 14,
   },
-  empty: {
-    color: '#aaa',
+  deleteButton: {
+    color: '#f87171',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyIcon: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    color: '#888',
     textAlign: 'center',
-    marginTop: 40,
+    fontSize: 15,
+  },
+  addBtn: {
+    position: 'absolute',
+    bottom: 80,
+    left: 16,
+    right: 16,
+    backgroundColor: '#1a4d1a',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2d7a2d',
+  },
+  addText: {
+    color: '#4ade80',
+    fontWeight: '700',
+    fontSize: 15,
   },
 });
