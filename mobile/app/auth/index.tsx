@@ -62,7 +62,7 @@ export default function LoginScreen() {
         await login(email, password);
       }
       // Navigate to tabs after successful auth
-      router.replace('/(tabs)');
+      router.replace('/(tabs)/transactions');
     } catch (err: any) {
       // Backend returns { success: false, message: "..." }
       const message = err?.response?.data?.message || err?.message || 
