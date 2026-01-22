@@ -28,7 +28,7 @@ export default function EditAccountScreen() {
           return router.back();
         }
 
-        setAccountData({ name: account.accountName, balance: account.balance.toString() });
+        setAccountData({ name: account.name, balance: account.balance.toString() });
       } catch (error) {
         console.error(error);
         Alert.alert('Error', 'Failed to load account');

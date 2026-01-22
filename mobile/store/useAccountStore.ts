@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 
 interface Account {
   _id: string;
-  accountName: string;
+  name: string;
   accountType: string;
   balance: number;
   createdAt?: string;

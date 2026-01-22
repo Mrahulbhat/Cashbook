@@ -9,7 +9,6 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAccountStore } from '@/store/useAccountStore';
 import { useAuth } from '@/context/AuthContext';
@@ -17,13 +16,9 @@ import { useAuth } from '@/context/AuthContext';
 const AccountsScreen = () => {
   const router = useRouter();
   const { api } = useAuth();
-  const { accounts, fetchAccounts, deleteAccount, loading } =
-    useAccountStore();
-
+  const { accounts, fetchAccounts, deleteAccount, loading } = useAccountStore();
   const [showConfirm, setShowConfirm] = useState(false);
-  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
-    null
-  );
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
 
   useEffect(() => {
     if (api) {
@@ -100,7 +95,7 @@ const AccountsScreen = () => {
             renderItem={({ item }) => (
               <View style={styles.accountCard}>
                 <View style={styles.cardHeader}>
-                  <Text style={styles.accountName}>{item.accountName}</Text>
+                  <Text style={styles.accountName}>{item.name}</Text>
 
                   <View style={styles.actions}>
                     <TouchableOpacity
