@@ -38,3 +38,8 @@ automation/playwright-report/
 automation/blob-report/
 automation/playwright/.cache/
 automation/playwright/.auth/
+
+# Mobile
+
+mobile/.env
+mobile/node_modules

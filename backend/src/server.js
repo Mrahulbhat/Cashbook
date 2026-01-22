@@ -37,25 +37,63 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const allowedOrigins = [
+const allowedOriginStrings = [
   "http://localhost:5173",
   "https://cashbook-kappa.vercel.app",
-  "https://test-cashbook.netlify.app"
+  "https://test-cashbook.netlify.app",
+  "exp://192.168.29.253:8081", // Expo Metro bundler
+  "exp://localhost:8081", // Expo Metro bundler (simulator)
 ];
 
 // Add FRONTEND_URL from env if it exists
-if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
+if (process.env.FRONTEND_URL && !allowedOriginStrings.includes(process.env.FRONTEND_URL)) {
+  allowedOriginStrings.push(process.env.FRONTEND_URL);
 }
+
+// Regex patterns for dynamic origins (Expo, localhost, private IPs)
+const allowedOriginPatterns = [
+  /^exp:\/\/.*$/,
+  /^http:\/\/localhost:\d+$/,
+  /^http:\/\/192\.168\.\d+\.\d+:\d+$/,
+  /^http:\/\/10\.\d+\.\d+\.\d+:\d+$/,
+];
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) callback(null, true);
-      else callback(new Error("Not allowed by CORS"));
+      
+      // Check exact string matches
+      if (allowedOriginStrings.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      // Check regex patterns for Expo/mobile dev servers
+      const matchesPattern = allowedOriginPatterns.some((pattern) => {
+        return pattern.test(origin);
+      });
+      
+      if (matchesPattern) {
+        return callback(null, true);
+      }
+      
+      // In development, be more permissive for mobile testing
+      if (process.env.NODE_ENV !== 'production') {
+        // Allow localhost and private IPs
+        if (
+          /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin) ||
+          /^exp:\/\/.*$/.test(origin)
+        ) {
+          return callback(null, true);
+        }
+      }
+      
+      callback(new Error("Not allowed by CORS"));
     },
-    credentials: true
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
 
