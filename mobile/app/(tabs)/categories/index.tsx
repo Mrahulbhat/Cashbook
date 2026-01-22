@@ -76,7 +76,7 @@ export default function CategoriesScreen() {
 
         <View style={styles.actions}>
           <Pressable
-            onPress={() => router.push(`/edit/${item._id}`)}
+            onPress={() => router.push(`/categories/edit/${item._id}`)}
           >
             <Text style={styles.actionText}>Edit</Text>
           </Pressable>
@@ -92,13 +92,13 @@ export default function CategoriesScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.heading}>Categories</Text>
         <Pressable
           style={styles.addBtn}
-          onPress={() => router.push('/add')}
+          onPress={() => router.push('/categories/add')}
         >
           <Text style={styles.addText}>+ Add</Text>
         </Pressable>
@@ -140,7 +140,7 @@ export default function CategoriesScreen() {
           contentContainerStyle={{ paddingBottom: 40 }}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
