@@ -8,27 +8,15 @@ export default function RootIndex() {
   const router = useRouter();
 
   useEffect(() => {
-    // Add timeout to prevent infinite loading if backend is down
-    const timeout = setTimeout(() => {
-      if (isLoading) {
-        // If still loading after 3 seconds, assume backend is down and show login
-        router.replace('/auth/login');
-      }
-    }, 3000);
-
     if (!isLoading) {
-      clearTimeout(timeout);
       if (isAuthenticated) {
-        router.replace('/(tabs)');
+        router.replace('/(tabs)/transactions');
       } else {
-        router.replace('/auth/login');
+        router.replace('/auth');
       }
     }
-
-    return () => clearTimeout(timeout);
   }, [isAuthenticated, isLoading, router]);
 
-  // Show loading spinner while checking auth
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color="#4f46e5" />
