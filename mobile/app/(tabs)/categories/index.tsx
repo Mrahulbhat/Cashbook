@@ -76,7 +76,7 @@ export default function CategoriesScreen() {
 
         <View style={styles.actions}>
           <Pressable
-            onPress={() => router.push(`/edit-category/${item._id}`)}
+            onPress={() => router.push(`/edit/${item._id}`)}
           >
             <Text style={styles.actionText}>Edit</Text>
           </Pressable>
@@ -98,7 +98,7 @@ export default function CategoriesScreen() {
         <Text style={styles.heading}>Categories</Text>
         <Pressable
           style={styles.addBtn}
-          onPress={() => router.push('/add-category')}
+          onPress={() => router.push('/add')}
         >
           <Text style={styles.addText}>+ Add</Text>
         </Pressable>

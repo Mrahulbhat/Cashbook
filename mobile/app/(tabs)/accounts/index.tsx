@@ -61,9 +61,6 @@ const AccountsScreen = () => {
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>Accounts</Text>
-            <Text style={styles.subtitle}>
-              Manage your financial accounts
-            </Text>
           </View>
 
           <TouchableOpacity
