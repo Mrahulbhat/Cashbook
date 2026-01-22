@@ -183,13 +183,13 @@ const TransactionsScreen = () => {
 
                   <View style={styles.actions}>
                     <TouchableOpacity style={styles.actionButton}>
-                      <Text style={styles.editButton}>✏️ Edit</Text>
+                      <Text style={styles.editButton}>Edit</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                       style={styles.actionButton}
                       onPress={() => handleDelete(item._id)}
                     >
-                      <Text style={styles.deleteButton}>🗑️ Delete</Text>
+                      <Text style={styles.deleteButton}>Delete</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
