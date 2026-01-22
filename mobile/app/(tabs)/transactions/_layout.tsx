@@ -5,7 +5,6 @@ export default function AuthLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="add" options={{ headerShown: false }} />
-      <Stack.Screen name="edit/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }

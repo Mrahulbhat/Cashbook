@@ -1,22 +1,14 @@
-import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useAccountStore } from '@/store/useAccountStore';
 
-export default function EditAccountScreen({ params }: { params: { id: string } }) {
+export default function EditAccountScreen() {
   const router = useRouter();
-  const { id } = params; 
+  const params = useLocalSearchParams<{ id: string }>();
+  const id = params.id; 
+
   const { api } = useAuth();
   const { accounts, fetchAccounts, updateAccount, loading } = useAccountStore();
 
@@ -27,19 +19,16 @@ export default function EditAccountScreen({ params }: { params: { id: string } }
     const loadAccount = async () => {
       try {
         if (!accounts.length) {
-          await fetchAccounts(api); // fetch accounts if not loaded
+          await fetchAccounts(api);
         }
 
-        const account = accounts.find((acc) => acc._id === id);
+        const account = accounts.find(acc => acc._id === id);
         if (!account) {
           Alert.alert('Error', 'Account not found');
           return router.back();
         }
 
-        setAccountData({
-          name: account.accountName,
-          balance: account.balance.toString(),
-        });
+        setAccountData({ name: account.accountName, balance: account.balance.toString() });
       } catch (error) {
         console.error(error);
         Alert.alert('Error', 'Failed to load account');
@@ -53,7 +42,7 @@ export default function EditAccountScreen({ params }: { params: { id: string } }
   }, [id, accounts]);
 
   const handleChange = (key: string, value: string) => {
-    setAccountData((prev) => ({ ...prev, [key]: value }));
+    setAccountData(prev => ({ ...prev, [key]: value }));
   };
 
   const handleSubmit = async () => {
@@ -75,74 +64,56 @@ export default function EditAccountScreen({ params }: { params: { id: string } }
 
   if (loadingData) {
     return (
-      <SafeAreaView style={styles.center}>
+      <View style={styles.center}>
         <ActivityIndicator size="large" color="#4ade80" />
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+    <View style={{ flex: 1, backgroundColor: '#000' }}>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-        {/* Back Button */}
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
         <View style={styles.card}>
           <Text style={styles.heading}>Edit Account</Text>
-          <Text style={styles.subheading}>
-            Update your account details
-          </Text>
+          <Text style={styles.subheading}>Update your account details</Text>
 
-          {/* Account Name */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Account Name *</Text>
             <TextInput
               value={accountData.name}
-              onChangeText={(text) => handleChange('name', text)}
+              onChangeText={text => handleChange('name', text)}
               placeholder="e.g., Savings Account"
               style={styles.input}
             />
           </View>
 
-          {/* Balance */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Balance *</Text>
             <TextInput
               value={accountData.balance}
-              onChangeText={(text) => handleChange('balance', text)}
+              onChangeText={text => handleChange('balance', text)}
               placeholder="0.00"
               keyboardType="numeric"
               style={styles.input}
             />
           </View>
 
-          {/* Buttons */}
           <View style={styles.buttons}>
-            <TouchableOpacity
-              style={[styles.btn, styles.cancelBtn]}
-              onPress={() => router.back()}
-              disabled={loading}
-            >
+            <TouchableOpacity style={[styles.btn, styles.cancelBtn]} onPress={() => router.back()} disabled={loading}>
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.btn, styles.saveBtn]}
-              onPress={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#000" />
-              ) : (
-                <Text style={styles.saveText}>Update Account</Text>
-              )}
+            <TouchableOpacity style={[styles.btn, styles.saveBtn]} onPress={handleSubmit} disabled={loading}>
+              {loading ? <ActivityIndicator color="#000" /> : <Text style={styles.saveText}>Update Account</Text>}
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
