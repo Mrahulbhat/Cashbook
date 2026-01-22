@@ -65,7 +65,7 @@ export default function AddAccountScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+    <View style={{ flex: 1, backgroundColor: '#000' }}>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         {/* Header */}
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
@@ -133,7 +133,7 @@ export default function AddAccountScreen() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

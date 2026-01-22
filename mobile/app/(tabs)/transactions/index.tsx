@@ -185,7 +185,7 @@ const TransactionsScreen = () => {
                     <TouchableOpacity style={styles.actionButton}>
                       <Text style={styles.editButton}>Edit</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       style={styles.actionButton}
                       onPress={() => handleDelete(item._id)}
                     >
@@ -195,7 +195,7 @@ const TransactionsScreen = () => {
                 </View>
               )}
             />
-            
+
             {/* Action Buttons */}
             <View style={styles.bottomActions}>
               <TouchableOpacity
@@ -204,10 +204,10 @@ const TransactionsScreen = () => {
               >
                 <Text style={styles.deleteAllText}>Delete All</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
                 style={styles.addBtn}
-                onPress={() => {/* Add your navigation logic */}}
+                onPress={() => router.push('/transactions/add')}
               >
                 <Text style={styles.addBtnText}>+ Add Transaction</Text>
               </TouchableOpacity>
@@ -222,7 +222,7 @@ const TransactionsScreen = () => {
             </Text>
             <TouchableOpacity
               style={styles.addBtn}
-              onPress={() => {/* Add your navigation logic */}}
+              onPress={() => {/* Add your navigation logic */ }}
             >
               <Text style={styles.addBtnText}>+ Add Transaction</Text>
             </TouchableOpacity>

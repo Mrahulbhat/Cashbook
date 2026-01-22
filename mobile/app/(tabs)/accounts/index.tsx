@@ -55,7 +55,7 @@ const AccountsScreen = () => {
     accounts.reduce((sum, acc) => sum + (Number(acc.balance) || 0), 0);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -181,7 +181,7 @@ const AccountsScreen = () => {
           </View>
         </Modal>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
