@@ -68,7 +68,7 @@ const AccountsScreen = () => {
 
           <TouchableOpacity
             style={styles.addButton}
-            onPress={() => router.push('/addAccount')}
+            onPress={() => router.push('/accounts/add')}
           >
             <Text style={styles.addButtonText}>+ Add Account</Text>
           </TouchableOpacity>
@@ -108,7 +108,7 @@ const AccountsScreen = () => {
                   <View style={styles.actions}>
                     <TouchableOpacity
                       onPress={() =>
-                        router.push(`/edit-account/${item._id}`)
+                        router.push(`/accounts/edit/${item._id}`)
                       }
                     >
                       <Text style={styles.editText}>Edit</Text>
