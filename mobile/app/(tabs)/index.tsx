@@ -1,3 +1,5 @@
+//TRANSACTIONS SCREEN SET AS DEFAULT SCREEN IN TABS
+
 import React, { useEffect, useState } from 'react';
 import {
   View,
