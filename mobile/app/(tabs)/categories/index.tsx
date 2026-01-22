@@ -92,6 +92,7 @@ export default function CategoriesScreen() {
         >
           <Text style={styles.editButton}>Edit</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => confirmDelete(item._id)}
