@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { generateToken } from "../middleware/auth.js";
+import { OAuth2Client } from "google-auth-library";
 
 // Register user
 export const register = async (req, res) => {
@@ -216,7 +217,7 @@ export const getCurrentUser = async (req, res) => {
 export const logout = (req, res) => {
   // Clear the token cookie
   res.clearCookie("token");
-  
+
   // Also clear session if using passport sessions
   req.logout((err) => {
     if (err) {
@@ -231,3 +232,46 @@ export const logout = (req, res) => {
     });
   });
 };
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// Mobile Google login (Expo / React Native)
+export const googleMobileLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({ success: false, message: "ID token missing" });
+    }
+
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_WEB_CLIENT_ID, 
+    });
+
+    const payload = ticket.getPayload();
+
+    let user = await User.findOne({ email: payload.email });
+
+    if (!user) {
+      user = await User.create({
+        name: payload.name,
+        email: payload.email,
+        password: "google-auth",
+      });
+    }
+
+    const token = generateToken(user._id, user.email);
+
+    res.json({
+      success: true,
+      token,
+      user: { id: user._id, name: user.name, email: user.email },
+    });
+  } catch (err) {
+    console.error("Google auth error:", err);
+    res.status(401).json({ success: false, message: "Invalid Google token" });
+  }
+};
+
+
