@@ -5,36 +5,36 @@ import { generateToken } from "../middleware/auth.js";
 // Register user
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, phone, password } = req.body;
 
     // Validation
-    if (!email || !password || !name) {
+    if (!phone || !password || !name) {
       return res.status(400).json({
         success: false,
-        message: "Please provide name, email, and password",
+        message: "Please provide name, phone, and password",
       });
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await User.findOne({ phone: phone });
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: "Email already registered",
+        message: "Phone number already registered",
       });
     }
 
     // Create new user
     const user = new User({
       name,
-      email: email.toLowerCase(),
+      phone: phone,
       password,
     });
 
     await user.save();
 
     // Generate JWT token
-    const token = generateToken(user._id, user.email);
+    const token = generateToken(user._id, user.phone);
 
     res.status(201).json({
       success: true,
@@ -43,7 +43,7 @@ export const register = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email,
+        phone: user.phone,
       },
     });
   } catch (error) {
@@ -57,25 +57,25 @@ export const register = async (req, res) => {
 // Login user
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { phone, password } = req.body;
 
     // Validation
-    if (!email || !password) {
+    if (!phone || !password) {
       return res.status(400).json({
         success: false,
-        message: "Please provide email and password",
+        message: "Please provide phone and password",
       });
     }
 
     // Check if user exists and get password field
     const user = await User.findOne({
-      email: email.toLowerCase(),
+      phone: phone,
     }).select("+password");
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid phone or password",
       });
     }
 
@@ -84,12 +84,12 @@ export const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid phone or password",
       });
     }
 
     // Generate JWT token
-    const token = generateToken(user._id, user.email);
+    const token = generateToken(user._id, user.phone);
 
     res.status(200).json({
       success: true,
@@ -98,7 +98,7 @@ export const login = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email,
+        phone: user.phone,
       },
     });
   } catch (error) {
@@ -120,7 +120,7 @@ export const googleCallback = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = generateToken(req.user._id, req.user.email);
+    const token = generateToken(req.user._id, req.user.phone);
 
     // Set token in cookie and redirect to frontend with token
     const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -167,7 +167,7 @@ export const getSession = async (req, res) => {
         user: {
           id: user._id,
           name: user.name,
-          email: user.email,
+          phone: user.phone,
         },
       });
     } catch (err) {
@@ -201,7 +201,7 @@ export const getCurrentUser = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email,
+        phone: user.phone,
       },
     });
   } catch (error) {
