@@ -71,7 +71,7 @@ const LoginPage = () => {
                 <div className="bg-gradient-to-b from-gray-800/50 to-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-2xl p-8 shadow-2xl">
                     <div className="mb-8 text-center">
                         <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 via-emerald-400 to-green-400 bg-clip-text text-transparent">
-                            Cashbook
+                            Cashbook - Next js
                         </h1>
                         <p className="text-gray-400 text-sm">Manage your finances efficiently</p>
                     </div>
