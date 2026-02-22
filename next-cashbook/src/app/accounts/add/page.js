@@ -63,6 +63,7 @@ const AddAccountContent = () => {
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Account Name *</label>
                             <input
+                                id="accountNameInputField"
                                 type="text"
                                 name="name"
                                 value={formData.name}
@@ -75,6 +76,7 @@ const AddAccountContent = () => {
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Initial Balance *</label>
                             <input
+                                id="balanceInputField"
                                 type="number"
                                 name="balance"
                                 value={formData.balance}
@@ -86,8 +88,8 @@ const AddAccountContent = () => {
                         </div>
 
                         <div className="flex gap-4">
-                            <button type="button" onClick={() => router.back()} className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Cancel</button>
-                            <button type="submit" disabled={loading} className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-500 flex items-center justify-center gap-2 transition-transform transform hover:scale-105">
+                            <button id="cancelBtn" type="button" onClick={() => router.back()} className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Cancel</button>
+                            <button id="saveBtn" type="submit" disabled={loading} className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-500 flex items-center justify-center gap-2 transition-transform transform hover:scale-105">
                                 {loading ? <Loader className="animate-spin" size={18} /> : <Plus size={18} />} Create Account
                             </button>
                         </div>

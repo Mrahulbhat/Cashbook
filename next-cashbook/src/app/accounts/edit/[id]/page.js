@@ -57,15 +57,18 @@ const EditAccountContent = () => {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Account Name</label>
-                            <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
+                            <input id="editAccNameInputField" type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
                         </div>
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Balance</label>
-                            <input type="number" value={formData.balance} onChange={e => setFormData({ ...formData, balance: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
+                            <input id="editBalanceInputField" type="number" value={formData.balance} onChange={e => setFormData({ ...formData, balance: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
                         </div>
-                        <button disabled={loading} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 transition-all flex justify-center items-center gap-2">
-                            {loading ? <Loader className="animate-spin" size={18} /> : <Save size={18} />} Save Changes
-                        </button>
+                        <div className="flex gap-4">
+                            <button id="cancelBtn" type="button" onClick={() => router.back()} className="flex-1 py-4 bg-gray-800 text-white rounded-xl font-bold hover:bg-gray-700 transition-all">Cancel</button>
+                            <button id="saveBtn" disabled={loading} className="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 transition-all flex justify-center items-center gap-2">
+                                {loading ? <Loader className="animate-spin" size={18} /> : <Save size={18} />} Save Changes
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
