@@ -114,7 +114,7 @@ const SignupPage = () => {
                             <label className="block text-gray-300 text-sm font-medium mb-2">Phone Number</label>
                             <div className="relative">
                                 <input
-                                    id="emailInputField"
+                                    id="phoneInputField"
                                     type="text"
                                     name="phone"
                                     value={formData.phone}
