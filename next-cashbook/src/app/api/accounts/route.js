@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import dbConnect from '@/lib/dbConnect';
 import Account from '@/models/Account';
 import { getAuthUser } from '@/lib/getAuthUser';

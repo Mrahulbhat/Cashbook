@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
     const options = {
