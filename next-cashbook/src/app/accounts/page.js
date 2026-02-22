@@ -54,6 +54,7 @@ const AccountsContent = () => {
                         <p className="text-gray-400">Manage your financial accounts</p>
                     </div>
                     <button
+                        id="addAccountBtn"
                         onClick={() => router.push("/accounts/add")}
                         className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-transform transform hover:scale-105"
                     >
@@ -62,7 +63,7 @@ const AccountsContent = () => {
                 </div>
 
                 {accounts.length > 0 && (
-                    <div className="mb-8 bg-emerald-900/40 border border-emerald-500/30 rounded-2xl p-8 backdrop-blur-sm">
+                    <div id="balanceContainer" className="mb-8 bg-emerald-900/40 border border-emerald-500/30 rounded-2xl p-8 backdrop-blur-sm">
                         <h3 className="text-emerald-400 font-semibold text-sm mb-2">Total Balance</h3>
                         <p className="text-4xl font-bold text-white">{formatCurrency(getTotalBalance())}</p>
                         <p className="text-emerald-400 text-sm mt-2">Across {accounts.length} account(s)</p>
@@ -71,14 +72,14 @@ const AccountsContent = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {accounts.map((account) => (
-                        <div key={account._id} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 backdrop-blur-sm hover:border-blue-500/30 transition-all">
+                        <div key={account._id} id={`accountDiv${account.name}`} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 backdrop-blur-sm hover:border-blue-500/30 transition-all">
                             <div className="flex items-start justify-between mb-4">
                                 <h3 className="text-white font-bold text-lg">{account.name}</h3>
                                 <div className="flex gap-2">
-                                    <button onClick={() => router.push(`/accounts/edit/${account._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
+                                    <button id="editBtn" onClick={() => router.push(`/accounts/edit/${account._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
                                         <Edit2 className="w-4 h-4 text-blue-400" />
                                     </button>
-                                    <button onClick={() => handleDeleteClick(account._id)} className="p-2 hover:bg-red-500/20 rounded-lg">
+                                    <button id="deleteBtn" onClick={() => handleDeleteClick(account._id)} className="p-2 hover:bg-red-500/20 rounded-lg">
                                         <Trash2 className="w-4 h-4 text-red-400" />
                                     </button>
                                 </div>

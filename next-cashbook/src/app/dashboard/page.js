@@ -121,7 +121,7 @@ const DashboardContent = () => {
                                 <ArrowUpRight className="w-5 h-5 text-red-400" />
                             </div>
                         </div>
-                        <p className="text-2xl font-bold text-white">{formatCurrency(stats.totalExpense)}</p>
+                        <p id="totalExpense" className="text-2xl font-bold text-white">{formatCurrency(stats.totalExpense)}</p>
                     </div>
 
                     <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm">
@@ -139,7 +139,7 @@ const DashboardContent = () => {
 
                     {lastTransactions.length > 0 ? (
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <table data-testid="resultsTable" className="w-full">
                                 <thead>
                                     <tr className="border-b border-gray-700/50 text-gray-400 text-sm">
                                         <th className="px-8 py-4 text-left">Type</th>

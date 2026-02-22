@@ -78,7 +78,7 @@ const EditTransactionContent = () => {
     return (
         <div className="min-h-screen bg-black p-4 sm:p-8">
             <div className="max-w-2xl mx-auto">
-                <button onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400"><ArrowLeft size={18} /> Back</button>
+                <button id="BackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400"><ArrowLeft size={18} /> Back</button>
                 <div className="bg-gray-900 p-8 rounded-3xl border border-gray-800">
                     <h1 className="text-2xl font-bold text-white mb-8">Edit Transaction</h1>
                     <form onSubmit={handleSubmit} className="space-y-6">

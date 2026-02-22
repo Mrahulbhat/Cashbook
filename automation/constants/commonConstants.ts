@@ -3,7 +3,7 @@ const test_date = new Date().toISOString().split('T')[0]; //current date in YYYY
 const commonConstants = {
 
     userName: 'test_name',
-    userEmail: 'test@gmail.com',
+    userPhone: '9876543210',
     userPassword: 'test123',
 
     urls: {

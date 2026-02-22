@@ -8,10 +8,10 @@ test.describe('Login Related Tests', () => {
 
     test('Create Account / Singup Functionality @BAT', async ({ page, loginPage }) => {
         const name = commonConstants.userName;
-        const email = commonConstants.userEmail;
+        const phone = commonConstants.userPhone;
         const password = commonConstants.userPassword;
 
-        await loginPage.createAccount(name, email, password);
+        await loginPage.createAccount(name, phone, password);
     });
 
     test('Login using email @BAT', async ({ page, loginPage }) => {

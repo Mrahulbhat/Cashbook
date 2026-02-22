@@ -49,7 +49,7 @@ const AddAccountContent = () => {
             </div>
 
             <div className="relative z-10 max-w-2xl mx-auto">
-                <button onClick={() => router.back()} className="flex items-center gap-2 mb-6 text-gray-400 hover:text-white transition-colors">
+                <button id="BackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-6 text-gray-400 hover:text-white transition-colors">
                     <ArrowLeft size={18} /> Back
                 </button>
 

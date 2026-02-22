@@ -98,6 +98,7 @@ const SignupPage = () => {
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                                 <input
+                                    id="nameInputField"
                                     type="text"
                                     name="name"
                                     value={formData.name}
@@ -113,6 +114,7 @@ const SignupPage = () => {
                             <label className="block text-gray-300 text-sm font-medium mb-2">Phone Number</label>
                             <div className="relative">
                                 <input
+                                    id="emailInputField"
                                     type="text"
                                     name="phone"
                                     value={formData.phone}
@@ -129,6 +131,7 @@ const SignupPage = () => {
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                                 <input
+                                    id="passwordInputField"
                                     type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={formData.password}
@@ -153,6 +156,7 @@ const SignupPage = () => {
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                                 <input
+                                    id="confirmPasswordInputField"
                                     type="password"
                                     name="confirmPassword"
                                     value={formData.confirmPassword}
@@ -165,6 +169,7 @@ const SignupPage = () => {
                         </div>
 
                         <button
+                            id="signupButton"
                             type="submit"
                             disabled={isLoading}
                             className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-2 mt-4"
@@ -181,6 +186,7 @@ const SignupPage = () => {
                     </div>
 
                     <button
+                        id="googleLoginButton"
                         type="button"
                         onClick={handleGoogleLogin}
                         className="w-full bg-white hover:bg-gray-100 text-gray-900 font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"

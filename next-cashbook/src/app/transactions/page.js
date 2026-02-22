@@ -43,14 +43,14 @@ const TransactionsContent = () => {
                         <h1 className="text-3xl font-bold text-white mb-2">Transactions</h1>
                         <p className="text-gray-400">View and manage your history</p>
                     </div>
-                    <button onClick={() => router.push("/add-transaction")} className="mt-4 sm:mt-0 bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-transform transform hover:scale-105">
+                    <button id="addTransactionBtn" onClick={() => router.push("/add-transaction")} className="mt-4 sm:mt-0 bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-transform transform hover:scale-105">
                         <Plus size={18} /> Add Transaction
                     </button>
                 </div>
 
                 <div className="flex gap-3 mb-8">
                     {['monthly', 'yearly', 'lifetime'].map(f => (
-                        <button key={f} onClick={() => setFilter(f)} className={`px-6 py-2 rounded-lg capitalize ${filter === f ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}`}>
+                        <button key={f} id={`${f}FilterBtn`} onClick={() => setFilter(f)} className={`px-6 py-2 rounded-lg capitalize ${filter === f ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}`}>
                             {f}
                         </button>
                     ))}
@@ -63,7 +63,7 @@ const TransactionsContent = () => {
                         <div className="p-20 flex justify-center"><Loader className="animate-spin text-green-500" /></div>
                     ) : filteredTransactions.length > 0 ? (
                         <div className="overflow-x-auto">
-                            <table className="w-full">
+                            <table data-testid="resultsTable" className="w-full">
                                 <thead className="text-gray-400 text-sm text-left">
                                     <tr>
                                         <th className="px-8 py-4">Type</th>
@@ -87,8 +87,8 @@ const TransactionsContent = () => {
                                             <td className="px-8 py-4">{new Date(t.date).toLocaleDateString()}</td>
                                             <td className="px-8 py-4">
                                                 <div className="flex gap-2">
-                                                    <button onClick={() => router.push(`/edit-transaction/${t._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg"><Edit2 size={16} className="text-blue-400" /></button>
-                                                    <button onClick={() => handleDelete(t._id)} className="p-2 hover:bg-red-500/20 rounded-lg"><Trash2 size={16} className="text-red-400" /></button>
+                                                    <button id="editRecordBtn" onClick={() => router.push(`/edit-transaction/${t._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg"><Edit2 size={16} className="text-blue-400" /></button>
+                                                    <button id="deleteBtn" onClick={() => handleDelete(t._id)} className="p-2 hover:bg-red-500/20 rounded-lg"><Trash2 size={16} className="text-red-400" /></button>
                                                 </div>
                                             </td>
                                         </tr>

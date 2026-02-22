@@ -65,7 +65,7 @@ const AddTransactionContent = () => {
             </div>
 
             <div className="relative z-10 max-w-2xl mx-auto">
-                <button onClick={() => router.back()} className="flex items-center gap-2 mb-6 text-gray-400 hover:text-white transition-colors">
+                <button id="BackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-6 text-gray-400 hover:text-white transition-colors">
                     <ArrowLeft size={18} /> Back
                 </button>
 
@@ -75,11 +75,11 @@ const AddTransactionContent = () => {
                         <h1 className="text-2xl font-bold text-white">Add Transaction</h1>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form id="addTransactionForm" onSubmit={handleSubmit} className="space-y-6">
                         <div className="flex gap-4">
                             {['income', 'expense'].map(t => (
                                 <label key={t} className="flex items-center gap-2 cursor-pointer capitalize text-gray-300">
-                                    <input type="radio" name="type" value={t} checked={formData.type === t} onChange={handleInputChange} className="accent-green-500" />
+                                    <input id={t === 'income' ? 'incomeRadioBox' : 'expenseRadioBox'} type="radio" name="type" value={t} checked={formData.type === t} onChange={handleInputChange} className="accent-green-500" />
                                     {t}
                                 </label>
                             ))}
@@ -88,6 +88,7 @@ const AddTransactionContent = () => {
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Amount *</label>
                             <input
+                                id="AmountInputField"
                                 type="number"
                                 name="amount"
                                 value={formData.amount}
@@ -100,14 +101,14 @@ const AddTransactionContent = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-400 mb-2">Account *</label>
-                                <select name="account" value={formData.account} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
+                                <select id="accountDropdown" name="account" value={formData.account} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
                                     <option value="">Select Account</option>
                                     {accounts.map(acc => <option key={acc._id} value={acc._id}>{acc.name}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-400 mb-2">Category *</label>
-                                <select name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
+                                <select id="categoryDropdown" name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
                                     <option value="">Select Category</option>
                                     {filteredCategories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
                                 </select>
@@ -116,17 +117,17 @@ const AddTransactionContent = () => {
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Date *</label>
-                            <input type="date" name="date" value={formData.date} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required />
+                            <input id="dateInputField" type="date" name="date" value={formData.date} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required />
                         </div>
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Description</label>
-                            <textarea name="description" value={formData.description} onChange={handleInputChange} rows="3" className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white resize-none" />
+                            <textarea id="descriptionInputField" name="description" value={formData.description} onChange={handleInputChange} rows="3" className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white resize-none" />
                         </div>
 
                         <div className="flex gap-4">
-                            <button type="button" onClick={() => router.back()} className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Cancel</button>
-                            <button type="submit" disabled={isLoading} className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-500 flex items-center justify-center gap-2 transition-transform transform hover:scale-105">
+                            <button id="cancelBtn" type="button" onClick={() => router.back()} className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Cancel</button>
+                            <button id="saveBtn" type="submit" disabled={isLoading} className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-500 flex items-center justify-center gap-2 transition-transform transform hover:scale-105">
                                 {isLoading ? <Loader className="animate-spin" size={18} /> : <Plus size={18} />} Save Transaction
                             </button>
                         </div>
