@@ -83,7 +83,7 @@ const LoginPage = () => {
                             </label>
                             <div className="relative">
                                 <input
-                                    id="emailInputField"
+                                    id="phoneInputField"
                                     type="text"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}

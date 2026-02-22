@@ -11,8 +11,8 @@ export class LoginPage extends BasePage {
         this.page = page;
     }
 
-    get emailInputField(): Locator {
-        return this.page.locator('#emailInputField');
+    get phoneInputField(): Locator {
+        return this.page.locator('#phoneInputField');
     }
     get passwordInputField(): Locator {
         return this.page.locator('#passwordInputField');
@@ -54,11 +54,9 @@ export class LoginPage extends BasePage {
         await expect(this.page).toHaveURL(commonConstants.urls.baseURL + '/signup');
         await expect(this.nameInputField).toBeVisible();
         await this.nameInputField.fill(name);
-        await this.emailInputField.fill(email);
+        await this.phoneInputField.fill(email);
         await this.passwordInputField.fill(password);
         await this.confirmPasswordInputField.fill(password);
-        await this.termsConditionsCheckbox.check();
-        await expect(this.termsConditionsCheckbox).toBeChecked();
         await this.signupButton.click();
         await waitForApiResponse(this.page, commonConstants.urls.transactionAPI);
         await expect(this.navbarUserName).toContainText(name);
@@ -67,8 +65,8 @@ export class LoginPage extends BasePage {
     async loginUser() {
         const userName = commonConstants.userName;
         await this.page.goto(commonConstants.urls.baseURL);
-        await this.emailInputField.clear();
-        await this.emailInputField.pressSequentially(commonConstants.userEmail);
+        await this.phoneInputField.clear();
+        await this.phoneInputField.pressSequentially(commonConstants.userPhone);
         await this.passwordInputField.clear();
         await this.passwordInputField.pressSequentially(commonConstants.userPassword);
         await this.rememberMeCheckbox.check();
