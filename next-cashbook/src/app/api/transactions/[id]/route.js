@@ -11,7 +11,7 @@ export async function GET(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
-        const { id } = params;
+        const { id } = await params;
         await dbConnect();
         const transaction = await Transaction.findOne({ _id: id, userId: user.userId })
             .populate('account')
@@ -30,7 +30,7 @@ export async function PUT(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
         const { amount, type, description, category, date, account } = body;
 
@@ -83,7 +83,7 @@ export async function DELETE(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
-        const { id } = params;
+        const { id } = await params;
         await dbConnect();
         const transaction = await Transaction.findOne({ _id: id, userId: user.userId });
         if (!transaction) return NextResponse.json({ message: 'Transaction not found' }, { status: 404 });

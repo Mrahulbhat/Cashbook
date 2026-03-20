@@ -10,7 +10,7 @@ export async function GET(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
-        const { id } = params;
+        const { id } = await params;
         await dbConnect();
         const category = await Category.findOne({ _id: id, userId: user.userId });
         if (!category) return NextResponse.json({ message: 'Category not found' }, { status: 404 });
@@ -26,7 +26,7 @@ export async function PUT(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
-        const { id } = params;
+        const { id } = await params;
         const { name, type, parentCategory, budget } = await req.json();
 
         await dbConnect();
@@ -55,7 +55,7 @@ export async function DELETE(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
-        const { id } = params;
+        const { id } = await params;
         await dbConnect();
         const category = await Category.findOne({ _id: id, userId: user.userId });
         if (!category) return NextResponse.json({ message: 'Category not found' }, { status: 404 });
