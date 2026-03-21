@@ -15,12 +15,12 @@ test.describe('Cashbook Application Basic Tests', () => {
         await navigateToPage(page, commonConstants.pageName.DASHBOARD);
 
         const tabs = [
-            { tabname: "transactions", api: "transaction", locator: transactionPage.addTransactionBtn },
-            { tabname: "accounts", api: "accounts", locator: accountsPage.addAccountBtn },
+            { tabname: "transactions", api: "transaction", locator: transactionPage.addButton },
+            { tabname: "accounts", api: "accounts", locator: accountsPage.addButton },
             { tabname: "transfer", api: "accounts", locator: transferPage.transferForm },
-            { tabname: "categories", api: "categories", locator: categoryPage.addCategoryBtn },
+            { tabname: "categories", api: "categories", locator: categoryPage.addButton },
             { tabname: "statistics", api: "categories", locator: statisticsPage.statsContainer },
-            { tabname: "dashboard", api: "accounts", locator: dashboardPage.resultsTable },
+            { tabname: "dashboard", api: "accounts", locator: dashboardPage.balanceCard },
         ];
 
         await expect(dashboardPage.sidebar).toBeVisible();

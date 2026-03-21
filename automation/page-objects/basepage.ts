@@ -77,7 +77,7 @@ export class BasePage {
         return this.page.locator('#LogoutBtn');
     }
     get addButton(): Locator {
-        return this.page.locator('#AddBtn');
+        return this.page.locator('#AddBtn').first();
     }
     get saveButton(): Locator {
         return this.page.locator('#SaveBtn');

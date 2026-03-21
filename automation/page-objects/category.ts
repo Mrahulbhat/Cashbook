@@ -32,7 +32,7 @@ export class CategoryPage extends BasePage {
         await navigateToPage(page, commonConstants.pageName.CATEGORIES);
 
         // ---- go to add category
-        await this.addButton.first().click();
+        await this.addButton.click();
         await page.waitForLoadState("networkidle");
 
         // ---- fill form

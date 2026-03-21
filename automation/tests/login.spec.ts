@@ -18,8 +18,9 @@ test.describe.serial('Login Related Tests', () => {
         await loginPage.loginUser();
     });
 
-    test('Signout functionality @BAT', async ({ loginPage }) => {
+    test('Signout functionality @BAT', async ({ page,loginPage }) => {
         await loginPage.loginUser();
+        await page.waitForTimeout(3000);
         await expect(loginPage.navbarUserName).toBeVisible();
         await expect(loginPage.logoutButton).toBeVisible();
         await loginPage.logoutButton.click();

@@ -18,4 +18,13 @@ export class DashboardPage extends BasePage {
     sidebarTab(tabName: string): Locator {
         return this.page.locator('#' + tabName);
     }
+    get balanceCard(): Locator {
+        return this.page.locator('#balanceCard');
+    }
+    get totalExpenseCard(): Locator {
+        return this.page.locator('#totalExpenseCard');
+    }
+    get totalIncomeCard(): Locator {
+        return this.page.locator('#totalIncomeCard');
+    }
 }
