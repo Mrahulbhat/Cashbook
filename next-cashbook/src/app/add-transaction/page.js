@@ -79,7 +79,7 @@ const AddTransactionContent = () => {
                         <div className="flex gap-4">
                             {['income', 'expense'].map(t => (
                                 <label key={t} className="flex items-center gap-2 cursor-pointer capitalize text-gray-300">
-                                    <input id={t === 'income' ? 'incomeRadioBox' : 'expenseRadioBox'} type="radio" name="type" value={t} checked={formData.type === t} onChange={handleInputChange} className="accent-green-500" />
+                                    <input id={t === 'income' ? 'TypeRadio-income' : 'TypeRadio-expense'} type="radio" name="type" value={t} checked={formData.type === t} onChange={handleInputChange} className="accent-green-500" />
                                     {t}
                                 </label>
                             ))}

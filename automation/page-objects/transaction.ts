@@ -11,17 +11,8 @@ export class TransactionPage extends BasePage {
         this.page = page;
     }
 
-    get addTransactionBtn(): Locator {
-        return this.page.locator('#AddBtn');
-    }
     get addTransactionForm(): Locator {
         return this.page.locator('#AddTransactionForm');
-    }
-    get incomeRadioBox(): Locator {
-        return this.page.locator('#incomeRadioBox');
-    }
-    get expenseRadioBox(): Locator {
-        return this.page.locator('#expenseRadioBox');
     }
 
     async createTransaction(page: Page, transaction: { type: string, amount: string, accountName: string, categoryName: string, date: string, description: string }) {
@@ -33,8 +24,8 @@ export class TransactionPage extends BasePage {
         await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
 
         // Create a Transaction 
-        await expect(this.addTransactionBtn).toBeVisible();
-        await this.addTransactionBtn.click();
+        await expect(this.addButton).toBeVisible();
+        await this.addButton.click();
         page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 200||304, { timeout: 15000 }),
 
         await expect(this.backButton).toBeVisible();
@@ -44,17 +35,17 @@ export class TransactionPage extends BasePage {
         await expect(this.saveButton).toBeDisabled();
 
         if (transaction.type === 'expense') {
-            await this.expenseRadioBox.click();
+            await this.expenseRadio.click();
         }
         else {
-            await this.incomeRadioBox.click();
+            await this.incomeRadio.click();
         }
 
         await this.enterAmount(transaction.amount);
         await this.selectAccount(transaction.accountName);
         await this.selectCategory(transaction.categoryName);
         await this.selectDate(transaction.date);
-        await this.inputFieldById('Description').fill(transaction.description);
+        await this.descriptionInput.fill(transaction.description);
 
         await expect(this.cancelButton).toBeVisible();
         await expect(this.saveButton).toBeEnabled();
@@ -86,7 +77,7 @@ export class TransactionPage extends BasePage {
 
         const initialTxnCountText = await this.recordCountOnTable.innerText();
 
-        await this.editRecordButton.first().click();
+        await this.editButton.first().click();
         await Promise.all([
             page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200)
         ]);
@@ -99,18 +90,18 @@ export class TransactionPage extends BasePage {
         const updated_description = 'TEST AUTOMATION - EDITED';
 
         // assert default selection is expense
-        await expect(this.expenseRadioBox).toBeChecked();
+        await expect(this.expenseRadio).toBeChecked();
 
-        await this.incomeRadioBox.click();
-        await expect(this.incomeRadioBox).toBeChecked();
+        await this.incomeRadio.click();
+        await expect(this.incomeRadio).toBeChecked();
         await this.enterAmount(updated_amount);
         await this.selectAccount(updated_accountName);
         await this.selectCategory(updated_categoryName);
         await this.selectDate(updated_date);
-        await this.inputFieldById('Description').fill(updated_description);
+        await this.descriptionInput.fill(updated_description);
         await expect(this.cancelButton).toBeVisible();
-        await expect(this.updateButton).toBeEnabled();
-        await this.updateButton.click();
+        await expect(this.saveButton).toBeEnabled();
+        await this.saveButton.click();
 
         await Promise.all([
             page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200, { timeout: 15000 }),
@@ -118,7 +109,7 @@ export class TransactionPage extends BasePage {
         ]);
 
         // Verify if it stays on the same page and count remains the same
-        await expect(this.addTransactionBtn).toBeVisible();
+        await expect(this.addButton).toBeVisible();
         const postCreationTxnCountText = await this.recordCountOnTable.innerText();
         expect(parseInt(postCreationTxnCountText)).toBe(parseInt(initialTxnCountText));
 

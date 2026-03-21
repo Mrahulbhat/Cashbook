@@ -11,33 +11,7 @@ export class AccountsPage extends BasePage {
         this.page = page;
     }
 
-    get addAccountBtn(): Locator {
-        return this.page.locator('#AddBtn');
-    }
-
-    //add account form elements
-    get accountNameInputField(): Locator {
-        return this.page.locator('#NameInput');
-    }
-    get balanceInputField(): Locator {
-        return this.page.locator('#BalanceInput');
-    }
-
-    // edit account form elements
-    get editAccNameInputField(): Locator {
-        return this.page.locator('#NameInput');
-    }
-    get editBalanceInputField(): Locator {
-        return this.page.locator('#BalanceInput');
-    }
-
     //edit and delete account buttons in accounts tab grid
-    get deleteAccBtn(): Locator {
-        return this.page.locator('#DeleteBtn');
-    }
-    get editAccBtn(): Locator {
-        return this.page.locator('#EditBtn');
-    }
     deleteAccountBtn(name: string): Locator {
         const slug = name.replace(/\s+/g, '-').toLowerCase();
         return this.page.locator(`#accountCard-${slug}`).locator('#DeleteBtn');
@@ -55,14 +29,14 @@ export class AccountsPage extends BasePage {
 
     async createAccount(page: Page, account: { name: string; balance: string }) {
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
-        await this.addAccountBtn.click();
+        await this.addButton.click();
         await page.waitForLoadState("networkidle");
 
-        await expect(this.accountNameInputField).toBeVisible();
-        await this.accountNameInputField.fill(account.name);
+        await expect(this.nameInput).toBeVisible();
+        await this.nameInput.fill(account.name);
 
-        await expect(this.balanceInputField).toBeVisible();
-        await this.balanceInputField.fill(account.balance);
+        await expect(this.balanceInput).toBeVisible();
+        await this.balanceInput.fill(account.balance);
 
         await Promise.all([
             this.saveButton.click(),
@@ -84,14 +58,14 @@ export class AccountsPage extends BasePage {
         await expect(targetAccount).toBeVisible();
         await targetAccount.click();
 
-        await expect(this.editAccNameInputField).toBeVisible();
-        await expect(this.editAccNameInputField).toHaveValue(accountName);
-        await expect(this.editBalanceInputField).toBeVisible();
-        await expect(this.editBalanceInputField).not.toHaveValue('');
+        await expect(this.nameInput).toBeVisible();
+        await expect(this.nameInput).toHaveValue(accountName);
+        await expect(this.balanceInput).toBeVisible();
+        await expect(this.balanceInput).not.toHaveValue('');
 
-        await this.editAccNameInputField.fill(name);
+        await this.nameInput.fill(name);
         if (balance) {
-            await this.editBalanceInputField.fill(balance);
+            await this.balanceInput.fill(balance);
         }
 
         await this.saveButton.click();
@@ -118,12 +92,12 @@ export class AccountsPage extends BasePage {
 
         await expect(this.balanceContainer).toBeVisible(); //added this else count will be 0 before data loads hence test will pass without doing anything which is wrong
 
-        let count = await this.deleteAccBtn.count();
+        let count = await this.deleteButton.count();
         if (count === 0) return;
 
-        while (await this.deleteAccBtn.count() > 0) {
+        while (await this.deleteButton.count() > 0) {
 
-            await this.deleteAccBtn.first().click();
+            await this.deleteButton.first().click();
             await this.modalOkBtn.click();
 
             const toast = this.page.getByText(commonConstants.toastMessages.ACCOUNT_DELETED_SUCCESSFULLY).last();
@@ -134,7 +108,7 @@ export class AccountsPage extends BasePage {
             await this.page.waitForLoadState('networkidle');
         }
 
-        await expect(this.deleteAccBtn).toHaveCount(0);
+        await expect(this.deleteButton).toHaveCount(0);
         await expect(this.balanceContainer).not.toBeVisible();
     }
 

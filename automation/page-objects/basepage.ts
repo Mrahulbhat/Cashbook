@@ -18,11 +18,32 @@ export class BasePage {
     get recordCountOnTable(): Locator {
         return this.page.locator('#txnCount');
     }
-    get editRecordButton(): Locator {
-        return this.page.locator('#EditBtn');
-    }
     inputFieldById(name: string): Locator {
         return this.page.locator(`#${name}Input`);
+    }
+    get nameInput(): Locator {
+        return this.inputFieldById('Name');
+    }
+    get amountInput(): Locator {
+        return this.inputFieldById('Amount');
+    }
+    get balanceInput(): Locator {
+        return this.inputFieldById('Balance');
+    }
+    get budgetInput(): Locator {
+        return this.inputFieldById('Budget');
+    }
+    get dateInput(): Locator {
+        return this.inputFieldById('Date');
+    }
+    get descriptionInput(): Locator {
+        return this.inputFieldById('Description');
+    }
+    get incomeRadio(): Locator {
+        return this.page.locator('#TypeRadio-income');
+    }
+    get expenseRadio(): Locator {
+        return this.page.locator('#TypeRadio-expense');
     }
 
     // when no records found
@@ -52,17 +73,20 @@ export class BasePage {
     get modalOkBtn(): Locator {
         return this.page.locator('#DeleteBtn'); // Modal OK/Confirm was standardized to DeleteBtn or SaveBtn in some places, but usually DeleteBtn for confirmations. Actually I should check modal.
     }
+    get addButton(): Locator {
+        return this.page.locator('#AddBtn');
+    }
     get saveButton(): Locator {
         return this.page.locator('#SaveBtn');
+    }
+    get submitButton(): Locator {
+        return this.page.locator('#SubmitBtn');
     }
     get editButton(): Locator {
         return this.page.locator('#EditBtn');
     }
     get deleteButton(): Locator {
         return this.page.locator('#DeleteBtn');
-    }
-    get updateButton(): Locator {
-        return this.page.locator('#SaveBtn');
     }
     get backButton(): Locator {
         return this.page.locator('#BackBtn');
@@ -81,9 +105,9 @@ export class BasePage {
     }
 
     async enterAmount(amount: string) {
-        await expect(this.inputFieldById('Amount')).toBeVisible();
-        await this.inputFieldById('Amount').fill(amount);
-        await expect(this.inputFieldById('Amount')).toHaveValue(amount);
+        await expect(this.amountInput).toBeVisible();
+        await this.amountInput.fill(amount);
+        await expect(this.amountInput).toHaveValue(amount);
     }
     async selectAccount(optionText: string) {
         await this.accountDropdownContainer.click();
@@ -137,9 +161,8 @@ export class BasePage {
     }
 
     async selectDate(dateString: string = new Date().toISOString().split('T')[0]) {
-        const dateInput = this.inputFieldById('Date');
-        await expect(dateInput).toBeVisible();
-        await dateInput.fill(dateString);
-        await expect(dateInput).toHaveValue(dateString);
+        await expect(this.dateInput).toBeVisible();
+        await this.dateInput.fill(dateString);
+        await expect(this.dateInput).toHaveValue(dateString);
     }
 }

@@ -11,26 +11,7 @@ export class CategoryPage extends BasePage {
         this.page = page;
     }
 
-    get addCategoryBtn(): Locator {
-        return this.page.locator('#AddBtn');
-    }
-
     //form fields
-    get categoryNameInputField(): Locator {
-        return this.page.locator('#NameInput');
-    }
-    get incomeCheckbox(): Locator {
-        return this.page.locator('#TypeRadio-income');
-    }
-    get expenseCheckbox(): Locator {
-        return this.page.locator('#TypeRadio-expense');
-    }
-    get parentCategoryDropdown(): Locator {
-        return this.page.locator('#ParentDropdown');
-    }
-    get budgetInputField(): Locator {
-        return this.page.locator('#BudgetInput');
-    }
     get categoryDiv(): Locator {
         return this.page.locator('#categoryDiv');
     }
@@ -51,26 +32,26 @@ export class CategoryPage extends BasePage {
         await navigateToPage(page, commonConstants.pageName.CATEGORIES);
 
         // ---- go to add category
-        await this.addCategoryBtn.click();
+        await this.addButton.click();
         await page.waitForLoadState("networkidle");
 
         // ---- fill form
-        await expect(this.categoryNameInputField).toBeVisible();
-        await this.categoryNameInputField.fill(category.name);
+        await expect(this.nameInput).toBeVisible();
+        await this.nameInput.fill(category.name);
 
         // select income / expense
         if (category.type === "income") {
-            await this.incomeCheckbox.click();
+            await this.incomeRadio.click();
         } else {
-            await this.expenseCheckbox.click();
+            await this.expenseRadio.click();
         }
 
-        await expect(this.parentCategoryDropdown).toBeVisible();
-        await this.parentCategoryDropdown.selectOption(category.parentCategory);
+        await expect(this.inputFieldById('ParentDropdown')).toBeVisible();
+        await this.inputFieldById('ParentDropdown').selectOption(category.parentCategory);
 
         if (category.budget) {
-            await expect(this.budgetInputField).toBeVisible();
-            await this.budgetInputField.fill(category.budget);
+            await expect(this.budgetInput).toBeVisible();
+            await this.budgetInput.fill(category.budget);
         }
 
         // ---- save

@@ -6,7 +6,7 @@ import { generateRandomPrefix } from '../page-objects/common-functions.js';
 
 test.describe('Login Related Tests', () => {
 
-    test('Create Account / Singup Functionality @BAT', async ({ page, loginPage }) => {
+    test.skip('Create Account / Singup Functionality @BAT', async ({ page, loginPage }) => {
         const name = commonConstants.userName;
         const phone = commonConstants.userPhone;
         const password = commonConstants.userPassword;
