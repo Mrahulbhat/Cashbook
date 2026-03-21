@@ -46,10 +46,6 @@ export class BasePage {
         return this.page.locator('#TypeRadio-expense');
     }
 
-    // when no records found
-    get noRecordsFound(): Locator {
-        return this.page.locator('#noRecordsFound');
-    }
     get navbarUserName(): Locator {
         return this.page.locator('#userName_navbar');
     }

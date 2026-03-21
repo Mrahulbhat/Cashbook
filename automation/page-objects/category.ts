@@ -76,7 +76,7 @@ export class CategoryPage extends BasePage {
 
         if (count === 0) {
             try {
-                await expect(this.noRecordsFound).toBeVisible({ timeout: 30000 });
+                await expect(this.page.getByText("No categories found")).toBeVisible({ timeout: 30000 });
             }
             catch {
                 console.log("Data might have loaded now proceed!");
