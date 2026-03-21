@@ -73,6 +73,9 @@ export class BasePage {
     get modalOkBtn(): Locator {
         return this.page.locator('#ConfirmationModal #DeleteBtn');
     }
+    get logoutButton(): Locator {
+        return this.page.locator('#LogoutBtn');
+    }
     get addButton(): Locator {
         return this.page.locator('#AddBtn');
     }
