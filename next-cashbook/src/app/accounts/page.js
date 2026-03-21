@@ -5,18 +5,27 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2, Edit2, Loader } from "lucide-react";
 import { useAccountStore } from "@/store/useAccountStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Modal from "@/components/Modal";
 
 const AccountsContent = () => {
     const router = useRouter();
     const { accounts, fetchAccounts, deleteAccount, loading } = useAccountStore();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedAccountId, setSelectedAccountId] = useState(null);
 
     useEffect(() => {
         fetchAccounts();
     }, [fetchAccounts]);
 
-    const handleDeleteClick = async (id) => {
-        if (window.confirm("Are you sure you want to delete this account?")) {
-            await deleteAccount(id);
+    const handleDeleteClick = (id) => {
+        setSelectedAccountId(id);
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (selectedAccountId) {
+            await deleteAccount(selectedAccountId);
+            setSelectedAccountId(null);
         }
     };
 
@@ -100,6 +109,16 @@ const AccountsContent = () => {
                         </button>
                     </div>
                 )}
+
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleConfirmDelete}
+                    title="Delete Account"
+                    message="Are you sure you want to delete this account? All associated transactions will be affected."
+                    confirmText="Delete"
+                    type="danger"
+                />
             </div>
         </div>
     );
