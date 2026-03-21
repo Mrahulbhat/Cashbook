@@ -20,6 +20,7 @@ const Navbar = () => {
 
             <div className="relative z-10">
                 <h1
+                    id="navbarLogo"
                     className="font-bold text-2xl sm:text-3xl bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent cursor-pointer hover:from-blue-300 hover:via-purple-300 hover:to-blue-300 transition-all duration-300 select-none"
                     onClick={() => router.push("/dashboard")}
                 >
@@ -35,6 +36,7 @@ const Navbar = () => {
                             Welcome, <span id="userName_navbar" className="text-blue-300 font-medium">{user.name}</span>
                         </span>
                         <button
+                            id="navbarLogoutBtn"
                             className="group flex gap-2 justify-center items-center px-4 py-2 rounded-xl bg-gradient-to-r from-red-800/50 to-red-700/50 border border-red-700/50 hover:border-red-500/30 hover:from-red-600/20 hover:to-red-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"
                             onClick={logout}
                         >
@@ -45,6 +47,7 @@ const Navbar = () => {
                 )}
 
                 <button
+                    id="navbarDashboardBtn"
                     className="group flex gap-2 justify-center items-center px-4 py-2 rounded-xl bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-700/50 hover:border-blue-500/30 hover:from-blue-600/20 hover:to-purple-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"
                     onClick={() => router.push("/dashboard")}
                 >

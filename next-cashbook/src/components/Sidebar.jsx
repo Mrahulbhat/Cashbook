@@ -32,6 +32,7 @@ const Sidebar = () => {
     return (
         <>
             <button
+                id="sidebarMenuToggle"
                 onClick={() => setIsOpen(!isOpen)}
                 className="fixed top-20 left-4 z-50 p-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg md:hidden"
             >
