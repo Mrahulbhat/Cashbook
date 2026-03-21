@@ -4,7 +4,7 @@ import { navigateToPage } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 import { generateRandomPrefix } from '../page-objects/common-functions.js';
 
-test.describe('Login Related Tests', () => {
+test.describe.serial('Login Related Tests', () => {
 
     test.skip('Create Account / Singup Functionality @BAT', async ({ loginPage }) => {
         const name = commonConstants.userName;
