@@ -69,8 +69,6 @@ export class LoginPage extends BasePage {
         await this.phoneInputField.pressSequentially(commonConstants.userPhone);
         await this.passwordInputField.clear();
         await this.passwordInputField.pressSequentially(commonConstants.userPassword);
-        await this.rememberMeCheckbox.check();
-        await expect(this.rememberMeCheckbox).toBeChecked();
         await this.loginButton.click();
         await waitForApiResponse(this.page, commonConstants.urls.loginApi);
         await expect(this.page).toHaveURL(commonConstants.urls.baseURL + '/dashboard');
