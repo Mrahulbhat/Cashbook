@@ -75,6 +75,4 @@ export class LoginPage extends BasePage {
         await expect(this.navbarUserName).toBeVisible();
         await expect(this.navbarUserName).toContainText(userName);
     }
-
-
 }

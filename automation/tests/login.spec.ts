@@ -14,12 +14,14 @@ test.describe('Login Related Tests', () => {
         await loginPage.createAccount(name, phone, password);
     });
 
-    test('Login using email @BAT', async ({ page, loginPage }) => {
+    test('Login functionality @BAT', async ({loginPage }) => {
         await loginPage.loginUser();
-
     });
 
-    test('SignOut Functionality @BAT', async ({ page, loginPage }) => {
-
+    test('Signout functionality @BAT', async ({ page, loginPage }) => {
+        await loginPage.loginUser();
+        await expect(loginPage.phoneInputField).toBeVisible();
+        await expect(loginPage.passwordInputField).toBeVisible();
+        await expect(loginPage.loginButton).toBeVisible();
     });
 });
