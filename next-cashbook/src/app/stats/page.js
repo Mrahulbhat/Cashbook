@@ -70,13 +70,13 @@ const StatisticsContent = () => {
     }
 
     return (
-        <div className="min-h-screen bg-black p-4 sm:p-8 relative overflow-hidden">
+        <div id="statsContainer" className="min-h-screen bg-black p-4 sm:p-8 relative overflow-hidden">
             <div className="absolute inset-0">
                 <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto pb-20">
-                <button onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400 hover:text-white transition-colors">
+                <button id="BackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400 hover:text-white transition-colors">
                     <ArrowLeft size={18} /> Back
                 </button>
 
@@ -84,26 +84,26 @@ const StatisticsContent = () => {
 
                 <div className="flex gap-3 mb-8">
                     {['monthly', 'yearly', 'lifetime'].map(f => (
-                        <button key={f} onClick={() => setFilter(f)} className={`px-6 py-2 rounded-lg capitalize ${filter === f ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400'}`}>
+                        <button id={`FilterBtn-${f}`} key={f} onClick={() => setFilter(f)} className={`px-6 py-2 rounded-lg capitalize ${filter === f ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400'}`}>
                             {f}
                         </button>
                     ))}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-green-900/20 border border-green-500/30 p-6 rounded-2xl">
+                    <div id="statsIncomeCard" className="bg-green-900/20 border border-green-500/30 p-6 rounded-2xl">
                         <div className="flex justify-between mb-4"><span className="text-green-400 text-sm">Income</span><TrendingUp size={20} className="text-green-400" /></div>
                         <p className="text-2xl font-bold text-white">{formatCurrency(stats.totalIncome)}</p>
                     </div>
-                    <div className="bg-red-900/20 border border-red-500/30 p-6 rounded-2xl">
+                    <div id="statsExpenseCard" className="bg-red-900/20 border border-red-500/30 p-6 rounded-2xl">
                         <div className="flex justify-between mb-4"><span className="text-red-400 text-sm">Expense</span><TrendingUp size={20} className="text-red-400 rotate-180" /></div>
                         <p className="text-2xl font-bold text-white">{formatCurrency(stats.totalExpense)}</p>
                     </div>
-                    <div className="bg-blue-900/20 border border-blue-500/30 p-6 rounded-2xl">
+                    <div id="statsSavingsCard" className="bg-blue-900/20 border border-blue-500/30 p-6 rounded-2xl">
                         <div className="flex justify-between mb-4"><span className="text-blue-400 text-sm">Net Savings</span><PieChart size={20} className="text-blue-400" /></div>
                         <p className="text-2xl font-bold text-white">{formatCurrency(stats.totalIncome - stats.totalExpense)}</p>
                     </div>
-                    <div className="bg-amber-900/20 border border-amber-500/30 p-6 rounded-2xl">
+                    <div id="statsSavingsRateCard" className="bg-amber-900/20 border border-amber-500/30 p-6 rounded-2xl">
                         <div className="flex justify-between mb-4"><span className="text-amber-400 text-sm">Savings Rate</span><Target size={20} className="text-amber-400" /></div>
                         <p className="text-2xl font-bold text-white">{stats.savingsRate}%</p>
                     </div>

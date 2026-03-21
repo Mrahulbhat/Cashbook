@@ -81,7 +81,7 @@ const EditTransactionContent = () => {
                 <button id="BackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400"><ArrowLeft size={18} /> Back</button>
                 <div className="bg-gray-900 p-8 rounded-3xl border border-gray-800">
                     <h1 className="text-2xl font-bold text-white mb-8">Edit Transaction</h1>
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form id="EditTransactionForm" onSubmit={handleSubmit} className="space-y-6">
                         <div className="flex gap-4 mb-4">
                             {['income', 'expense'].map(t => (
                                 <label key={t} className="flex items-center gap-2 cursor-pointer capitalize text-gray-300">
@@ -92,33 +92,33 @@ const EditTransactionContent = () => {
                         </div>
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Amount</label>
-                            <input id="AmountInputField" type="number" value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
+                            <input id="AmountInput" type="number" value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm text-gray-400 mb-2">Account</label>
-                                <select id="accountDropdown" value={formData.account} onChange={e => setFormData({ ...formData, account: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required>
+                                <select id="AccountDropdown" value={formData.account} onChange={e => setFormData({ ...formData, account: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required>
                                     {accounts.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-sm text-gray-400 mb-2">Category</label>
-                                <select id="categoryDropdown" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required>
+                                <select id="CategoryDropdown" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required>
                                     {filteredCategories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                                 </select>
                             </div>
                         </div>
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Date</label>
-                            <input id="dateInputField" type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
+                            <input id="DateInput" type="date" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
                         </div>
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Description</label>
-                            <textarea id="descriptionInputField" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} rows="3" className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none resize-none" />
+                            <textarea id="DescriptionInput" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} rows="3" className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none resize-none" />
                         </div>
                         <div className="flex gap-4">
-                            <button id="cancelBtn" type="button" onClick={() => router.back()} className="flex-1 py-4 bg-gray-800 text-white rounded-xl font-bold hover:bg-gray-700 transition-all">Cancel</button>
-                            <button id="updateBtn" disabled={loading} className="flex-1 py-4 bg-green-600 text-white rounded-xl font-bold hover:bg-green-500 transition-all flex justify-center items-center gap-2">
+                            <button id="CancelBtn" type="button" onClick={() => router.back()} className="flex-1 py-4 bg-gray-800 text-white rounded-xl font-bold hover:bg-gray-700 transition-all">Cancel</button>
+                            <button id="SaveBtn" disabled={loading} className="flex-1 py-4 bg-green-600 text-white rounded-xl font-bold hover:bg-green-500 transition-all flex justify-center items-center gap-2">
                                 {loading ? <Loader className="animate-spin" size={18} /> : <Save size={18} />} Save Changes
                             </button>
                         </div>

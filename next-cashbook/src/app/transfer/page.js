@@ -64,29 +64,29 @@ const TransferContent = () => {
     return (
         <div className="min-h-screen bg-black p-4 sm:p-8 relative">
             <div className="max-w-2xl mx-auto z-10 relative">
-                <button id="transferBackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400"><ArrowLeft size={18} /> Back</button>
+                <button id="BackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400"><ArrowLeft size={18} /> Back</button>
                 <div className="bg-gray-900 p-8 rounded-3xl border border-gray-800">
                     <h1 className="text-2xl font-bold text-white mb-8 flex items-center gap-3"><Repeat className="text-blue-500" /> Fund Transfer</h1>
-                    <form id="transferForm" onSubmit={handleSubmit} className="space-y-6">
+                    <form id="TransferForm" onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">From Account</label>
-                            <select id="fromAccountDropdown" value={formData.fromAccount} onChange={e => setFormData({ ...formData, fromAccount: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none">
+                            <select id="FromAccountDropdown" value={formData.fromAccount} onChange={e => setFormData({ ...formData, fromAccount: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none">
                                 <option value="">Select Account</option>
                                 {accounts.map(a => <option key={a._id} value={a._id}>{a.name} (₹{a.balance})</option>)}
                             </select>
                         </div>
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">To Account</label>
-                            <select id="toAccountDropdown" value={formData.toAccount} onChange={e => setFormData({ ...formData, toAccount: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none">
+                            <select id="ToAccountDropdown" value={formData.toAccount} onChange={e => setFormData({ ...formData, toAccount: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none">
                                 <option value="">Select Account</option>
                                 {accounts.map(a => <option key={a._id} value={a._id}>{a.name}</option>)}
                             </select>
                         </div>
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Amount</label>
-                            <input id="amountInputField" type="number" value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })} placeholder="0.00" className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" />
+                            <input id="AmountInput" type="number" value={formData.amount} onChange={e => setFormData({ ...formData, amount: e.target.value })} placeholder="0.00" className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" />
                         </div>
-                        <button id="confirmTransferBtn" disabled={loading} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 transition-all">
+                        <button id="SubmitBtn" disabled={loading} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 transition-all">
                             {loading ? <Loader className="animate-spin mx-auto" /> : "Confirm Transfer"}
                         </button>
                     </form>

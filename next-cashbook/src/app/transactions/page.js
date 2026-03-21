@@ -43,21 +43,24 @@ const TransactionsContent = () => {
                         <h1 className="text-3xl font-bold text-white mb-2">Transactions</h1>
                         <p className="text-gray-400">View and manage your history</p>
                     </div>
-                    <button id="addTransactionBtn" onClick={() => router.push("/add-transaction")} className="mt-4 sm:mt-0 bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-transform transform hover:scale-105">
+                    <button id="AddBtn" onClick={() => router.push("/add-transaction")} className="mt-4 sm:mt-0 bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-transform transform hover:scale-105">
                         <Plus size={18} /> Add Transaction
                     </button>
                 </div>
 
                 <div className="flex gap-3 mb-8">
                     {['monthly', 'yearly', 'lifetime'].map(f => (
-                        <button key={f} id={`${f}FilterBtn`} onClick={() => setFilter(f)} className={`px-6 py-2 rounded-lg capitalize ${filter === f ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}`}>
+                        <button key={f} id={`FilterBtn-${f}`} onClick={() => setFilter(f)} className={`px-6 py-2 rounded-lg capitalize ${filter === f ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}`}>
                             {f}
                         </button>
                     ))}
                 </div>
 
                 <div className="bg-gray-900/50 border border-gray-800 rounded-3xl overflow-hidden backdrop-blur-xl">
-                    <div className="px-8 py-6 border-b border-gray-800"><h2 className="text-white text-xl font-bold">Transaction History</h2></div>
+                    <div className="px-8 py-6 border-b border-gray-800 flex justify-between items-center">
+                        <h2 className="text-white text-xl font-bold">Transaction History</h2>
+                        <span id="txnCount" className="text-gray-400 text-sm">{filteredTransactions.length} Records</span>
+                    </div>
 
                     {loading ? (
                         <div className="p-20 flex justify-center"><Loader className="animate-spin text-green-500" /></div>
@@ -75,8 +78,8 @@ const TransactionsContent = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="text-gray-300">
-                                    {filteredTransactions.map(t => (
-                                        <tr key={t._id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
+                                    {filteredTransactions.map((t, index) => (
+                                        <tr key={t._id} id={`transactionRow-${index}`} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
                                             <td className="px-8 py-4 flex items-center gap-2">
                                                 {t.type === 'income' ? <ArrowDownLeft className="text-green-400" size={16} /> : <ArrowUpRight className="text-red-400" size={16} />}
                                                 <span className="capitalize">{t.type}</span>
@@ -87,8 +90,8 @@ const TransactionsContent = () => {
                                             <td className="px-8 py-4">{new Date(t.date).toLocaleDateString()}</td>
                                             <td className="px-8 py-4">
                                                 <div className="flex gap-2">
-                                                    <button id="editRecordBtn" onClick={() => router.push(`/edit-transaction/${t._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg"><Edit2 size={16} className="text-blue-400" /></button>
-                                                    <button id="deleteBtn" onClick={() => handleDelete(t._id)} className="p-2 hover:bg-red-500/20 rounded-lg"><Trash2 size={16} className="text-red-400" /></button>
+                                                    <button id="EditBtn" onClick={() => router.push(`/edit-transaction/${t._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg"><Edit2 size={16} className="text-blue-400" /></button>
+                                                    <button id="DeleteBtn" onClick={() => handleDelete(t._id)} className="p-2 hover:bg-red-500/20 rounded-lg"><Trash2 size={16} className="text-red-400" /></button>
                                                 </div>
                                             </td>
                                         </tr>

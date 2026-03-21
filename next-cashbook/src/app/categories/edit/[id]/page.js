@@ -56,26 +56,26 @@ const EditCategoryContent = () => {
     return (
         <div className="min-h-screen bg-black p-4 sm:p-8">
             <div className="max-w-2xl mx-auto">
-                <button onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400"><ArrowLeft size={18} /> Back</button>
+                <button id="BackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400"><ArrowLeft size={18} /> Back</button>
                 <div className="bg-gray-900 p-8 rounded-3xl border border-gray-800">
                     <h1 className="text-2xl font-bold text-white mb-8">Edit Category</h1>
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form id="EditCategoryForm" onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Category Name</label>
-                            <input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
+                            <input id="NameInput" type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
                         </div>
                         <div className="flex gap-4">
                             {['income', 'expense'].map(t => (
                                 <label key={t} className="flex items-center gap-2 text-gray-300 capitalize cursor-pointer">
-                                    <input type="radio" checked={formData.type === t} onChange={() => setFormData({ ...formData, type: t })} /> {t}
+                                    <input id={`TypeRadio-${t}`} type="radio" checked={formData.type === t} onChange={() => setFormData({ ...formData, type: t })} /> {t}
                                 </label>
                             ))}
                         </div>
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Budget (Optional)</label>
-                            <input type="number" value={formData.budget} onChange={e => setFormData({ ...formData, budget: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" />
+                            <input id="BudgetInput" type="number" value={formData.budget} onChange={e => setFormData({ ...formData, budget: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" />
                         </div>
-                        <button disabled={loading} className="w-full py-4 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-500 transition-all flex justify-center items-center gap-2">
+                        <button id="SaveBtn" disabled={loading} className="w-full py-4 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-500 transition-all flex justify-center items-center gap-2">
                             {loading ? <Loader className="animate-spin" size={18} /> : <Save size={18} />} Save Changes
                         </button>
                     </form>

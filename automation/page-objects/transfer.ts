@@ -10,6 +10,6 @@ export class TransferPage extends BasePage {
     }
 
     get transferForm(): Locator {
-        return this.page.locator('#transferForm');
+        return this.page.locator('#TransferForm');
     }
 }

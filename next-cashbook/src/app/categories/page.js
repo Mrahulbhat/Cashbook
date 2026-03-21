@@ -46,6 +46,7 @@ const CategoriesContent = () => {
                         <p className="text-gray-400">Organize your income and expenses</p>
                     </div>
                     <button
+                        id="AddBtn"
                         onClick={() => router.push("/categories/add")}
                         className="mt-4 sm:mt-0 bg-purple-600 hover:bg-purple-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-transform transform hover:scale-105"
                     >
@@ -56,6 +57,7 @@ const CategoriesContent = () => {
                 <div className="mb-8 flex gap-3">
                     {['all', 'income', 'expense'].map(f => (
                         <button
+                            id={`FilterBtn-${f}`}
                             key={f}
                             onClick={() => setFilter(f)}
                             className={`px-6 py-2 rounded-lg capitalize transition-colors ${filter === f ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
@@ -67,7 +69,7 @@ const CategoriesContent = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredCategories.map((category) => (
-                        <div key={category._id} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 backdrop-blur-sm hover:border-purple-500/30 transition-all">
+                        <div id={`categoryCard-${category.name.replace(/\s+/g, '-').toLowerCase()}`} key={category._id} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 backdrop-blur-sm hover:border-purple-500/30 transition-all">
                             <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <h3 className="text-white font-bold text-lg">{category.name}</h3>
@@ -76,10 +78,10 @@ const CategoriesContent = () => {
                                     </span>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
+                                    <button id="EditBtn" onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
                                         <Edit2 className="w-4 h-4 text-blue-400" />
                                     </button>
-                                    <button onClick={() => handleDelete(category._id)} className="p-2 hover:bg-red-500/20 rounded-lg">
+                                    <button id="DeleteBtn" onClick={() => handleDelete(category._id)} className="p-2 hover:bg-red-500/20 rounded-lg">
                                         <Trash2 className="w-4 h-4 text-red-400" />
                                     </button>
                                 </div>
@@ -96,7 +98,7 @@ const CategoriesContent = () => {
                 {filteredCategories.length === 0 && (
                     <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-16 text-center">
                         <p className="text-gray-400 text-lg mb-6">No categories found</p>
-                        <button onClick={() => router.push("/categories/add")} className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-4 rounded-xl inline-flex items-center gap-2">
+                        <button id="AddBtn" onClick={() => router.push("/categories/add")} className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-4 rounded-xl inline-flex items-center gap-2">
                             <Plus size={18} /> Create Category
                         </button>
                     </div>

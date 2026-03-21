@@ -54,18 +54,18 @@ const EditAccountContent = () => {
                 <button id="BackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-8 text-gray-400"><ArrowLeft size={18} /> Back</button>
                 <div className="bg-gray-900 p-8 rounded-3xl border border-gray-800">
                     <h1 className="text-2xl font-bold text-white mb-8">Edit Account</h1>
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form id="EditAccountForm" onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Account Name</label>
-                            <input id="editAccNameInputField" type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
+                            <input id="NameInput" type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
                         </div>
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Balance</label>
-                            <input id="editBalanceInputField" type="number" value={formData.balance} onChange={e => setFormData({ ...formData, balance: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
+                            <input id="BalanceInput" type="number" value={formData.balance} onChange={e => setFormData({ ...formData, balance: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
                         </div>
                         <div className="flex gap-4">
-                            <button id="cancelBtn" type="button" onClick={() => router.back()} className="flex-1 py-4 bg-gray-800 text-white rounded-xl font-bold hover:bg-gray-700 transition-all">Cancel</button>
-                            <button id="saveBtn" disabled={loading} className="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 transition-all flex justify-center items-center gap-2">
+                            <button id="CancelBtn" type="button" onClick={() => router.back()} className="flex-1 py-4 bg-gray-800 text-white rounded-xl font-bold hover:bg-gray-700 transition-all">Cancel</button>
+                            <button id="SaveBtn" disabled={loading} className="flex-1 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 transition-all flex justify-center items-center gap-2">
                                 {loading ? <Loader className="animate-spin" size={18} /> : <Save size={18} />} Save Changes
                             </button>
                         </div>

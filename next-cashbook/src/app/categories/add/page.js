@@ -53,7 +53,7 @@ const AddCategoryContent = () => {
             </div>
 
             <div className="relative z-10 max-w-2xl mx-auto">
-                <button onClick={() => router.back()} className="flex items-center gap-2 mb-6 text-gray-400 hover:text-white transition-colors">
+                <button id="BackBtn" onClick={() => router.back()} className="flex items-center gap-2 mb-6 text-gray-400 hover:text-white transition-colors">
                     <ArrowLeft size={18} /> Back
                 </button>
 
@@ -63,10 +63,11 @@ const AddCategoryContent = () => {
                         <h1 className="text-2xl font-bold text-white">Add New Category</h1>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form id="AddCategoryForm" onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Category Name *</label>
                             <input
+                                id="NameInput"
                                 type="text"
                                 name="name"
                                 value={formData.name}
@@ -81,7 +82,7 @@ const AddCategoryContent = () => {
                             <div className="flex gap-4">
                                 {['income', 'expense'].map(t => (
                                     <label key={t} className="flex items-center gap-2 cursor-pointer capitalize text-gray-300">
-                                        <input type="radio" name="type" value={t} checked={formData.type === t} onChange={handleInputChange} className="accent-purple-500" />
+                                        <input id={`TypeRadio-${t}`} type="radio" name="type" value={t} checked={formData.type === t} onChange={handleInputChange} className="accent-purple-500" />
                                         {t}
                                     </label>
                                 ))}
@@ -91,6 +92,7 @@ const AddCategoryContent = () => {
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Parent Category *</label>
                             <select
+                                id="ParentDropdown"
                                 name="parentCategory"
                                 value={formData.parentCategory}
                                 onChange={handleInputChange}
@@ -103,6 +105,7 @@ const AddCategoryContent = () => {
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Monthly Budget (Optional)</label>
                             <input
+                                id="BudgetInput"
                                 type="number"
                                 name="budget"
                                 value={formData.budget}
@@ -112,8 +115,8 @@ const AddCategoryContent = () => {
                         </div>
 
                         <div className="flex gap-4">
-                            <button type="button" onClick={() => router.back()} className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Cancel</button>
-                            <button type="submit" disabled={loading} className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-500 flex items-center justify-center gap-2 transition-transform transform hover:scale-105">
+                            <button id="CancelBtn" type="button" onClick={() => router.back()} className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Cancel</button>
+                            <button id="SaveBtn" type="submit" disabled={loading} className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-500 flex items-center justify-center gap-2 transition-transform transform hover:scale-105">
                                 {loading ? <Loader className="animate-spin" size={18} /> : <Plus size={18} />} Create Category
                             </button>
                         </div>

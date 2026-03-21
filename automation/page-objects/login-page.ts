@@ -12,28 +12,28 @@ export class LoginPage extends BasePage {
     }
 
     get phoneInputField(): Locator {
-        return this.page.locator('#phoneInputField');
+        return this.page.locator('#PhoneInput');
     }
     get passwordInputField(): Locator {
-        return this.page.locator('#passwordInputField');
+        return this.page.locator('#PasswordInput');
     }
     get confirmPasswordInputField(): Locator {
-        return this.page.locator('#confirmPasswordInputField');
+        return this.page.locator('#ConfirmPasswordInput');
     }
     get rememberMeCheckbox(): Locator {
         return this.page.locator('#rememberMeCheckbox');
     }
     get loginButton(): Locator {
-        return this.page.locator('#loginButton');
+        return this.page.locator('#LoginBtn');
     }
     get googleLoginButton(): Locator {
-        return this.page.locator('#googleLoginButton');
+        return this.page.locator('#GoogleLoginBtn');
     }
     get signupLink(): Locator {
-        return this.page.locator('#signupLink');
+        return this.page.locator('#SignupLink');
     }
     get nameInputField(): Locator {
-        return this.page.locator('#nameInputField');
+        return this.page.locator('#NameInput');
     }
     get togglePasswordVisibilityButton(): Locator {
         return this.page.locator('#togglePasswordVisibilityButton');
@@ -45,7 +45,7 @@ export class LoginPage extends BasePage {
         return this.page.locator('#termsConditionsCheckbox');
     }
     get signupButton(): Locator {
-        return this.page.locator('#signupButton');
+        return this.page.locator('#SignupBtn');
     }
 
     async createAccount(name: string, email: string, password: string) {

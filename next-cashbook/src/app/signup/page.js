@@ -86,7 +86,7 @@ const SignupPage = () => {
             <div className="relative z-10 w-full max-w-md">
                 <div className="bg-gradient-to-b from-gray-800/50 to-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-2xl p-8 shadow-2xl">
                     <div className="mb-8 text-center">
-                        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 via-emerald-400 to-green-400 bg-clip-text text-transparent">
+                        <h1 id="signupPageTitle" className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 via-emerald-400 to-green-400 bg-clip-text text-transparent">
                             Cashbook
                         </h1>
                         <p className="text-gray-400 text-sm">Create your account</p>
@@ -98,7 +98,7 @@ const SignupPage = () => {
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                                 <input
-                                    id="nameInputField"
+                                    id="NameInput"
                                     type="text"
                                     name="name"
                                     value={formData.name}
@@ -114,7 +114,7 @@ const SignupPage = () => {
                             <label className="block text-gray-300 text-sm font-medium mb-2">Phone Number</label>
                             <div className="relative">
                                 <input
-                                    id="phoneInputField"
+                                    id="PhoneInput"
                                     type="text"
                                     name="phone"
                                     value={formData.phone}
@@ -131,7 +131,7 @@ const SignupPage = () => {
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                                 <input
-                                    id="passwordInputField"
+                                    id="PasswordInput"
                                     type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={formData.password}
@@ -156,7 +156,7 @@ const SignupPage = () => {
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                                 <input
-                                    id="confirmPasswordInputField"
+                                    id="ConfirmPasswordInput"
                                     type="password"
                                     name="confirmPassword"
                                     value={formData.confirmPassword}
@@ -169,7 +169,7 @@ const SignupPage = () => {
                         </div>
 
                         <button
-                            id="signupButton"
+                            id="SignupBtn"
                             type="submit"
                             disabled={isLoading}
                             className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-2 mt-4"
@@ -186,7 +186,7 @@ const SignupPage = () => {
                     </div>
 
                     <button
-                        id="googleLoginButton"
+                        id="GoogleLoginBtn"
                         type="button"
                         onClick={handleGoogleLogin}
                         className="w-full bg-white hover:bg-gray-100 text-gray-900 font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
@@ -214,7 +214,7 @@ const SignupPage = () => {
 
                     <p className="text-center text-gray-400 text-sm mt-6">
                         Already have an account?{" "}
-                        <a href="/login" className="text-green-400 hover:text-green-300 font-semibold transition-colors">Login here</a>
+                        <a id="LoginLink" href="/login" className="text-green-400 hover:text-green-300 font-semibold transition-colors">Login here</a>
                     </p>
                 </div>
             </div>

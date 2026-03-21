@@ -12,37 +12,39 @@ export class AccountsPage extends BasePage {
     }
 
     get addAccountBtn(): Locator {
-        return this.page.locator('#addAccountBtn');
+        return this.page.locator('#AddBtn');
     }
 
     //add account form elements
     get accountNameInputField(): Locator {
-        return this.page.locator('#accountNameInputField');
+        return this.page.locator('#NameInput');
     }
     get balanceInputField(): Locator {
-        return this.page.locator('#balanceInputField');
+        return this.page.locator('#BalanceInput');
     }
 
     // edit account form elements
     get editAccNameInputField(): Locator {
-        return this.page.locator('#editAccNameInputField');
+        return this.page.locator('#NameInput');
     }
     get editBalanceInputField(): Locator {
-        return this.page.locator('#editBalanceInputField');
+        return this.page.locator('#BalanceInput');
     }
 
     //edit and delete account buttons in accounts tab grid
     get deleteAccBtn(): Locator {
-        return this.page.locator('#deleteBtn');
+        return this.page.locator('#DeleteBtn');
     }
     get editAccBtn(): Locator {
-        return this.page.locator('#editBtn');
+        return this.page.locator('#EditBtn');
     }
     deleteAccountBtn(name: string): Locator {
-        return this.page.locator('#accountDiv' + name).locator('#deleteBtn');
+        const slug = name.replace(/\s+/g, '-').toLowerCase();
+        return this.page.locator(`#accountCard-${slug}`).locator('#DeleteBtn');
     }
     editAccountBtn(name: string): Locator {
-        return this.page.locator('#accountDiv' + name).locator('#editBtn');
+        const slug = name.replace(/\s+/g, '-').toLowerCase();
+        return this.page.locator(`#accountCard-${slug}`).locator('#EditBtn');
     }
 
     //balance container
@@ -71,12 +73,14 @@ export class AccountsPage extends BasePage {
         ]);
 
         //verify if account is visible in grid
-        await expect(this.page.locator('#accountDiv' + account.name)).toBeVisible();
+        const slug = account.name.replace(/\s+/g, '-').toLowerCase();
+        await expect(this.page.locator(`#accountCard-${slug}`)).toBeVisible();
     }
 
     async updateAccount(page: Page, accountName: string, name: string, balance?: string) {
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
-        const targetAccount = this.page.locator('#accountDiv' + accountName).locator('#editBtn');
+        const slug = accountName.replace(/\s+/g, '-').toLowerCase();
+        const targetAccount = this.page.locator(`#accountCard-${slug}`).locator('#EditBtn');
         await expect(targetAccount).toBeVisible();
         await targetAccount.click();
 
@@ -93,12 +97,14 @@ export class AccountsPage extends BasePage {
         await this.saveButton.click();
         await expect(this.page.getByText(commonConstants.toastMessages.ACCOUNT_UPDATED_SUCCESSFULLY)).toBeVisible();
         await this.page.waitForLoadState('networkidle');
-        await expect(this.page.locator('#accountDiv' + name)).toBeVisible();
+        const newSlug = name.replace(/\s+/g, '-').toLowerCase();
+        await expect(this.page.locator(`#accountCard-${newSlug}`)).toBeVisible();
     }
 
     async deleteAccount(page: Page, accountName: string) {
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
-        const targetAccount = this.page.locator('#accountDiv' + accountName).locator('#deleteBtn');
+        const slug = accountName.replace(/\s+/g, '-').toLowerCase();
+        const targetAccount = this.page.locator(`#accountCard-${slug}`).locator('#DeleteBtn');
         await expect(targetAccount).toBeVisible();
         await targetAccount.click();
         await this.modalOkBtn.click();

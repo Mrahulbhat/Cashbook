@@ -12,10 +12,10 @@ export class TransactionPage extends BasePage {
     }
 
     get addTransactionBtn(): Locator {
-        return this.page.locator('#addTransactionBtn');
+        return this.page.locator('#AddBtn');
     }
     get addTransactionForm(): Locator {
-        return this.page.locator('#addTransactionForm');
+        return this.page.locator('#AddTransactionForm');
     }
     get incomeRadioBox(): Locator {
         return this.page.locator('#incomeRadioBox');
@@ -54,7 +54,7 @@ export class TransactionPage extends BasePage {
         await this.selectAccount(transaction.accountName);
         await this.selectCategory(transaction.categoryName);
         await this.selectDate(transaction.date);
-        await this.inputFieldById('description').fill(transaction.description);
+        await this.inputFieldById('Description').fill(transaction.description);
 
         await expect(this.cancelButton).toBeVisible();
         await expect(this.saveButton).toBeEnabled();
@@ -107,7 +107,7 @@ export class TransactionPage extends BasePage {
         await this.selectAccount(updated_accountName);
         await this.selectCategory(updated_categoryName);
         await this.selectDate(updated_date);
-        await this.inputFieldById('description').fill(updated_description);
+        await this.inputFieldById('Description').fill(updated_description);
         await expect(this.cancelButton).toBeVisible();
         await expect(this.updateButton).toBeEnabled();
         await this.updateButton.click();

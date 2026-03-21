@@ -104,17 +104,17 @@ const DashboardContent = () => {
 
             <div className="relative z-10 max-w-6xl mx-auto pb-20">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-gradient-to-br from-green-900/40 to-green-800/20 border border-green-500/30 rounded-2xl p-6 backdrop-blur-sm">
+                    <div id="totalIncomeCard" className="bg-gradient-to-br from-green-900/40 to-green-800/20 border border-green-500/30 rounded-2xl p-6 backdrop-blur-sm">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-green-400 font-semibold text-sm">Total Income</h3>
                             <div className="p-2 bg-green-500/20 rounded-lg">
                                 <ArrowDownLeft className="w-5 h-5 text-green-400" />
                             </div>
                         </div>
-                        <p className="text-2xl font-bold text-white">{formatCurrency(stats.totalIncome)}</p>
+                        <p id="totalIncome" className="text-2xl font-bold text-white">{formatCurrency(stats.totalIncome)}</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/30 rounded-2xl p-6 backdrop-blur-sm">
+                    <div id="totalExpenseCard" className="bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/30 rounded-2xl p-6 backdrop-blur-sm">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-red-400 font-semibold text-sm">Total Expense</h3>
                             <div className="p-2 bg-red-500/20 rounded-lg">
@@ -124,11 +124,11 @@ const DashboardContent = () => {
                         <p id="totalExpense" className="text-2xl font-bold text-white">{formatCurrency(stats.totalExpense)}</p>
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm">
+                    <div id="balanceCard" className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-blue-400 font-semibold text-sm">Balance</h3>
                         </div>
-                        <p className="text-2xl font-bold text-white">{formatCurrency(stats.balance)}</p>
+                        <p id="totalBalance" className="text-2xl font-bold text-white">{formatCurrency(stats.balance)}</p>
                     </div>
                 </div>
 
@@ -139,7 +139,7 @@ const DashboardContent = () => {
 
                     {lastTransactions.length > 0 ? (
                         <div className="overflow-x-auto">
-                            <table data-testid="resultsTable" className="w-full">
+                            <table id="recentTransactionsTable" data-testid="resultsTable" className="w-full">
                                 <thead>
                                     <tr className="border-b border-gray-700/50 text-gray-400 text-sm">
                                         <th className="px-8 py-4 text-left">Type</th>
@@ -151,8 +151,8 @@ const DashboardContent = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="text-gray-300">
-                                    {lastTransactions.map((transaction) => (
-                                        <tr key={transaction._id} className="border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors">
+                                    {lastTransactions.map((transaction, index) => (
+                                        <tr key={transaction._id} id={`transactionRow-${index}`} className="border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors">
                                             <td className="px-8 py-4 capitalize">{transaction.type}</td>
                                             <td className={`px-8 py-4 font-bold ${transaction.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
                                                 {formatCurrency(transaction.amount)}
@@ -162,10 +162,10 @@ const DashboardContent = () => {
                                             <td className="px-8 py-4">{formatDate(transaction.date)}</td>
                                             <td className="px-8 py-4">
                                                 <div className="flex gap-2">
-                                                    <button onClick={() => router.push(`/edit-transaction/${transaction._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
+                                                    <button id="EditBtn" onClick={() => router.push(`/edit-transaction/${transaction._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
                                                         <Edit2 className="w-4 h-4 text-blue-400" />
                                                     </button>
-                                                    <button onClick={() => handleDelete(transaction._id)} className="p-2 hover:bg-red-500/20 rounded-lg">
+                                                    <button id="DeleteBtn" onClick={() => handleDelete(transaction._id)} className="p-2 hover:bg-red-500/20 rounded-lg">
                                                         <Trash2 className="w-4 h-4 text-red-400" />
                                                     </button>
                                                 </div>
@@ -178,7 +178,7 @@ const DashboardContent = () => {
                     ) : (
                         <div className="px-8 py-16 text-center text-gray-400">
                             <p>No transactions yet</p>
-                            <button onClick={() => router.push("/add-transaction")} className="mt-4 bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg inline-flex items-center gap-2">
+                            <button id="AddBtn" onClick={() => router.push("/add-transaction")} className="mt-4 bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg inline-flex items-center gap-2">
                                 <Plus size={18} /> Add First Transaction
                             </button>
                         </div>

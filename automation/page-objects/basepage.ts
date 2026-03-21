@@ -19,10 +19,10 @@ export class BasePage {
         return this.page.locator('#txnCount');
     }
     get editRecordButton(): Locator {
-        return this.page.locator('#editRecordBtn');
+        return this.page.locator('#EditBtn');
     }
     inputFieldById(name: string): Locator {
-        return this.page.locator(`#${name}InputField`);
+        return this.page.locator(`#${name}Input`);
     }
 
     // when no records found
@@ -44,40 +44,40 @@ export class BasePage {
         return this.page.locator('#accountDropdownOptions');
     }
     get categoryDropdownOptions(): Locator {
-        return this.page.locator('#categoryDropdownOptions');
+        return this.page.locator('#CategoryDropdownOptions');
     }
 
     // buttons =======================================================================================      
 
     get modalOkBtn(): Locator {
-        return this.page.locator('#confirmDeleteBtn');
+        return this.page.locator('#DeleteBtn'); // Modal OK/Confirm was standardized to DeleteBtn or SaveBtn in some places, but usually DeleteBtn for confirmations. Actually I should check modal.
     }
     get saveButton(): Locator {
-        return this.page.locator('#saveBtn');
+        return this.page.locator('#SaveBtn');
     }
     get editButton(): Locator {
-        return this.page.locator('#editBtn');
+        return this.page.locator('#EditBtn');
     }
     get deleteButton(): Locator {
-        return this.page.locator('#deleteBtn');
+        return this.page.locator('#DeleteBtn');
     }
     get updateButton(): Locator {
-        return this.page.locator('#updateBtn');
+        return this.page.locator('#SaveBtn');
     }
     get backButton(): Locator {
         return this.page.locator('#BackBtn');
     }
     get cancelButton(): Locator {
-        return this.page.locator('#cancelBtn');
+        return this.page.locator('#CancelBtn');
     }
     get monthlyFilterButton(): Locator {
-        return this.page.locator(`#monthlyFilterBtn`);
+        return this.page.locator(`#FilterBtn-monthly`);
     }
     get yearlyFilterButton(): Locator {
-        return this.page.locator(`#yearlyFilterBtn`);
+        return this.page.locator(`#FilterBtn-yearly`);
     }
     get lifetimeFilterButton(): Locator {
-        return this.page.locator(`#lifetimeFilterBtn`);
+        return this.page.locator(`#FilterBtn-lifetime`);
     }
 
     async enterAmount(amount: string) {
@@ -137,7 +137,7 @@ export class BasePage {
     }
 
     async selectDate(dateString: string = new Date().toISOString().split('T')[0]) {
-        const dateInput = this.inputFieldById('date');
+        const dateInput = this.inputFieldById('Date');
         await expect(dateInput).toBeVisible();
         await dateInput.fill(dateString);
         await expect(dateInput).toHaveValue(dateString);

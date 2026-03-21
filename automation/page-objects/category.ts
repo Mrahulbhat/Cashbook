@@ -12,24 +12,24 @@ export class CategoryPage extends BasePage {
     }
 
     get addCategoryBtn(): Locator {
-        return this.page.locator('#addCategoryBtn');
+        return this.page.locator('#AddBtn');
     }
 
     //form fields
     get categoryNameInputField(): Locator {
-        return this.page.locator('#categoryNameInputField');
+        return this.page.locator('#NameInput');
     }
     get incomeCheckbox(): Locator {
-        return this.page.locator('#incomeCheckbox');
+        return this.page.locator('#TypeRadio-income');
     }
     get expenseCheckbox(): Locator {
-        return this.page.locator('#expenseCheckbox');
+        return this.page.locator('#TypeRadio-expense');
     }
     get parentCategoryDropdown(): Locator {
-        return this.page.locator('#parentCategoryDropdown');
+        return this.page.locator('#ParentDropdown');
     }
     get budgetInputField(): Locator {
-        return this.page.locator('#budgetInputField');
+        return this.page.locator('#BudgetInput');
     }
     get categoryDiv(): Locator {
         return this.page.locator('#categoryDiv');
@@ -78,8 +78,9 @@ export class CategoryPage extends BasePage {
         await page.waitForResponse((response) => response.url().includes(commonConstants.urls.newCategoryAPI) && response.status() === 201 && response.request().method() === "POST", { timeout: 15000 });
         await expect(page.getByText(commonConstants.toastMessages.CATEGORY_CREATED_SUCCESSFULLY)).toBeVisible();
 
-        //verify if account is visible in grid
-        await expect(this.page.locator('#categoryDiv' + category.name)).toBeVisible(); //verify if category is visible in grid
+        //verify if category is visible in grid
+        const slug = category.name.replace(/\s+/g, '-').toLowerCase();
+        await expect(this.page.locator(`#categoryCard-${slug}`)).toBeVisible(); //verify if category is visible in grid
     }
 
     async deleteAllCategories(page: Page) {
