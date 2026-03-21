@@ -48,7 +48,7 @@ const AddTransactionContent = () => {
                 date: new Date(formData.date),
             });
             toast.success("Transaction recorded successfully!");
-            router.push("/dashboard");
+            router.push("/transactions");
         } catch (error) {
             toast.error("Failed to add transaction");
         }

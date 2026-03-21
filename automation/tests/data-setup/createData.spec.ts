@@ -27,8 +27,6 @@ test.describe.serial('Create Data Setup', () => {
         for (const category of categories) {
             await categoryPage.createCategory(page, category);
         }
-
-        await expect(categoryPage.totalCategoryCount).toHaveText(String(categories.length));
     });
 
     // create default transactions

@@ -45,7 +45,7 @@ const EditTransactionContent = () => {
                 });
             } catch (error) {
                 toast.error("Failed to load data");
-                router.push("/dashboard");
+                router.push("/transactions");
             } finally {
                 setFetching(false);
             }
@@ -63,7 +63,7 @@ const EditTransactionContent = () => {
                 date: new Date(formData.date),
             });
             toast.success("Transaction updated!");
-            router.push("/dashboard");
+            router.push("/transactions");
         } catch (error) {
             toast.error("Update failed");
         } finally {

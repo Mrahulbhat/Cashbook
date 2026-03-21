@@ -1,6 +1,6 @@
 import { test } from '../fixtures/test-base.js';
 import { expect } from '@playwright/test';
-import { navigateToPage } from '../page-objects/common-functions.js';
+import { navigateToPage, generateRandomPrefix } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
 
 test.describe.serial('Account Related Tests', () => {
@@ -11,6 +11,8 @@ test.describe.serial('Account Related Tests', () => {
     });
 
     test('Create Account @BAT @ACCOUNT', async ({ page, accountsPage }) => {
+        const prefix = await generateRandomPrefix();
+        account.name = `${prefix}_${account.name}`;
 
         // create a account
         await accountsPage.createAccount(page, account);
