@@ -27,6 +27,10 @@ export class CategoryPage extends BasePage {
         return this.page.locator('#totalExpenseCategoryCount');
     }
 
+    get parentDropdown(): Locator {
+        return this.page.locator('#ParentDropdown');
+    }
+
     async createCategory(page: Page, category: { name: string; type: string; parentCategory: string; budget?: string; }) {
 
         await navigateToPage(page, commonConstants.pageName.CATEGORIES);
@@ -46,8 +50,8 @@ export class CategoryPage extends BasePage {
             await this.expenseRadio.click();
         }
 
-        await expect(this.inputFieldById('ParentDropdown')).toBeVisible();
-        await this.inputFieldById('ParentDropdown').selectOption(category.parentCategory);
+        await expect(this.parentDropdown).toBeVisible();
+        await this.parentDropdown.selectOption(category.parentCategory);
 
         if (category.budget) {
             await expect(this.budgetInput).toBeVisible();

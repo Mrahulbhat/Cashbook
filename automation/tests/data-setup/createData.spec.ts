@@ -6,6 +6,9 @@ import commonConstants from '../../constants/commonConstants.js';
 //ONLY FOR TESTING
 
 test.describe.serial('Create Data Setup', () => {
+    test.beforeEach(async ({ page, loginPage }) => {
+        await loginPage.loginUser();
+    });
 
     // create default accounts
     test('Setup default accounts @TEST', async ({ page, accountsPage }) => {
@@ -19,7 +22,6 @@ test.describe.serial('Create Data Setup', () => {
 
     // create default categories
     test('Setup default categories @TEST', async ({ page, categoryPage, loginPage }) => {
-        await loginPage.loginUser();
         const categories = commonConstants.CATEGORIES;
 
         for (const category of categories) {
@@ -31,7 +33,6 @@ test.describe.serial('Create Data Setup', () => {
 
     // create default transactions
     test('Setup default transactions @TEST', async ({ page, transactionPage, loginPage }) => {
-        await loginPage.loginUser();
         const transactions = commonConstants.TRANSACTIONS;
 
         for (const transaction of transactions) {

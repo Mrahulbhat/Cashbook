@@ -29,7 +29,7 @@ export class AccountsPage extends BasePage {
 
     async createAccount(page: Page, account: { name: string; balance: string }) {
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
-        await this.addButton.first().click();
+        await this.addButton.click();
         await page.waitForLoadState("networkidle");
 
         await expect(this.nameInput).toBeVisible();

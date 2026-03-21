@@ -56,10 +56,10 @@ export class BasePage {
 
     //dropdown containers=============================================================================
     get accountDropdownContainer(): Locator {
-        return this.page.locator('#accountDropdown');
+        return this.page.locator('#AccountDropdown');
     }
     get categoryDropdownContainer(): Locator {
-        return this.page.locator('#categoryDropdown');
+        return this.page.locator('#CategoryDropdown');
     }
     get accountDropdownOptions(): Locator {
         return this.page.locator('#accountDropdownOptions');

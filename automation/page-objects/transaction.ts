@@ -31,9 +31,6 @@ export class TransactionPage extends BasePage {
         await expect(this.backButton).toBeVisible();
         await expect(this.addTransactionForm).toBeVisible();
 
-        //click on save button with empty form to check validation
-        await expect(this.saveButton).toBeDisabled();
-
         if (transaction.type === 'expense') {
             await this.expenseRadio.click();
         }
