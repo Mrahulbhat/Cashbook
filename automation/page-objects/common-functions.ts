@@ -68,7 +68,7 @@ export async function waitForApiResponse(page: any, url: string) {
 }
 
 export async function generateRandomPrefix(length: number = 5): Promise<string> {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
     const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
