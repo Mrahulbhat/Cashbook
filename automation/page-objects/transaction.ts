@@ -24,8 +24,8 @@ export class TransactionPage extends BasePage {
         await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
 
         // Create a Transaction 
-        await expect(this.addButton).toBeVisible();
-        await this.addButton.click();
+        await expect(this.addButton.first()).toBeVisible();
+        await this.addButton.first().click();
         page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 200||304, { timeout: 15000 }),
 
         await expect(this.backButton).toBeVisible();
@@ -109,7 +109,7 @@ export class TransactionPage extends BasePage {
         ]);
 
         // Verify if it stays on the same page and count remains the same
-        await expect(this.addButton).toBeVisible();
+        await expect(this.addButton.first()).toBeVisible();
         const postCreationTxnCountText = await this.recordCountOnTable.innerText();
         expect(parseInt(postCreationTxnCountText)).toBe(parseInt(initialTxnCountText));
 

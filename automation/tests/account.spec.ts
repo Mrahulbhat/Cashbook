@@ -19,8 +19,8 @@ test.describe.serial('Account Related Tests', () => {
 
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
 
-        await expect(accountsPage.addAccountBtn).toBeVisible();
-        await accountsPage.addAccountBtn.click();
+        await expect(accountsPage.addButton.first()).toBeVisible();
+        await accountsPage.addButton.first().click();
         await accountsPage.inputFieldById('accountName').fill(account.name);
         await accountsPage.inputFieldById('balance').fill(account.balance);
         await accountsPage.saveButton.click();

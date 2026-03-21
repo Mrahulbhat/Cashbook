@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './basepage';
-import { navigateToPage } from './common-functions';
+import { navigateToPage, waitForApiResponse } from './common-functions';
 import commonConstants from '../constants/commonConstants';
 
 export class AccountsPage extends BasePage {
@@ -29,7 +29,7 @@ export class AccountsPage extends BasePage {
 
     async createAccount(page: Page, account: { name: string; balance: string }) {
         await navigateToPage(page, commonConstants.pageName.ACCOUNTS);
-        await this.addButton.click();
+        await this.addButton.first().click();
         await page.waitForLoadState("networkidle");
 
         await expect(this.nameInput).toBeVisible();
@@ -40,9 +40,7 @@ export class AccountsPage extends BasePage {
 
         await Promise.all([
             this.saveButton.click(),
-            page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newAccountAPI) &&
-                response.status() === 201
-                && response.request().method() === "POST", { timeout: 15000 }),
+            await waitForApiResponse(page, commonConstants.urls.newAccountAPI),
             expect(page.getByText(commonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY)).toBeVisible(),
         ]);
 
