@@ -71,7 +71,7 @@ export class BasePage {
     // buttons =======================================================================================      
 
     get modalOkBtn(): Locator {
-        return this.page.locator('#DeleteBtn'); // Modal OK/Confirm was standardized to DeleteBtn or SaveBtn in some places, but usually DeleteBtn for confirmations. Actually I should check modal.
+        return this.page.locator('#ConfirmationModal #DeleteBtn');
     }
     get addButton(): Locator {
         return this.page.locator('#AddBtn');

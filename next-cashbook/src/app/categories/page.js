@@ -5,19 +5,28 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2, Edit2, Loader } from "lucide-react";
 import { useCategoryStore } from "@/store/useCategoryStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Modal from "@/components/Modal";
 
 const CategoriesContent = () => {
     const router = useRouter();
     const { categories, loading, loadCategories, deleteCategory } = useCategoryStore();
     const [filter, setFilter] = useState("all");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
     useEffect(() => {
         loadCategories();
     }, [loadCategories]);
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this category?")) {
-            await deleteCategory(id);
+    const handleDelete = (id) => {
+        setSelectedCategoryId(id);
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (selectedCategoryId) {
+            await deleteCategory(selectedCategoryId);
+            setSelectedCategoryId(null);
         }
     };
 
@@ -103,6 +112,16 @@ const CategoriesContent = () => {
                         </button>
                     </div>
                 )}
+
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleConfirmDelete}
+                    title="Delete Category"
+                    message="Are you sure you want to delete this category? All transactions in this category will be preserved but uncategorized."
+                    confirmText="Delete"
+                    type="danger"
+                />
             </div>
         </div>
     );
