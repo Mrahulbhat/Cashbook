@@ -7,11 +7,14 @@ import { useTransactionStore } from "@/store/useTransactionStore";
 import { useAccountStore } from "@/store/useAccountStore";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Modal from "@/components/Modal";
 
 const DashboardContent = () => {
     const router = useRouter();
     const { transactions, fetchTransactions, deleteTransaction, loading } = useTransactionStore();
     const { accounts, fetchAccounts } = useAccountStore();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTransactionId, setSelectedTransactionId] = useState(null);
 
     const [lastTransactions, setLastTransactions] = useState([]);
     const [filter, setFilter] = useState("monthly");
@@ -66,10 +69,16 @@ const DashboardContent = () => {
         }
     }, [transactions]);
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this transaction?")) {
-            await deleteTransaction(id);
+    const handleDelete = (id) => {
+        setSelectedTransactionId(id);
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (selectedTransactionId) {
+            await deleteTransaction(selectedTransactionId);
             await loadData();
+            setSelectedTransactionId(null);
         }
     };
 
@@ -184,6 +193,16 @@ const DashboardContent = () => {
                         </div>
                     )}
                 </div>
+
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleConfirmDelete}
+                    title="Delete Transaction"
+                    message="Are you sure you want to delete this transaction? This action cannot be undone."
+                    confirmText="Delete"
+                    type="danger"
+                />
             </div>
         </div>
     );

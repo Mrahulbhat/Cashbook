@@ -8,13 +8,13 @@ const commonConstants = {
 
     urls: {
         baseURL: 'https://cashbook-kappa.vercel.app', //prod url
-        loginApi: '/login',
-        accountsAPI: '/account',
-        transactionAPI: '/transaction',
-        categoriesAPI: '/category',
-        newTransactionAPI: '/transaction/new',
-        newAccountAPI: '/account/new',
-        newCategoryAPI: '/category/new',
+        loginApi: '/api/auth/login',
+        accountsAPI: '/api/accounts',
+        transactionAPI: '/api/transactions',
+        categoriesAPI: '/api/categories',
+        newTransactionAPI: '/api/transactions',
+        newAccountAPI: '/api/accounts',
+        newCategoryAPI: '/api/categories',
     },
 
     pageName: {
@@ -27,19 +27,19 @@ const commonConstants = {
     },
 
     toastMessages: {
-        TRANSACTION_ADDED_SUCCESSFULLY: 'Transaction added successfully',
-        TRANSACTION_UPDATED_SUCCESSFULLY: 'Transaction updated successfully',
+        TRANSACTION_ADDED_SUCCESSFULLY: 'Transaction recorded successfully!',
+        TRANSACTION_UPDATED_SUCCESSFULLY: 'Transaction updated!',
         TRANSACTION_DELETED_SUCCESSFULLY: 'Transaction deleted successfully',
 
-        ACCOUNT_CREATED_SUCCESSFULLY: 'Account created successfully',
+        ACCOUNT_CREATED_SUCCESSFULLY: 'Account created successfully!',
         ACCOUNT_ALREADY_EXISTS: 'Account with this name already exists',
         ACCOUNT_DELETED_SUCCESSFULLY: 'Account deleted successfully',
-        ACCOUNT_UPDATED_SUCCESSFULLY: 'Account updated successfully',
+        ACCOUNT_UPDATED_SUCCESSFULLY: 'Account updated successfully!',
 
-        CATEGORY_CREATED_SUCCESSFULLY: 'Category created successfully',
+        CATEGORY_CREATED_SUCCESSFULLY: 'Category created successfully!',
         CATEGORY_ALREADY_EXISTS: 'Category with this name already exists',
         CATEGORY_DELETED_SUCCESSFULLY: 'Category deleted successfully',
-        CATEGORY_UPDATED_SUCCESSFULLY: 'Category updated successfully',
+        CATEGORY_UPDATED_SUCCESSFULLY: 'Category updated!',
     },
 
     //update all to test once testing is complete

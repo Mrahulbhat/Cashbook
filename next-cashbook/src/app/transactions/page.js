@@ -10,6 +10,8 @@ const TransactionsContent = () => {
     const router = useRouter();
     const { transactions, fetchTransactions, deleteTransaction, loading } = useTransactionStore();
     const [filter, setFilter] = useState("monthly");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTransactionId, setSelectedTransactionId] = useState(null);
 
     useEffect(() => {
         fetchTransactions();
@@ -23,9 +25,15 @@ const TransactionsContent = () => {
         return true;
     }).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Delete this transaction?")) {
-            await deleteTransaction(id);
+    const handleDelete = (id) => {
+        setSelectedTransactionId(id);
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (selectedTransactionId) {
+            await deleteTransaction(selectedTransactionId);
+            setSelectedTransactionId(null);
         }
     };
 
@@ -103,6 +111,16 @@ const TransactionsContent = () => {
                         <div className="p-16 text-center text-gray-400"><p>No transactions found</p></div>
                     )}
                 </div>
+
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleConfirmDelete}
+                    title="Delete Transaction"
+                    message="Are you sure you want to delete this transaction? This action cannot be undone."
+                    confirmText="Delete"
+                    type="danger"
+                />
             </div>
         </div>
     );
