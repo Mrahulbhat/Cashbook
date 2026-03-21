@@ -56,10 +56,14 @@ export async function navigateToPage(page: any, pageName: string) {
 
 export async function waitForApiResponse(page: any, url: string) {
     try {
-        await page.waitForResponse((response: any) => response.url().includes(url) && response.status() === 200 || 304, { timeout: 15000 });
+        await page.waitForResponse((response: any) => 
+            response.url().includes(url) && 
+            [200, 201, 304].includes(response.status()), 
+            { timeout: 15000 }
+        );
     }
     catch {
-        console.log('Intercept might have arrived before');
+        console.log('Intercept might have arrived before or timeout');
     }
 }
 

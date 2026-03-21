@@ -40,7 +40,7 @@ export class AccountsPage extends BasePage {
 
         await Promise.all([
             this.saveButton.click(),
-            await waitForApiResponse(page, commonConstants.urls.newAccountAPI),
+            waitForApiResponse(page, commonConstants.urls.newAccountAPI),
             expect(page.getByText(commonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY)).toBeVisible(),
         ]);
 

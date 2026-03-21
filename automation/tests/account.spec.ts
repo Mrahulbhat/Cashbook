@@ -21,8 +21,8 @@ test.describe.serial('Account Related Tests', () => {
 
         await expect(accountsPage.addButton.first()).toBeVisible();
         await accountsPage.addButton.first().click();
-        await accountsPage.inputFieldById('accountName').fill(account.name);
-        await accountsPage.inputFieldById('balance').fill(account.balance);
+        await accountsPage.nameInput.fill(account.name);
+        await accountsPage.balanceInput.fill(account.balance);
         await accountsPage.saveButton.click();
 
         //get status code 400 saying record name already exists
