@@ -79,14 +79,14 @@ const CategoriesContent = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredCategories.map((category) => (
                         <div id={`categoryCard-${category.name.replace(/\s+/g, '-').toLowerCase()}`} key={category._id} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 backdrop-blur-sm hover:border-purple-500/30 transition-all">
-                            <div className="flex items-start justify-between mb-4">
-                                <div>
-                                    <h3 className="text-white font-bold text-lg">{category.name}</h3>
+                            <div className="flex items-start justify-between mb-4 gap-4">
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="text-white font-bold text-lg truncate">{category.name}</h3>
                                     <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold ${category.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                                         {category.type}
                                     </span>
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-shrink-0">
                                     <button id="EditBtn" onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
                                         <Edit2 className="w-4 h-4 text-blue-400" />
                                     </button>
