@@ -109,54 +109,29 @@ export class BasePage {
         await expect(this.amountInput).toHaveValue(amount);
     }
     async selectAccount(optionText: string) {
-        await this.accountDropdownContainer.click();
+        await expect(this.accountDropdownContainer).toBeVisible();
         try {
-            await this.accountDropdownContainer.selectOption(optionText);
+            // Wait for at least one option beyond the placeholder
+            await expect(this.accountDropdownContainer.locator('option').nth(1)).toBeAttached({ timeout: 15000 });
+        } catch (e) {
+            const currentOptions = await this.accountDropdownContainer.locator('option').allTextContents();
+            console.error(`Timeout waiting for options in Account dropdown. Current options: [${currentOptions.join(', ')}]`);
+            throw e;
         }
-        catch {
-            const dropdownOptions = this.accountDropdownOptions;
-            await dropdownOptions.first().waitFor({ state: 'attached' });
-            const rawOptions = await dropdownOptions.allTextContents();
-            // Normalize text (remove amount in brackets)
-            const normalizedOptions = rawOptions.map(text =>
-                text.replace(/\s*\(.*?\)/, '').trim()
-            );
-            expect(normalizedOptions).toContain('Cash');
-            const optionIndex = normalizedOptions.findIndex(
-                text => text === optionText
-            );
-            expect(optionIndex).toBeGreaterThanOrEqual(0);
-            await this.accountDropdownContainer.selectOption({ index: optionIndex + 1 });
-            await this.page.waitForTimeout(500);
-            await expect(this.accountDropdownContainer).toContainText(optionText);
-        }
+        await this.accountDropdownContainer.selectOption({ label: optionText });
     }
 
     async selectCategory(optionText: string) {
-        await this.categoryDropdownContainer.click();
+        await expect(this.categoryDropdownContainer).toBeVisible();
         try {
-            await this.categoryDropdownContainer.selectOption(optionText);
+            // Wait for at least one option beyond the placeholder
+            await expect(this.categoryDropdownContainer.locator('option').nth(1)).toBeAttached({ timeout: 15000 });
+        } catch (e) {
+            const currentOptions = await this.categoryDropdownContainer.locator('option').allTextContents();
+            console.error(`Timeout waiting for options in Category dropdown. Current options: [${currentOptions.join(', ')}]`);
+            throw e;
         }
-        catch {
-            const dropdownOptions = this.categoryDropdownOptions;
-            await dropdownOptions.first().waitFor({ state: 'attached' });
-            const rawOptions = await dropdownOptions.allTextContents();
-            console.log('Category Options:', rawOptions);
-
-            // Normalize text (remove amount in brackets)
-            const normalizedOptions = rawOptions.map(text =>
-                text.replace(/\s*\(.*?\)/, '').trim()
-            );
-            console.log('Normalized Category Options:', normalizedOptions);
-            expect(normalizedOptions).toContain(optionText);
-            const optionIndex = normalizedOptions.findIndex(
-                text => text === optionText
-            );
-            expect(optionIndex).toBeGreaterThanOrEqual(0);
-            await this.categoryDropdownContainer.selectOption({ index: optionIndex + 1 });
-            await this.page.waitForTimeout(500);
-            await expect(this.categoryDropdownContainer).toContainText(optionText);
-        }
+        await this.categoryDropdownContainer.selectOption({ label: optionText });
     }
 
     async selectDate(dateString: string = new Date().toISOString().split('T')[0]) {

@@ -24,4 +24,11 @@ test.describe('Delete Data Setup', () => {
         await expect(categoryPage.addButton).toBeVisible();
         await categoryPage.deleteAllCategories(page);
     });
+
+    // delete all transactions in DB
+    test('Delete all transactions in DB @TEST', async ({ page, transactionPage }) => {
+        await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
+        await expect(transactionPage.recordCountOnTable).toBeVisible();
+        await transactionPage.deleteAllTransactions(page);
+    });
 });

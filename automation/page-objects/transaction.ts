@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './basepage';
 import commonConstants from '../constants/commonConstants';
-import { navigateToPage } from './common-functions';
+import { navigateToPage, waitForApiResponse } from './common-functions';
 
 export class TransactionPage extends BasePage {
     readonly page: Page;
@@ -26,9 +26,10 @@ export class TransactionPage extends BasePage {
         // Create a Transaction 
         await expect(this.addButton).toBeVisible();
         await this.addButton.click();
-        page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 200||304, { timeout: 15000 }),
-
-        await expect(this.backButton).toBeVisible();
+        await Promise.all([
+            waitForApiResponse(page, commonConstants.urls.categoriesAPI),
+            waitForApiResponse(page, commonConstants.urls.accountsAPI)
+        ]);
         await expect(this.addTransactionForm).toBeVisible();
 
         if (transaction.type === 'expense') {
@@ -123,4 +124,32 @@ export class TransactionPage extends BasePage {
         });
         await expect(this.firstRowOfGrid).toContainText(formattedDate1);
     };
+ 
+    async deleteAllTransactions(page: Page) {
+        const initialTxnCountText = await this.recordCountOnTable.innerText();
+        const initialTxnCount = parseInt(initialTxnCountText);
+
+        if (await this.page.getByText('No transactions found').isVisible()) {
+            console.log('No transactions found to delete.');
+            return;
+        }
+
+        console.log(`Found ${initialTxnCount} transactions. Starting deletion...`);
+
+        for (let i = 0; i < initialTxnCount; i++) {
+            await expect(this.deleteButton.first()).toBeVisible();
+            await this.deleteButton.first().click();
+            await expect(this.modalOkBtn).toBeVisible();
+            await this.modalOkBtn.click();
+            await Promise.all([
+                page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200, { timeout: 10000 }),
+                expect(page.getByText(commonConstants.toastMessages.TRANSACTION_DELETED_SUCCESSFULLY)).toBeVisible()
+            ]);
+            await expect(this.recordCountOnTable).toBeVisible();
+        }
+
+        // Verify all transactions are deleted
+        await expect(this.recordCountOnTable).toHaveText('0');
+        console.log('All transactions deleted successfully.');
+    }
 }
