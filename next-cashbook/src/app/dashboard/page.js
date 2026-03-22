@@ -42,32 +42,46 @@ const DashboardContent = () => {
     };
 
     useEffect(() => {
-        if (transactions.length > 0) {
-            const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
-            setLastTransactions(sorted.slice(0, 5));
+        const filteredTransactions = transactions.filter(t => {
+            const d = new Date(t.date);
+            const now = new Date();
+            
+            if (filter === 'daily') {
+                return d.getDate() === now.getDate() && 
+                       d.getMonth() === now.getMonth() && 
+                       d.getFullYear() === now.getFullYear();
+            }
+            if (filter === 'monthly') {
+                return d.getMonth() === now.getMonth() && 
+                       d.getFullYear() === now.getFullYear();
+            }
+            if (filter === 'yearly') {
+                return d.getFullYear() === now.getFullYear();
+            }
+            return true;
+        });
 
-            let totalIncome = 0;
-            let totalExpense = 0;
+        const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+        setLastTransactions(sorted.slice(0, 5));
 
-            transactions.forEach((t) => {
-                const amount = Number(t.amount);
-                if (t.type.toLowerCase() === "income") {
-                    totalIncome += amount;
-                } else {
-                    totalExpense += amount;
-                }
-            });
+        let totalIncome = 0;
+        let totalExpense = 0;
 
-            setStats({
-                totalIncome,
-                totalExpense,
-                balance: totalIncome - totalExpense,
-            });
-        } else {
-            setLastTransactions([]);
-            setStats({ totalIncome: 0, totalExpense: 0, balance: 0 });
-        }
-    }, [transactions]);
+        filteredTransactions.forEach((t) => {
+            const amount = Number(t.amount);
+            if (t.type.toLowerCase() === "income") {
+                totalIncome += amount;
+            } else {
+                totalExpense += amount;
+            }
+        });
+
+        setStats({
+            totalIncome,
+            totalExpense,
+            balance: totalIncome - totalExpense,
+        });
+    }, [transactions, filter]);
 
     const handleDelete = (id) => {
         setSelectedTransactionId(id);
@@ -112,6 +126,20 @@ const DashboardContent = () => {
             </div>
 
             <div className="relative z-10 max-w-6xl mx-auto pb-20">
+                <div className="flex justify-center mb-8">
+                    <div className="flex bg-gray-900/80 p-1.5 rounded-2xl border border-gray-800 shadow-2xl backdrop-blur-md">
+                        {['daily', 'monthly', 'yearly', 'lifetime'].map((f) => (
+                            <button
+                                key={f}
+                                onClick={() => setFilter(f)}
+                                className={`px-6 py-2.5 rounded-xl capitalize text-sm font-semibold transition-all duration-300 ${filter === f ? 'bg-green-600 text-white shadow-lg shadow-green-900/40 transform scale-105' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'}`}
+                            >
+                                {f}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div id="totalIncomeCard" className="bg-gradient-to-br from-green-900/40 to-green-800/20 border border-green-500/30 rounded-2xl p-6 backdrop-blur-sm">
                         <div className="flex items-center justify-between mb-4">
