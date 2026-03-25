@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { Mail, Lock, User, LogIn, Loader, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, LogIn, Loader, Eye, EyeOff, Globe, Github, Linkedin } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -77,13 +77,13 @@ const SignupPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden flex items-center justify-center p-4">
-            <div className="absolute inset-0">
+        <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black relative overflow-y-auto flex flex-col items-center justify-start p-4 scrollbar-hide">
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-20 left-10 w-72 h-72 bg-green-500/10 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
             </div>
 
-            <div className="relative z-10 w-full max-w-md">
+            <div className="relative z-10 w-full max-w-md my-auto pt-10">
                 <div className="bg-gradient-to-b from-gray-800/50 to-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-2xl p-8 shadow-2xl">
                     <div className="mb-8 text-center">
                         <h1 id="signupPageTitle" className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 via-emerald-400 to-green-400 bg-clip-text text-transparent">
@@ -216,6 +216,20 @@ const SignupPage = () => {
                         Already have an account?{" "}
                         <a id="LoginLink" href="/login" className="text-green-400 hover:text-green-300 font-semibold transition-colors">Login here</a>
                     </p>
+                </div>
+                <div className="py-12 text-center">
+                    <p className="text-gray-500 text-sm mb-4">Developed by <span className="text-green-400 font-semibold tracking-wide">M Rahul Bhat</span></p>
+                    <div className="flex justify-center gap-6">
+                        <a href="#" className="p-2.5 bg-gray-800/40 hover:bg-gray-800/80 border border-gray-700/50 hover:border-green-500/30 rounded-xl text-gray-400 hover:text-green-400 transition-all duration-300 transform hover:-translate-y-1 group">
+                            <Globe size={18} className="group-hover:animate-pulse" />
+                        </a>
+                        <a href="#" className="p-2.5 bg-gray-800/40 hover:bg-gray-800/80 border border-gray-700/50 hover:border-green-500/30 rounded-xl text-gray-400 hover:text-green-400 transition-all duration-300 transform hover:-translate-y-1 group">
+                            <Github size={18} />
+                        </a>
+                        <a href="#" className="p-2.5 bg-gray-800/40 hover:bg-gray-800/80 border border-gray-700/50 hover:border-green-500/30 rounded-xl text-gray-400 hover:text-green-400 transition-all duration-300 transform hover:-translate-y-1 group">
+                            <Linkedin size={18} />
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
