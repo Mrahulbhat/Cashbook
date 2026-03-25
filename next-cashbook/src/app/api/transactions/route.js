@@ -18,7 +18,7 @@ export async function GET(req) {
         const transactions = await Transaction.find({ userId: user.userId })
             .populate('account')
             .populate('category')
-            .sort({ date: -1 });
+            .sort({ date: -1, createdAt: -1 });
 
         return NextResponse.json(transactions, { status: 200 });
     } catch (error) {

@@ -61,7 +61,11 @@ const DashboardContent = () => {
             return true;
         });
 
-        const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sorted = [...transactions].sort((a, b) => {
+            const dateCompare = new Date(b.date) - new Date(a.date);
+            if (dateCompare !== 0) return dateCompare;
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        });
         setLastTransactions(sorted.slice(0, 5));
 
         let totalIncome = 0;

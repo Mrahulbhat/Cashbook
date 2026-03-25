@@ -24,7 +24,11 @@ const TransactionsContent = () => {
         if (filter === 'monthly') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         if (filter === 'yearly') return d.getFullYear() === now.getFullYear();
         return true;
-    }).sort((a, b) => new Date(b.date) - new Date(a.date));
+    }).sort((a, b) => {
+        const dateCompare = new Date(b.date) - new Date(a.date);
+        if (dateCompare !== 0) return dateCompare;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
     const handleDelete = (id) => {
         setSelectedTransactionId(id);
