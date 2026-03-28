@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, TrendingUp, Target, PieChart, Loader, Activity, CalendarDays, Wallet, ArrowUpRight, ArrowDownRight, Award, List, DollarSign } from "lucide-react";
+import { ArrowLeft, TrendingUp, Target, PieChart, Loader, Activity, CalendarDays, Wallet, ArrowUpRight, ArrowDownRight, Award, List, DollarSign, Database } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { useCategoryStore } from "@/store/useCategoryStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -52,10 +52,24 @@ const StatisticsContent = () => {
     const { categories, loadCategories, loading: catLoading } = useCategoryStore();
 
     const [filter, setFilter] = useState("monthly");
+    const [dbStats, setDbStats] = useState(null);
 
     useEffect(() => {
         fetchTransactions();
         loadCategories();
+
+        const fetchDbStats = async () => {
+            try {
+                const res = await fetch('/api/db-stats');
+                const data = await res.json();
+                if (data.success) {
+                    setDbStats(data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch DB stats", error);
+            }
+        };
+        fetchDbStats();
     }, [fetchTransactions, loadCategories]);
 
     const stats = useMemo(() => {
@@ -356,7 +370,7 @@ const StatisticsContent = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="bg-gray-900/40 border border-gray-800 rounded-3xl p-6 sm:p-8 flex items-center gap-6 group hover:border-gray-700 transition-colors">
                         <div className="p-4 bg-purple-500/10 rounded-2xl group-hover:bg-purple-500/20 transition-colors">
                             <Award className="text-purple-400 w-10 h-10" />
@@ -385,6 +399,30 @@ const StatisticsContent = () => {
                             <p className="text-gray-400 text-sm font-medium mb-1">Total Transactions</p>
                             <p className="text-white font-bold text-3xl">{stats.transactionCount}</p>
                             <p className="text-gray-500 text-sm mt-1">Processed in this period</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-gray-900/40 border border-gray-800 rounded-3xl p-6 sm:p-8 flex items-center gap-6 group hover:border-gray-700 transition-colors">
+                        <div className="p-4 bg-green-500/10 rounded-2xl group-hover:bg-green-500/20 transition-colors flex-shrink-0">
+                            <Database className="text-green-400 w-10 h-10" />
+                        </div>
+                        <div className="w-full">
+                            <p className="text-gray-400 text-sm font-medium mb-1">Free Storage (M0)</p>
+                            {dbStats ? (
+                                <>
+                                    <p className="text-white font-bold text-3xl">
+                                        {Math.max(0, ((512 * 1024 * 1024 - (dbStats.dataSize + dbStats.indexSize || 0)) / (1024 * 1024))).toFixed(1)} <span className="text-lg font-medium text-gray-400">MB</span>
+                                    </p>
+                                    <div className="w-full bg-gray-800/50 h-1.5 rounded-full mt-3 overflow-hidden">
+                                        <div className="bg-gradient-to-r from-green-500 to-emerald-400 h-full rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]" style={{ width: `${Math.min((((dbStats.dataSize + dbStats.indexSize || 0)) / (512 * 1024 * 1024)) * 100, 100)}%` }}></div>
+                                    </div>
+                                    <p className="text-gray-500 text-xs mt-2 flex justify-between font-medium">
+                                        <span>Used: {(((dbStats.dataSize + dbStats.indexSize || 0)) / (1024 * 1024)).toFixed(2)} MB</span>
+                                    </p>
+                                </>
+                            ) : (
+                                <p className="text-gray-500 text-sm mt-1 flex items-center gap-2"><Loader size={14} className="animate-spin text-green-500" /> Loading DB...</p>
+                            )}
                         </div>
                     </div>
                 </div>
