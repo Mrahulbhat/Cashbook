@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
+import AIAssistant from "@/components/AIAssistant";
 
 /**
  * Conditionally renders the app shell (Navbar + Sidebar) only
@@ -18,7 +19,7 @@ export default function AppShell({ children }) {
     }
 
     return (
-        <div className="h-screen flex flex-col">
+        <div className="h-screen flex flex-col relative">
             <Navbar />
             <div className="flex flex-1 bg-black overflow-hidden">
                 <Sidebar />
@@ -26,6 +27,9 @@ export default function AppShell({ children }) {
                     {children}
                 </main>
             </div>
+            
+            {/* AI Floating Assistant */}
+            <AIAssistant />
         </div>
     );
 }
