@@ -8,6 +8,7 @@ import { useAccountStore } from "@/store/useAccountStore";
 import { useCategoryStore } from "@/store/useCategoryStore";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import QuickCreateModal from "@/components/QuickCreateModal";
 
 const AddTransactionContent = () => {
     const router = useRouter();
@@ -24,6 +25,11 @@ const AddTransactionContent = () => {
         account: "",
     });
 
+    const [modalState, setModalState] = useState({
+        isOpen: false,
+        type: 'account', // 'account' or 'category'
+    });
+
     useEffect(() => {
         fetchAccounts();
         loadCategories();
@@ -31,7 +37,25 @@ const AddTransactionContent = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        
+        if (value === "ADD_NEW_ACCOUNT") {
+            setModalState({ isOpen: true, type: 'account' });
+            return;
+        }
+        if (value === "ADD_NEW_CATEGORY") {
+            setModalState({ isOpen: true, type: 'category' });
+            return;
+        }
+
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleQuickCreateSuccess = (id, type) => {
+        if (type === 'account') {
+            setFormData(prev => ({ ...prev, account: id }));
+        } else if (type === 'category') {
+            setFormData(prev => ({ ...prev, category: id }));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -103,14 +127,24 @@ const AddTransactionContent = () => {
                                 <label className="block text-sm font-semibold text-gray-400 mb-2">Account *</label>
                                 <select id="AccountDropdown" name="account" value={formData.account} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
                                     <option value="">Select Account</option>
-                                    {accounts.map(acc => <option key={acc._id} value={acc._id}>{acc.name}</option>)}
+                                    <optgroup label="Actions">
+                                        <option value="ADD_NEW_ACCOUNT">+ Add New Account</option>
+                                    </optgroup>
+                                    <optgroup label="Existing Accounts">
+                                        {accounts.map(acc => <option key={acc._id} value={acc._id}>{acc.name}</option>)}
+                                    </optgroup>
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-400 mb-2">Category *</label>
                                 <select id="CategoryDropdown" name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
                                     <option value="">Select Category</option>
-                                    {filteredCategories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+                                    <optgroup label="Actions">
+                                        <option value="ADD_NEW_CATEGORY">+ Add New Category</option>
+                                    </optgroup>
+                                    <optgroup label="Existing Categories">
+                                        {filteredCategories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>
@@ -134,6 +168,14 @@ const AddTransactionContent = () => {
                     </form>
                 </div>
             </div>
+
+            <QuickCreateModal 
+                isOpen={modalState.isOpen}
+                onClose={() => setModalState({ ...modalState, isOpen: false })}
+                type={modalState.type}
+                onSuccess={handleQuickCreateSuccess}
+                initialType={formData.type}
+            />
         </div>
     );
 };
