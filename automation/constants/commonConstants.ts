@@ -40,6 +40,9 @@ const commonConstants = {
         CATEGORY_ALREADY_EXISTS: 'Category with this name already exists',
         CATEGORY_DELETED_SUCCESSFULLY: 'Category deleted successfully',
         CATEGORY_UPDATED_SUCCESSFULLY: 'Category updated!',
+
+        PHONE_ALREADY_REGISTERED: 'Phone number already registered',
+        LOGIN_FAILED: 'Invalid phone or password',
     },
 
     //update all to test once testing is complete
