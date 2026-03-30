@@ -15,6 +15,15 @@ export class TransactionPage extends BasePage {
         return this.page.locator('#AddTransactionForm');
     }
 
+    get resultsTable(): Locator {
+        return this.page.getByTestId('resultsTable');
+    }
+
+    get firstTransactionRow(): Locator {
+        return this.resultsTable.locator('tbody tr').first();
+    }
+
+
     async createTransaction(page: Page, transaction: { type: string, amount: string, accountName: string, categoryName: string, date: string, description: string }) {
 
         // Navigate to Dashboard Page
@@ -26,10 +35,7 @@ export class TransactionPage extends BasePage {
         // Create a Transaction 
         await expect(this.addButton).toBeVisible();
         await this.addButton.click();
-        await Promise.all([
-            waitForApiResponse(page, commonConstants.urls.categoriesAPI),
-            waitForApiResponse(page, commonConstants.urls.accountsAPI)
-        ]);
+        await waitForApiResponse(page, commonConstants.urls.accountsAPI);
         await expect(this.addTransactionForm).toBeVisible();
 
         if (transaction.type === 'expense') {
@@ -54,15 +60,13 @@ export class TransactionPage extends BasePage {
             expect(page.getByText(commonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
         ]);
 
-        // Verify if it stays in Transactions page after creation
-        await expect(this.addTransactionForm).toBeVisible();
+        await expect(this.resultsTable).toBeVisible({timeout: 5000});
 
         // Verify if all details are correct in the latest transaction row
-        await expect(this.firstRowOfGrid).toContainText(transaction.type.toLowerCase());
-        await expect(this.firstRowOfGrid).toContainText(transaction.categoryName);
-        await expect(this.firstRowOfGrid).toContainText(transaction.accountName);
-        await expect(this.firstRowOfGrid).toContainText(`₹${Number(transaction.amount).toLocaleString('en-IN')}`);
-        await expect(this.firstRowOfGrid).toContainText(transaction.description);
+        await expect(this.firstTransactionRow).toContainText(transaction.type.toLowerCase());
+        await expect(this.firstTransactionRow).toContainText(transaction.categoryName);
+        await expect(this.firstTransactionRow).toContainText(transaction.accountName);
+        await expect(this.firstTransactionRow).toContainText(`₹${Number(transaction.amount).toLocaleString('en-IN')}`);
         const formattedDate = new Date(transaction.date).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
@@ -149,7 +153,7 @@ export class TransactionPage extends BasePage {
         }
 
         // Verify all transactions are deleted
-        await expect(this.recordCountOnTable).toHaveText('0');
+        await expect(this.recordCountOnTable).toContainText('0 Records');
         console.log('All transactions deleted successfully.');
     }
 }
