@@ -2,14 +2,19 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, TrendingUp, Target, PieChart, Loader, Activity, CalendarDays, Wallet, ArrowUpRight, ArrowDownRight, Award, List, DollarSign, Database } from "lucide-react";
+import { 
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
+    Cell, PieChart as RechartsPieChart, Pie, Legend, BarChart, Bar, ResponsiveContainer as RC,
+    ComposedChart, Line
+} from 'recharts';
+import { 
+    ArrowLeft, TrendingUp, Target, PieChart, Loader, Activity, CalendarDays, Wallet, 
+    ArrowUpRight, ArrowDownRight, Award, List, DollarSign, Database, BarChart3, 
+    Calendar, Zap, Clock, Info, ChevronRight, ChevronDown, CheckCircle2, AlertCircle, TrendingDown
+} from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { useCategoryStore } from "@/store/useCategoryStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { 
-    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-    Cell, PieChart as RechartsPieChart, Pie, Legend
-} from 'recharts';
 
 const COLORS = ['#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6'];
 
@@ -74,13 +79,16 @@ const StatisticsContent = () => {
 
     const stats = useMemo(() => {
         const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
         const filtered = transactions.filter(t => {
             if (filter === 'monthly') {
                 const d = new Date(t.date);
-                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
             }
             if (filter === 'yearly') {
-                return new Date(t.date).getFullYear() === now.getFullYear();
+                return new Date(t.date).getFullYear() === currentYear;
             }
             return true;
         });
@@ -88,11 +96,11 @@ const StatisticsContent = () => {
         const prevFiltered = transactions.filter(t => {
             if (filter === 'monthly') {
                 const d = new Date(t.date);
-                return d.getMonth() === (now.getMonth() === 0 ? 11 : now.getMonth() - 1) && 
-                       d.getFullYear() === (now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear());
+                return d.getMonth() === (currentMonth === 0 ? 11 : currentMonth - 1) && 
+                       d.getFullYear() === (currentMonth === 0 ? currentYear - 1 : currentYear);
             }
             if (filter === 'yearly') {
-                return new Date(t.date).getFullYear() === now.getFullYear() - 1;
+                return new Date(t.date).getFullYear() === currentYear - 1;
             }
             return false;
         });
@@ -100,9 +108,31 @@ const StatisticsContent = () => {
         let totalIncome = 0;
         let totalExpense = 0;
         const categoryMap = {};
-        
         const chartMap = {};
+        const weekdayMap = { 'Sun': 0, 'Mon': 0, 'Tue': 0, 'Wed': 0, 'Thu': 0, 'Fri': 0, 'Sat': 0 };
+        const monthMap = {}; // For multi-month comparison
 
+        // Process all transactions for month-wise comparison (all time or current year)
+        transactions.forEach(t => {
+            const amount = Number(t.amount);
+            const d = new Date(t.date);
+            const mKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            const mName = d.toLocaleString('default', { month: 'short', year: '2-digit' });
+
+            if (!monthMap[mKey]) {
+                monthMap[mKey] = { key: mKey, name: mName, Income: 0, Expense: 0, Savings: 0, count: 0 };
+            }
+
+            if (t.type === 'income') {
+                monthMap[mKey].Income += amount;
+            } else {
+                monthMap[mKey].Expense += amount;
+            }
+            monthMap[mKey].Savings = monthMap[mKey].Income - monthMap[mKey].Expense;
+            monthMap[mKey].count += 1;
+        });
+
+        // Process active filter transactions
         filtered.forEach(t => {
             const amount = Number(t.amount);
             const d = new Date(t.date);
@@ -127,17 +157,24 @@ const StatisticsContent = () => {
                 totalExpense += amount;
                 chartMap[timeKey].Expense += amount;
                 
+                const dayName = d.toLocaleString('default', { weekday: 'short' });
+                weekdayMap[dayName] = (weekdayMap[dayName] || 0) + amount;
+
                 const catName = t.category?.name || 'Uncategorized';
                 if (!categoryMap[catName]) {
-                    categoryMap[catName] = { name: catName, value: 0 };
+                    categoryMap[catName] = { name: catName, value: 0, budget: Number(t.category?.budget) || 0 };
                 }
                 categoryMap[catName].value += amount;
             }
         });
 
+        const monthWiseComparison = Object.values(monthMap)
+            .sort((a, b) => a.key.localeCompare(b.key))
+            .slice(-12); // Last 12 months
+
         let finalChartData = [];
         if (filter === 'monthly') {
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             for (let i = 1; i <= daysInMonth; i++) {
                 const key = i.toString();
                 finalChartData.push(chartMap[key] || { name: key, Income: 0, Expense: 0 });
@@ -151,9 +188,7 @@ const StatisticsContent = () => {
             finalChartData = Object.values(chartMap).sort((a, b) => Number(a.name) - Number(b.name));
         }
 
-        const categoryStats = Object.values(categoryMap)
-            .sort((a, b) => b.value - a.value);
-
+        const categoryStats = Object.values(categoryMap).sort((a, b) => b.value - a.value);
         const savingsRate = totalIncome > 0 ? Math.max(0, Math.round(((totalIncome - totalExpense) / totalIncome) * 100)) : 0;
         
         let prevIncome = 0;
@@ -167,8 +202,22 @@ const StatisticsContent = () => {
         const prevIncomeDiff = prevIncome ? ((totalIncome - prevIncome) / prevIncome) * 100 : 0;
         const prevExpenseDiff = prevExpense ? ((totalExpense - prevExpense) / prevExpense) * 100 : 0;
 
+        const weekdayStats = Object.entries(weekdayMap).map(([name, value]) => ({ name, value }));
+        const topSpendingDay = [...weekdayStats].sort((a, b) => b.value - a.value)[0]?.name || 'N/A';
+
         const top10Expenses = filtered.filter(t => t.type === 'expense').sort((a,b) => Number(b.amount) - Number(a.amount)).slice(0, 10);
         const largestExpense = top10Expenses[0] || null;
+
+        // Insights Logic
+        const insights = [];
+        if (savingsRate > 20) insights.push({ type: 'success', text: "Great! Your savings rate is healthy." });
+        else if (savingsRate > 0) insights.push({ type: 'info', text: "You're saving, but could improve." });
+        else insights.push({ type: 'warning', text: "Expenses are higher than income!" });
+
+        if (totalExpense > prevExpense && prevExpense > 0) insights.push({ type: 'warning', text: `Spending is up by ${prevExpenseDiff.toFixed(0)}% vs last period.` });
+        
+        insights.push({ type: 'info', text: `Most of your money goes to ${categoryStats[0]?.name || 'uncategorized items'}.` });
+        insights.push({ type: 'info', text: `Peak spending occurs on ${topSpendingDay}s.` });
 
         return { 
             totalIncome, 
@@ -176,11 +225,15 @@ const StatisticsContent = () => {
             savingsRate, 
             categoryStats, 
             chartData: finalChartData,
+            monthWiseComparison,
+            weekdayStats,
+            topSpendingDay,
             transactionCount: filtered.length,
             prevIncomeDiff,
             prevExpenseDiff,
             largestExpense,
-            top10Expenses
+            top10Expenses,
+            insights
         };
     }, [transactions, filter]);
 
@@ -221,13 +274,13 @@ const StatisticsContent = () => {
                         </h1>
                     </div>
                     
-                    <div className="flex bg-gray-900/80 p-1.5 rounded-2xl border border-gray-800 backdrop-blur-md">
-                        {['monthly', 'yearly', 'lifetime'].map(f => (
+                    <div className="flex bg-gray-900/80 p-1.5 rounded-2xl border border-gray-800 backdrop-blur-md overflow-x-auto no-scrollbar">
+                        {['monthly', 'yearly', 'lifetime', 'comparison'].map(f => (
                             <button 
                                 id={`FilterBtn-${f}`} 
                                 key={f} 
                                 onClick={() => setFilter(f)} 
-                                className={`px-6 py-2.5 rounded-xl capitalize text-sm font-semibold transition-all duration-300 ${filter === f ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                className={`px-4 sm:px-6 py-2.5 rounded-xl capitalize text-sm font-semibold transition-all duration-300 whitespace-nowrap ${filter === f ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                             >
                                 {f}
                             </button>
@@ -235,7 +288,99 @@ const StatisticsContent = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                {/* Smart Insights Panel */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+                    {stats.insights.map((insight, idx) => (
+                        <div key={idx} className={`p-4 rounded-2xl border flex items-start gap-3 backdrop-blur-md transition-all hover:scale-[1.02] ${
+                            insight.type === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+                            insight.type === 'warning' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                            'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                        }`}>
+                            <div className="mt-0.5">
+                                {insight.type === 'success' ? <CheckCircle2 size={18} /> : 
+                                 insight.type === 'warning' ? <AlertCircle size={18} /> : 
+                                 <Info size={18} />}
+                            </div>
+                            <p className="text-sm font-medium leading-tight">{insight.text}</p>
+                        </div>
+                    ))}
+                </div>
+
+                {filter === 'comparison' ? (
+                    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        {/* Month-over-Month Comparison Chart */}
+                        <div className="bg-gray-900/30 border border-gray-800/60 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl">
+                            <h2 className="text-white text-xl font-bold mb-6 flex items-center gap-2">
+                                <BarChart3 className="text-purple-400" size={20} />
+                                Multi-Month Growth (Income vs Expense)
+                            </h2>
+                            <div className="h-[400px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={stats.monthWiseComparison} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+                                        <XAxis dataKey="name" stroke="#9ca3af" axisLine={false} tickLine={false} />
+                                        <YAxis stroke="#9ca3af" axisLine={false} tickLine={false} tickFormatter={(val) => `₹${val/1000}k`} />
+                                        <RechartsTooltip content={<CustomTooltip />} />
+                                        <Legend />
+                                        <Bar dataKey="Income" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={30} />
+                                        <Bar dataKey="Expense" fill="#ef4444" radius={[4, 4, 0, 0]} barSize={30} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* Detailed Table & Weekday Breakdown */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* Monthly Summary Table */}
+                            <div className="bg-gray-900/30 border border-gray-800/60 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl">
+                                <h3 className="text-white text-lg font-bold mb-6 flex items-center gap-2">
+                                    <List className="text-blue-400" size={18} />
+                                    Historical Performance
+                                </h3>
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-4 text-gray-500 text-xs font-bold uppercase tracking-wider pb-2 border-b border-gray-800">
+                                        <span>Month</span>
+                                        <span className="text-right">Income</span>
+                                        <span className="text-right">Expense</span>
+                                        <span className="text-right">Net</span>
+                                    </div>
+                                    {[...stats.monthWiseComparison].reverse().map((m, i) => (
+                                        <div key={i} className="grid grid-cols-4 items-center py-3 border-b border-gray-800/50 hover:bg-white/5 px-2 rounded-lg transition-colors">
+                                            <span className="text-gray-300 font-medium text-sm">{m.name}</span>
+                                            <span className="text-green-400 text-sm text-right font-mono">{formatCurrency(m.Income)}</span>
+                                            <span className="text-red-400 text-sm text-right font-mono">{formatCurrency(m.Expense)}</span>
+                                            <span className={`text-sm text-right font-bold ${m.Savings >= 0 ? 'text-blue-400' : 'text-amber-500'}`}>{formatCurrency(m.Savings)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Weekday Spending Habits */}
+                            <div className="bg-gray-900/30 border border-gray-800/60 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl">
+                                <h3 className="text-white text-lg font-bold mb-6 flex items-center gap-2">
+                                    <Calendar className="text-pink-400" size={18} />
+                                    Spending by Weekday
+                                </h3>
+                                <div className="h-[300px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={stats.weekdayStats} layout="vertical">
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" horizontal={false} />
+                                            <XAxis type="number" hide />
+                                            <YAxis dataKey="name" type="category" stroke="#9ca3af" axisLine={false} tickLine={false} />
+                                            <RechartsTooltip cursor={{fill: 'transparent'}} content={<CustomPieTooltip />} />
+                                            <Bar dataKey="value" fill="#ec4899" radius={[0, 4, 4, 0]} barSize={20} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div className="mt-4 p-4 bg-pink-500/10 rounded-2xl border border-pink-500/20 text-pink-400 text-sm italic">
+                                    Note: You tend to spend most on <strong>{stats.topSpendingDay}s</strong>. Plan your shopping accordingly!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-10 animate-in fade-in duration-500">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     <div id="statsIncomeCard" className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 p-6 rounded-3xl relative overflow-hidden group hover:border-green-500/50 transition-colors">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl group-hover:bg-green-500/20 transition-all"></div>
                         <div className="flex justify-between items-start mb-4 relative z-10">
@@ -512,6 +657,8 @@ const StatisticsContent = () => {
                     </div>
                 </div>
             </div>
+            )}
+        </div>
             
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
