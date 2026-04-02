@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Home, LogOut } from "lucide-react";
+import { Home, LogOut, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
@@ -35,6 +35,16 @@ const Navbar = () => {
                         <span className="text-sm text-gray-300 hidden sm:inline">
                             Welcome, <span id="userName_navbar" className="text-blue-300 font-medium">{user.name}</span>
                         </span>
+                        
+                        <button
+                            id="HabitTrackerBtn"
+                            className="group flex gap-2 justify-center items-center px-4 py-2 rounded-xl bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-700/50 hover:border-emerald-500/30 hover:from-emerald-600/20 hover:to-teal-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"
+                            onClick={() => router.push("/habits")}
+                        >
+                            <CheckCircle2 size={18} className="group-hover:scale-110 group-hover:text-emerald-300 transition-all duration-300" />
+                            <span className="font-medium group-hover:text-emerald-300 transition-colors duration-300">Habits</span>
+                        </button>
+
                         <button
                             id="LogoutBtn"
                             className="group flex gap-2 justify-center items-center px-4 py-2 rounded-xl bg-gradient-to-r from-red-800/50 to-red-700/50 border border-red-700/50 hover:border-red-500/30 hover:from-red-600/20 hover:to-red-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"
