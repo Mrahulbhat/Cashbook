@@ -39,10 +39,11 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const CustomPieTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
+        const data = payload[0].payload;
         return (
             <div className="bg-black/90 border border-gray-800 p-3 rounded-xl shadow-2xl backdrop-blur-md">
-                <p className="text-white font-medium mb-1">{payload[0].name}</p>
-                <p className="text-sm font-bold" style={{ color: payload[0].payload.fill }}>
+                <p className="text-white font-medium mb-1 font-sans">{data.name}</p>
+                <p className="text-sm font-bold font-mono" style={{ color: payload[0].color || payload[0].payload.fill || '#fff' }}>
                     {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(payload[0].value)}
                 </p>
             </div>
@@ -298,7 +299,7 @@ const StatisticsContent = () => {
                         }`}>
                             <div className="mt-0.5">
                                 {insight.type === 'success' ? <CheckCircle2 size={18} /> : 
-                                 insight.type === 'warning' ? <AlertCircle size={18} /> : 
+                                 insight.type === 'warning' ? <TrendingDown size={18} /> : 
                                  <Info size={18} />}
                             </div>
                             <p className="text-sm font-medium leading-tight">{insight.text}</p>
