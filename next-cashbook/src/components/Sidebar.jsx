@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat } from "lucide-react";
+import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat, CheckCircle2 } from "lucide-react";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +20,7 @@ const Sidebar = () => {
         { name: "Transfer", icon: Repeat, path: "/transfer", id: "transfer" },
         { name: "Categories", icon: Tag, path: "/categories", id: "categories" },
         { name: "Statistics", icon: TrendingUp, path: "/stats", id: "statistics" },
+        { name: "Habits", icon: CheckCircle2, path: "/habits", id: "habits" },
     ];
 
     const handleNavigation = (path) => {
@@ -68,16 +69,8 @@ const Sidebar = () => {
                         );
                     })}
                 </div>
-
-                <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-700/50 bg-gradient-to-t from-black to-transparent">
-                    <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 rounded-lg p-4">
-                        <p className="text-gray-300 text-xs font-semibold mb-2">Pro Tip</p>
-                        <p className="text-gray-400 text-xs leading-relaxed">
-                            Track your finances regularly to maintain better control over your money.
-                        </p>
-                    </div>
-                </div>
             </div>
+
 
             {isOpen && (
                 <div
