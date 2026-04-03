@@ -1,4 +1,6 @@
 import commonConstants from '../constants/commonConstants.js';
+import { LoginPage } from './login-page.js';
+import { SettingsPage } from './settings.js';
 
 export async function navigateToPage(page: any, pageName: string) {
     switch (pageName) {
@@ -49,6 +51,10 @@ export async function navigateToPage(page: any, pageName: string) {
             ]);
             break;
 
+        case commonConstants.pageName.SETTINGS:
+            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.SETTINGS}`);
+            break;
+
         default: console.error('Invalid page name provided for navigation.');
             return;
     }
@@ -78,5 +84,11 @@ export async function generateRandomPrefix(length: number = 5): Promise<string> 
 }
 
 export async function deleteMyAccount(page: any) {
-    
+    const loginPage = new LoginPage(page);
+    await loginPage.loginUser();
+    await navigateToPage(page, commonConstants.pageName.SETTINGS);
+    const settingsPage = new SettingsPage(page);
+    await settingsPage.deleteAccountButton.click();
+    await settingsPage.modalOkBtn.click();
+    await page.waitForResponse((response: any) => response.status() === 200, { timeout: 15000 });
 }

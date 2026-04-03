@@ -23,7 +23,8 @@ const commonConstants = {
         ACCOUNTS: 'accounts',
         TRANSFER: 'transfer',
         CATEGORIES: 'categories',
-        STATISTICS: 'statistics'
+        STATISTICS: 'statistics',
+        SETTINGS: 'settings'
     },
 
     toastMessages: {
