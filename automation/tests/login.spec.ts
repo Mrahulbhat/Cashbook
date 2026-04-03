@@ -49,13 +49,9 @@ test.describe('Login Related Tests', () => {
         await deleteMyAccount(page);
     });
 
-    test('Login functionality @BAT', async ({ loginPage }) => {
+    test('Login functionality and logout functionality @BAT', async ({ page, loginPage }) => {
         await loginPage.loginUser();
-    });
-
-    test('Signout functionality @BAT', async ({ page, loginPage }) => {
-        await loginPage.loginUser();
-        await page.waitForTimeout(3000);
+        await page.waitForTimeout(1000);
         await expect(loginPage.navbarUserName).toBeVisible();
         await expect(loginPage.logoutButton).toBeVisible();
         await loginPage.logoutButton.click();

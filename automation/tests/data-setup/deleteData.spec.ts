@@ -6,7 +6,7 @@ import commonConstants from '../../constants/commonConstants.js';
 //CAUTION : THIS IS FOR DATA SETUP
 //ONLY FOR TESTING
 
-test.describe('Delete Data Setup', () => {
+test.describe.skip('Delete Data Setup', () => {
     test.beforeEach(async ({ loginPage }) => {
         await loginPage.loginUser();
     });

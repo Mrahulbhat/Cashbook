@@ -5,7 +5,7 @@ import commonConstants from '../../constants/commonConstants.js';
 //CAUTION : THIS IS FOR DATA SETUP
 //ONLY FOR TESTING
 
-test.describe.serial('Create Data Setup', () => {
+test.describe.skip('Create Data Setup', () => {
     test.beforeEach(async ({ page, loginPage }) => {
         await loginPage.loginUser();
     });
