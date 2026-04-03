@@ -1,17 +1,19 @@
 import { test } from '../fixtures/test-base.js';
 import { expect } from '@playwright/test';
-import { navigateToPage } from '../page-objects/common-functions.js';
+import { generateRandomPrefix, navigateToPage } from '../page-objects/common-functions.js';
 import commonConstants from '../constants/commonConstants.js';
+import { deleteMyAccount } from '../page-objects/common-functions.js';
 import { waitForApiResponse } from '../page-objects/common-functions.js';
 
 test.describe('Login Related Tests', () => {
 
     test('Create Account and login functionality @BAT', async ({ page, loginPage }) => {
 
-        const name = 'TEST_CREATE_USERNAME';
+        const name = 'User' + generateRandomPrefix();
         const phone = '9876543211';
         const password = commonConstants.userPassword;
 
+        // Create an account
         await navigateToPage(page, commonConstants.urls.baseURL);
         await expect(loginPage.signupLink).toBeVisible();
         await loginPage.signupLink.click();
@@ -32,7 +34,7 @@ test.describe('Login Related Tests', () => {
         await waitForApiResponse(page, 'logout');
         await expect(page).toHaveURL(commonConstants.urls.baseURL + '/login');
 
-        // Verify login functionality
+        // Login Functionality 
         await loginPage.phoneInputField.clear();
         await loginPage.phoneInputField.pressSequentially(phone);
         await loginPage.passwordInputField.clear();
@@ -43,21 +45,22 @@ test.describe('Login Related Tests', () => {
         await expect(loginPage.navbarUserName).toBeVisible();
         await expect(loginPage.navbarUserName).toContainText(name);
 
-        
+        // Delete the created account
+        await deleteMyAccount(page);
     });
 
-test('Login functionality @BAT', async ({ loginPage }) => {
-    await loginPage.loginUser();
-});
+    test('Login functionality @BAT', async ({ loginPage }) => {
+        await loginPage.loginUser();
+    });
 
-test('Signout functionality @BAT', async ({ page, loginPage }) => {
-    await loginPage.loginUser();
-    await page.waitForTimeout(3000);
-    await expect(loginPage.navbarUserName).toBeVisible();
-    await expect(loginPage.logoutButton).toBeVisible();
-    await loginPage.logoutButton.click();
-    await expect(loginPage.phoneInputField).toBeVisible();
-    await expect(loginPage.passwordInputField).toBeVisible();
-    await expect(loginPage.loginButton).toBeVisible();
-});
+    test('Signout functionality @BAT', async ({ page, loginPage }) => {
+        await loginPage.loginUser();
+        await page.waitForTimeout(3000);
+        await expect(loginPage.navbarUserName).toBeVisible();
+        await expect(loginPage.logoutButton).toBeVisible();
+        await loginPage.logoutButton.click();
+        await expect(loginPage.phoneInputField).toBeVisible();
+        await expect(loginPage.passwordInputField).toBeVisible();
+        await expect(loginPage.loginButton).toBeVisible();
+    });
 });

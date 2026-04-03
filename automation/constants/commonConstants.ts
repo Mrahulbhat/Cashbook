@@ -15,6 +15,7 @@ const commonConstants = {
         newTransactionAPI: '/api/transactions',
         newAccountAPI: '/api/accounts',
         newCategoryAPI: '/api/categories',
+        logout: '/api/auth/logout',
     },
 
     pageName: {

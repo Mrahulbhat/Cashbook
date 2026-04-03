@@ -73,22 +73,24 @@ export async function waitForApiResponse(page: any, url: string) {
     }
 }
 
-export async function generateRandomPrefix(length: number = 5): Promise<string> {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
+export function generateRandomPrefix(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const ms = String(now.getMilliseconds()).padStart(3, '0');
+    
+    return `${year}${month}${day}${hours}${minutes}${seconds}${ms}`;
 }
 
+
 export async function deleteMyAccount(page: any) {
-    const loginPage = new LoginPage(page);
-    await loginPage.loginUser();
     await navigateToPage(page, commonConstants.pageName.SETTINGS);
     const settingsPage = new SettingsPage(page);
     await settingsPage.deleteAccountButton.click();
     await settingsPage.modalOkBtn.click();
-    await page.waitForResponse((response: any) => response.status() === 200, { timeout: 15000 });
+    await waitForApiResponse(page, commonConstants.urls.logout);
 }
