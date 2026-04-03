@@ -104,7 +104,7 @@ export class BasePage {
     }
     get sidebar(): Locator {
         return this.page.locator('#sidebar');
-    }  
+    }
     sidebarTab(tabName: string): Locator {
         return this.page.locator('#' + tabName);
     }
@@ -114,18 +114,17 @@ export class BasePage {
         await this.amountInput.fill(amount);
         await expect(this.amountInput).toHaveValue(amount);
     }
+    
+    // In selectAccount function
     async selectAccount(optionText: string) {
         await expect(this.accountDropdownContainer).toBeVisible();
-        try {
-            // Wait for at least one option beyond the placeholder
-            await expect(this.accountDropdownContainer.locator('option').nth(1)).toBeAttached({ timeout: 15000 });
-        } catch (e) {
-            const currentOptions = await this.accountDropdownContainer.locator('option').allTextContents();
-            console.error(`Timeout waiting for options in Account dropdown. Current options: [${currentOptions.join(', ')}]`);
-            throw e;
+        const options = await this.accountDropdownContainer.locator('option').allTextContents();
+        if (!options.includes(optionText)) {
+            throw new Error(`Account "${optionText}" not found in dropdown. Available: [${options.join(', ')}]`);
         }
         await this.accountDropdownContainer.selectOption({ label: optionText });
     }
+
 
     async selectCategory(optionText: string) {
         await expect(this.categoryDropdownContainer).toBeVisible();

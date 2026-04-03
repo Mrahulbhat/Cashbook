@@ -9,7 +9,7 @@ test.describe('Transaction Related Tests', () => {
     });
 
     test('Create New Transaction @BAT', async ({ page, transactionPage }) => {
-        const transactions = commonConstants.TRANSACTIONS
+        const transactions = commonConstants.TRANSACTIONS;
 
         //create just one for a bat test
 
