@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Home, LogOut, CheckCircle2 } from "lucide-react";
+import { LogOut, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
@@ -55,15 +55,6 @@ const Navbar = () => {
                         </button>
                     </div>
                 )}
-
-                <button
-                    id="DashboardBtn"
-                    className="group flex gap-2 justify-center items-center px-4 py-2 rounded-xl bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-700/50 hover:border-blue-500/30 hover:from-blue-600/20 hover:to-purple-600/20 transition-all duration-300 backdrop-blur-sm transform hover:scale-105"
-                    onClick={() => router.push("/dashboard")}
-                >
-                    <Home size={18} className="group-hover:scale-110 group-hover:text-blue-300 transition-all duration-300" />
-                    <span className="font-medium group-hover:text-blue-300 transition-colors duration-300">Dashboard</span>
-                </button>
             </div>
 
             <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>

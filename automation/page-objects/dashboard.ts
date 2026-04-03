@@ -12,12 +12,6 @@ export class DashboardPage extends BasePage {
     get totalExpense(): Locator {
         return this.page.locator('#totalExpense');
     }
-    get sidebar(): Locator {
-        return this.page.locator('#sidebar');
-    }  
-    sidebarTab(tabName: string): Locator {
-        return this.page.locator('#' + tabName);
-    }
     get balanceCard(): Locator {
         return this.page.locator('#balanceCard');
     }

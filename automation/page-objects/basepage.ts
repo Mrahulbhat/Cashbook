@@ -102,6 +102,12 @@ export class BasePage {
     get lifetimeFilterButton(): Locator {
         return this.page.locator(`#FilterBtn-lifetime`);
     }
+    get sidebar(): Locator {
+        return this.page.locator('#sidebar');
+    }  
+    sidebarTab(tabName: string): Locator {
+        return this.page.locator('#' + tabName);
+    }
 
     async enterAmount(amount: string) {
         await expect(this.amountInput).toBeVisible();
