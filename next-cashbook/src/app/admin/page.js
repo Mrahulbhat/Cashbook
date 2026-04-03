@@ -6,9 +6,10 @@ import {
     ArrowLeft, Users, Loader, TrendingUp, TrendingDown, Wallet,
     Calendar, Mail, Phone, Activity, Search, X, ChevronRight,
     CreditCard, ArrowUpCircle, ArrowDownCircle, LogOut, ShieldCheck,
-    RefreshCw, DollarSign, Hash, Tag, Clock, PieChart, Landmark, Database
+    RefreshCw, DollarSign, Hash, Tag, Clock, PieChart, Landmark, Database, Trash2
 } from "lucide-react";
 import toast from "react-hot-toast";
+import Modal from "@/components/Modal";
 
 const fmt = (amount) =>
     new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(amount);
@@ -160,6 +161,9 @@ const AdminDashboard = () => {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [mainTab, setMainTab] = useState('users'); // 'users' or 'accounts'
     const [dbStats, setDbStats] = useState(null);
+    const [isDeletingUserId, setIsDeletingUserId] = useState(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState({ id: null, name: '' });
 
     const fetchAllData = useCallback(async () => {
         setLoading(true);
@@ -207,6 +211,34 @@ const AdminDashboard = () => {
     const totalExpense = users.reduce((s, u) => s + (u.stats?.totalExpense || 0), 0);
     const systemNetWorth = accounts.reduce((s, a) => s + (a.balance || 0), 0);
     const totalTx = users.reduce((s, u) => s + (u.stats?.transactionCount || 0), 0);
+
+    const deleteUser = (userId, userName) => {
+        setUserToDelete({ id: userId, name: userName });
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        const { id, name } = userToDelete;
+        if (!id) return;
+        
+        setIsDeleteModalOpen(false);
+        setIsDeletingUserId(id);
+        try {
+            const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                toast.success(data.message || "User deleted successfully");
+                setUsers(prev => prev.filter(u => u.id !== id));
+            } else {
+                toast.error(data.error || "Failed to delete user");
+            }
+        } catch (err) {
+            toast.error("Network error while deleting user");
+        } finally {
+            setIsDeletingUserId(null);
+            setUserToDelete({ id: null, name: '' });
+        }
+    };
 
     const filteredUsers = users.filter(u =>
         u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -358,16 +390,16 @@ const AdminDashboard = () => {
                                         <th className="px-8 py-5">Contact Details</th>
                                         <th className="px-8 py-5 text-right">Activity</th>
                                         <th className="px-8 py-5 text-right">Net Worth</th>
+                                        <th className="px-8 py-5 text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredUsers.map(user => (
                                         <tr 
                                             key={user.id} 
-                                            onClick={() => setSelectedUserId(user.id)}
                                             className="border-b border-gray-800/40 hover:bg-white/5 cursor-pointer transition-all group"
                                         >
-                                            <td className="px-8 py-6">
+                                            <td className="px-8 py-6" onClick={() => setSelectedUserId(user.id)}>
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-xl">
                                                         {user.name?.charAt(0).toUpperCase()}
@@ -385,9 +417,22 @@ const AdminDashboard = () => {
                                             <td className="px-8 py-6 text-right">
                                                 <span className="px-3 py-1 bg-gray-800/60 rounded-lg text-xs font-bold text-gray-400">{user.stats.transactionCount} TXs</span>
                                             </td>
-                                            <td className="px-8 py-6 text-right">
+                                            <td className="px-8 py-6 text-right" onClick={() => setSelectedUserId(user.id)}>
                                                 <p className={`text-lg font-black ${user.stats.netBalance >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(user.stats.netBalance)}</p>
                                                 <p className="text-xs text-gray-600">Total Account Sum</p>
+                                            </td>
+                                            <td className="px-8 py-6 text-right">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        deleteUser(user.id, user.name);
+                                                    }}
+                                                    disabled={isDeletingUserId === user.id}
+                                                    className="p-3 bg-red-900/10 text-red-500 border border-red-800/20 rounded-xl hover:bg-red-900/30 transition-all disabled:opacity-50"
+                                                    title="Permanently Delete User"
+                                                >
+                                                    {isDeletingUserId === user.id ? <Loader size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -442,6 +487,16 @@ const AdminDashboard = () => {
             </main>
 
             {selectedUserId && <UserDetailDrawer userId={selectedUserId} onClose={() => setSelectedUserId(null)} />}
+
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Permanently Delete User"
+                message={`Are you sure you want to permanently delete user "${userToDelete.name}"? This will delete all their transactions, accounts, and categories. This action is irreversible.`}
+                confirmText="Delete User"
+                type="danger"
+            />
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }

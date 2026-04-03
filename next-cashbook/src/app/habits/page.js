@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Trash2, CheckCircle2, TrendingUp, Calendar as CalendarIcon, Trophy, Zap, ChevronLeft, ChevronRight, Grid as GridIcon, List as ListIcon } from 'lucide-react';
+import { Plus, Trash2, Edit2, CheckCircle2, TrendingUp, Calendar as CalendarIcon, Trophy, Zap, ChevronLeft, ChevronRight, Grid as GridIcon, List as ListIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const HabitTracker = () => {
@@ -10,6 +10,8 @@ const HabitTracker = () => {
     const [isAdding, setIsAdding] = useState(false);
     const [viewMode, setViewMode] = useState('weekly'); // 'weekly' or 'monthly'
     const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [editingHabitId, setEditingHabitId] = useState(null);
+    const [editingName, setEditingName] = useState('');
 
     // Load habits from localStorage
     useEffect(() => {
@@ -118,6 +120,22 @@ const HabitTracker = () => {
         toast.error('Habit removed');
     };
 
+    const startEditing = (habit) => {
+        setEditingHabitId(habit.id);
+        setEditingName(habit.name);
+    };
+
+    const saveEdit = (e) => {
+        e.preventDefault();
+        if (!editingName.trim()) return;
+
+        setHabits(prev => prev.map(h => 
+            h.id === editingHabitId ? { ...h, name: editingName.trim() } : h
+        ));
+        setEditingHabitId(null);
+        toast.success('Habit updated!');
+    };
+
     const calculateStreak = (completedDays) => {
         if (!completedDays.length) return 0;
         let streak = 0;
@@ -204,7 +222,29 @@ const HabitTracker = () => {
                                         <div className="flex items-center gap-4">
                                             <div className={`w-3 h-12 rounded-full ${getProgressColor(habit.color)}`}></div>
                                             <div>
-                                                <h3 className="text-xl font-bold text-gray-100">{habit.name}</h3>
+                                                {editingHabitId === habit.id ? (
+                                                    <form onSubmit={saveEdit} className="flex items-center gap-2">
+                                                        <input
+                                                            autoFocus
+                                                            type="text"
+                                                            value={editingName}
+                                                            onChange={(e) => setEditingName(e.target.value)}
+                                                            className="bg-gray-800 border border-blue-500/50 rounded-lg px-2 py-1 text-sm focus:outline-none"
+                                                        />
+                                                        <button type="submit" className="text-xs bg-blue-600 px-2 py-1 rounded">Save</button>
+                                                        <button type="button" onClick={() => setEditingHabitId(null)} className="text-xs bg-gray-700 px-2 py-1 rounded">Cancel</button>
+                                                    </form>
+                                                ) : (
+                                                    <div className="flex items-center gap-2">
+                                                        <h3 className="text-xl font-bold text-gray-100">{habit.name}</h3>
+                                                        <button 
+                                                            onClick={() => startEditing(habit)}
+                                                            className="p-1 text-gray-500 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+                                                        >
+                                                            <Edit2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                )}
                                                 <div className="flex items-center gap-1 text-amber-400 text-sm font-medium mt-1">
                                                     <Zap size={14} fill="currentColor" />
                                                     <span>{calculateStreak(habit.completedDays)} day streak</span>
@@ -272,7 +312,29 @@ const HabitTracker = () => {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
                                             <div className={`w-4 h-4 rounded-full ${getProgressColor(habit.color)} shadow-[0_0_10px_currentColor]`}></div>
-                                            <h3 className="text-2xl font-bold text-gray-100">{habit.name}</h3>
+                                            {editingHabitId === habit.id ? (
+                                                <form onSubmit={saveEdit} className="flex items-center gap-2">
+                                                    <input
+                                                        autoFocus
+                                                        type="text"
+                                                        value={editingName}
+                                                        onChange={(e) => setEditingName(e.target.value)}
+                                                        className="bg-gray-800 border border-blue-500/50 rounded-lg px-3 py-1.5 text-lg font-bold focus:outline-none"
+                                                    />
+                                                    <button type="submit" className="bg-blue-600 px-3 py-1.5 rounded-lg text-sm">Save</button>
+                                                    <button type="button" onClick={() => setEditingHabitId(null)} className="bg-gray-700 px-3 py-1.5 rounded-lg text-sm">Cancel</button>
+                                                </form>
+                                            ) : (
+                                                <div className="flex items-center gap-3 group/title">
+                                                    <h3 className="text-2xl font-bold text-gray-100">{habit.name}</h3>
+                                                    <button 
+                                                        onClick={() => startEditing(habit)}
+                                                        className="p-1.5 text-gray-500 hover:text-blue-400 transition-colors opacity-0 group-hover/title:opacity-100"
+                                                    >
+                                                        <Edit2 size={18} />
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="px-5 py-2 bg-gray-800/50 rounded-2xl text-amber-400 font-bold flex items-center gap-2 border border-gray-700/50">
                                             <Zap size={18} fill="currentColor" />

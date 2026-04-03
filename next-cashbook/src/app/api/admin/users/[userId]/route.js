@@ -3,6 +3,7 @@ import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import Account from '@/models/Account';
 import Transaction from '@/models/Transaction';
+import Category from '@/models/Category';
 import mongoose from 'mongoose';
 import { verifyAdminToken } from '@/lib/adminAuth';
 
@@ -70,5 +71,46 @@ export async function GET(request, { params }) {
     } catch (error) {
         console.error('Admin user detail fetch error:', error);
         return NextResponse.json({ error: 'Failed to fetch user details' }, { status: 500 });
+    }
+}
+
+export async function DELETE(request, { params }) {
+    try {
+        const admin = requireAdmin(request);
+        if (!admin) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        await dbConnect();
+
+        const { userId } = await params;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
+        }
+
+        // Check if user exists
+        const user = await User.findById(userId);
+        if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+        // Perform cascading deletion
+        // 1. Delete Transactions
+        await Transaction.deleteMany({ userId });
+        
+        // 2. Delete Accounts
+        await Account.deleteMany({ userId });
+        
+        // 3. Delete Categories
+        await Category.deleteMany({ userId });
+
+        // 4. Delete the User profile
+        await User.findByIdAndDelete(userId);
+
+        return NextResponse.json({
+            success: true,
+            message: `User ${user.name} and all associated data have been permanently deleted.`
+        });
+    } catch (error) {
+        console.error('Admin user deletion error:', error);
+        return NextResponse.json({ error: 'Failed to delete user and associated data' }, { status: 500 });
     }
 }
