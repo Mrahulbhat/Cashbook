@@ -6,7 +6,7 @@ import {
     ArrowLeft, Users, Loader, TrendingUp, TrendingDown, Wallet,
     Calendar, Mail, Phone, Activity, Search, X, ChevronRight,
     CreditCard, ArrowUpCircle, ArrowDownCircle, LogOut, ShieldCheck,
-    RefreshCw, DollarSign, Hash, Tag, Clock, PieChart, Landmark
+    RefreshCw, DollarSign, Hash, Tag, Clock, PieChart, Landmark, Database
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -159,6 +159,7 @@ const AdminDashboard = () => {
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [mainTab, setMainTab] = useState('users'); // 'users' or 'accounts'
+    const [dbStats, setDbStats] = useState(null);
 
     const fetchAllData = useCallback(async () => {
         setLoading(true);
@@ -178,6 +179,11 @@ const AdminDashboard = () => {
             if (aData.success) setAccounts(aData.data);
             
             if (!uData.success || !aData.success) toast.error("Partial data load failure");
+            
+            // Also fetch DB stats
+            fetch('/api/db-stats').then(r => r.json()).then(res => {
+                if (res.success) setDbStats(res.data);
+            }).catch(console.error);
         } catch (err) {
             toast.error("Network error");
         } finally {
@@ -273,6 +279,42 @@ const AdminDashboard = () => {
                         <p className="text-3xl font-extrabold text-red-400">{fmt(totalExpense)}</p>
                         <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
                              <TrendingDown size={12} /> System-wide outflow
+                        </div>
+                    </div>
+                    {/* DB Storage Card */}
+                    <div className="bg-gray-900/40 border border-gray-800 rounded-3xl p-6 relative overflow-hidden group hover:border-blue-500/50 transition-colors md:col-span-4 lg:col-span-4 xl:col-span-4">
+                        <div className="flex items-center gap-6">
+                            <div className="p-4 bg-blue-500/10 rounded-2xl group-hover:bg-blue-500/20 transition-colors flex-shrink-0">
+                                <Database className="text-blue-400 w-8 h-8" />
+                            </div>
+                            <div className="w-full">
+                                <div className="flex justify-between items-center mb-1">
+                                    <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">Database Storage (M0 Free Tier)</p>
+                                    {dbStats && (
+                                        <span className="text-[10px] text-gray-600 font-mono">
+                                            USED: {(((dbStats.dataSize + dbStats.indexSize || 0)) / (1024 * 1024)).toFixed(2)} MB / 512 MB
+                                        </span>
+                                    )}
+                                </div>
+                                {dbStats ? (
+                                    <>
+                                        <div className="flex items-baseline gap-2">
+                                            <p className="text-2xl font-bold text-white">
+                                                {Math.max(0, ((512 * 1024 * 1024 - (dbStats.dataSize + dbStats.indexSize || 0)) / (1024 * 1024))).toFixed(1)}
+                                            </p>
+                                            <p className="text-xs font-medium text-gray-500 uppercase tracking-widest">MB Free</p>
+                                        </div>
+                                        <div className="w-full bg-gray-800/50 h-1.5 rounded-full mt-2 overflow-hidden border border-gray-800/50">
+                                            <div className="bg-gradient-to-r from-blue-500 to-indigo-400 h-full rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)]" style={{ width: `${Math.min((((dbStats.dataSize + dbStats.indexSize || 0)) / (512 * 1024 * 1024)) * 100, 100)}%` }}></div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex items-center gap-2 text-gray-500 text-sm">
+                                        <Loader size={14} className="animate-spin text-blue-500" />
+                                        <span>Syncing with MongoDB Atlas...</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
