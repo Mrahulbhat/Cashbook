@@ -66,13 +66,15 @@ const SettingsPageContent = () => {
             <div className="max-w-4xl mx-auto relative z-10">
                 <header className="mb-12">
                     <button 
+                        id="BackBtn"
+                        data-test="back-button"
                         onClick={() => router.back()}
                         className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-6 group"
                     >
                         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                         <span>Back</span>
                     </button>
-                    <h1 className="text-4xl font-extrabold tracking-tight flex items-center gap-4">
+                    <h1 id="SettingsTitle" className="text-4xl font-extrabold tracking-tight flex items-center gap-4">
                         <div className="p-3 bg-gray-900 border border-gray-800 rounded-2xl">
                             <Settings className="text-purple-500 w-8 h-8" />
                         </div>
@@ -93,10 +95,12 @@ const SettingsPageContent = () => {
                             {/* Wipe Data */}
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 bg-gray-900/60 border border-gray-800/60 rounded-3xl group hover:border-amber-500/30 transition-all">
                                 <div className="max-w-md">
-                                    <h3 className="text-lg font-bold text-white mb-2">Fresh Restart (Wipe All Data)</h3>
+                                    <h3 id="WipeDataTitle" className="text-lg font-bold text-white mb-2">Fresh Restart (Wipe All Data)</h3>
                                     <p className="text-sm text-gray-400">Keep your login session but delete all transactions, accounts, and categories. Perfect if you want to start tracking from scratch.</p>
                                 </div>
                                 <button 
+                                    id="WipeDataBtn"
+                                    data-test="wipe-data-button"
                                     onClick={() => openConfirmModal('wipe')}
                                     className="px-6 py-3 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-2xl hover:bg-amber-500 hover:text-white transition-all font-bold flex items-center justify-center gap-2"
                                 >
@@ -108,10 +112,12 @@ const SettingsPageContent = () => {
                             {/* Delete Account */}
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 bg-gray-900/60 border border-gray-800/60 rounded-3xl group hover:border-red-500/30 transition-all">
                                 <div className="max-w-md">
-                                    <h3 className="text-lg font-bold text-white mb-2">Delete Account Permanently</h3>
+                                    <h3 id="DeleteAccountTitle" className="text-lg font-bold text-white mb-2">Delete Account Permanently</h3>
                                     <p className="text-sm text-gray-400">This will completely remove your user profile and all associated data from our servers. This action is irreversible.</p>
                                 </div>
                                 <button 
+                                    id="DeleteAccountBtn"
+                                    data-test="delete-account-button"
                                     onClick={() => openConfirmModal('delete')}
                                     className="px-6 py-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl hover:bg-red-500 hover:text-white transition-all font-bold flex items-center justify-center gap-2"
                                 >

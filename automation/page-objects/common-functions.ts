@@ -76,3 +76,7 @@ export async function generateRandomPrefix(length: number = 5): Promise<string> 
     }
     return result;
 }
+
+export async function deleteMyAccount(page: any) {
+    
+}

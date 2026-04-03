@@ -48,20 +48,6 @@ export class LoginPage extends BasePage {
         return this.page.locator('#SignupBtn');
     }
 
-    async createAccount(name: string, email: string, password: string) {
-        await this.page.goto(commonConstants.urls.baseURL);
-        await this.signupLink.click();
-        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + '/signup');
-        await expect(this.nameInputField).toBeVisible();
-        await this.nameInputField.fill(name);
-        await this.phoneInputField.fill(email);
-        await this.passwordInputField.fill(password);
-        await this.confirmPasswordInputField.fill(password);
-        await this.signupButton.click();
-        await waitForApiResponse(this.page, commonConstants.urls.transactionAPI);
-        await expect(this.navbarUserName).toContainText(name);
-    }
-
     async loginUser() {
         const userName = commonConstants.userName;
         await this.page.goto(commonConstants.urls.baseURL);
