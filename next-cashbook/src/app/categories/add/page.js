@@ -94,7 +94,7 @@ const AddCategoryContent = () => {
                             <select
                                 id="ParentDropdown"
                                 name="parentCategory"
-                                value={formData.parentCategory}
+                                value={formData.parentCategory || ""}
                                 onChange={handleInputChange}
                                 className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white"
                             >

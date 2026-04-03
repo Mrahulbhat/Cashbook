@@ -145,7 +145,7 @@ const TransferContent = () => {
                                 <label className="block text-sm font-semibold text-gray-400 mb-3 ml-1 group-focus-within:text-blue-400 transition-colors">From Account</label>
                                 <select 
                                     id="FromAccountDropdown" 
-                                    value={formData.fromAccount} 
+                                    value={formData.fromAccount || ""} 
                                     onChange={e => setFormData({ ...formData, fromAccount: e.target.value })} 
                                     className="w-full p-4 bg-gray-800/80 border border-gray-700/50 rounded-2xl text-white outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all appearance-none cursor-pointer"
                                 >
@@ -158,7 +158,7 @@ const TransferContent = () => {
                                 <label className="block text-sm font-semibold text-gray-400 mb-3 ml-1 group-focus-within:text-blue-400 transition-colors">To Account</label>
                                 <select 
                                     id="ToAccountDropdown" 
-                                    value={formData.toAccount} 
+                                    value={formData.toAccount || ""} 
                                     onChange={e => setFormData({ ...formData, toAccount: e.target.value })} 
                                     className="w-full p-4 bg-gray-800/80 border border-gray-700/50 rounded-2xl text-white outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all appearance-none cursor-pointer"
                                 >

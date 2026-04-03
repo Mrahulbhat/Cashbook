@@ -42,16 +42,18 @@ export async function PUT(req, { params }) {
         const oldAmount = Number(transaction.amount);
 
         // Revert old balance
-        if (transaction.type === 'income') {
-            oldAccount.balance -= oldAmount;
-        } else {
-            oldAccount.balance += oldAmount;
+        if (oldAccount) {
+            if (transaction.type === 'income') {
+                oldAccount.balance -= oldAmount;
+            } else {
+                oldAccount.balance += oldAmount;
+            }
         }
 
-        if (account && account !== transaction.account.toString()) {
+        if (account && account !== transaction?.account?.toString()) {
             const newAccount = await Account.findOne({ _id: account, userId: user.userId });
             if (!newAccount) return NextResponse.json({ message: 'New account not found' }, { status: 404 });
-            await oldAccount.save();
+            if (oldAccount) await oldAccount.save();
             oldAccount = newAccount;
         }
 
@@ -63,14 +65,16 @@ export async function PUT(req, { params }) {
         transaction.account = account ?? transaction.account;
 
         const newAmount = Number(transaction.amount);
-        if (transaction.type === 'income') {
-            oldAccount.balance += newAmount;
-        } else {
-            oldAccount.balance -= newAmount;
+        if (oldAccount) {
+            if (transaction.type === 'income') {
+                oldAccount.balance += newAmount;
+            } else {
+                oldAccount.balance -= newAmount;
+            }
+            await oldAccount.save();
         }
 
         await transaction.save();
-        await oldAccount.save();
 
         return NextResponse.json(transaction, { status: 200 });
     } catch (error) {
@@ -91,13 +95,15 @@ export async function DELETE(req, { params }) {
         const account = await Account.findById(transaction.account);
         const amount = Number(transaction.amount);
 
-        if (transaction.type === 'income') {
-            account.balance -= amount;
-        } else {
-            account.balance += amount;
+        if (account) {
+            if (transaction.type === 'income') {
+                account.balance -= amount;
+            } else {
+                account.balance += amount;
+            }
+            await account.save();
         }
-
-        await account.save();
+        
         await Transaction.findByIdAndDelete(id);
 
         return NextResponse.json({ message: 'Transaction deleted successfully' }, { status: 200 });

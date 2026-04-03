@@ -125,7 +125,7 @@ const AddTransactionContent = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-400 mb-2">Account *</label>
-                                <select id="AccountDropdown" name="account" value={formData.account} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
+                                <select id="AccountDropdown" name="account" value={formData.account || ""} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
                                     <option value="">Select Account</option>
                                     <optgroup label="Actions">
                                         <option value="ADD_NEW_ACCOUNT">+ Add New Account</option>
@@ -137,7 +137,7 @@ const AddTransactionContent = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-400 mb-2">Category *</label>
-                                <select id="CategoryDropdown" name="category" value={formData.category} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
+                                <select id="CategoryDropdown" name="category" value={formData.category || ""} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
                                     <option value="">Select Category</option>
                                     <optgroup label="Actions">
                                         <option value="ADD_NEW_CATEGORY">+ Add New Category</option>

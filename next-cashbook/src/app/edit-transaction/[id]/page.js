@@ -45,9 +45,9 @@ const EditTransactionContent = () => {
                     amount: tx.amount,
                     type: tx.type,
                     description: tx.description || "",
-                    category: tx.category?._id || tx.category,
+                    category: tx.category?._id || tx.category || "",
                     date: new Date(tx.date).toISOString().split("T")[0],
-                    account: tx.account?._id || tx.account,
+                    account: tx.account?._id || tx.account || "",
                 });
             } catch (error) {
                 toast.error("Failed to load data");
@@ -134,7 +134,7 @@ const EditTransactionContent = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm text-gray-400 mb-2">Account</label>
-                                <select id="AccountDropdown" name="account" value={formData.account} onChange={handleInputChange} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required>
+                                <select id="AccountDropdown" name="account" value={formData.account || ""} onChange={handleInputChange} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required>
                                     <option value="">Select Account</option>
                                     <optgroup label="Actions">
                                         <option value="ADD_NEW_ACCOUNT">+ Add New Account</option>
@@ -146,7 +146,7 @@ const EditTransactionContent = () => {
                             </div>
                             <div>
                                 <label className="block text-sm text-gray-400 mb-2">Category</label>
-                                <select id="CategoryDropdown" name="category" value={formData.category} onChange={handleInputChange} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required>
+                                <select id="CategoryDropdown" name="category" value={formData.category || ""} onChange={handleInputChange} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required>
                                     <option value="">Select Category</option>
                                     <optgroup label="Actions">
                                         <option value="ADD_NEW_CATEGORY">+ Add New Category</option>
