@@ -1,22 +1,27 @@
 import { test } from '../fixtures/test-base.js';
-import { expect } from '@playwright/test';
-import { navigateToPage } from '../page-objects/common-functions.js';
-import commonConstants from '../constants/commonConstants.js';
 
 test.describe('Transaction Related Tests', () => {
     test.beforeEach(async ({ loginPage }) => {
         await loginPage.loginUser();
     });
 
-    test('Create New Transaction @BAT', async ({ page, transactionPage }) => {
-        const transactions = commonConstants.TRANSACTIONS;
+    test.afterEach(async ({ settingsPage }) => {
+        await settingsPage.wipeData();
+    });
 
-        //create just one for a bat test
+    test('Create a Transaction @BAT', async ({ page, transactionPage,accountsPage,categoryPage ,settingsPage}) => {
+    
+        // Create a Category
+        const category = { name: "Food", type: "expense", parentCategory: "Needs", budget: "1000" };
+        await categoryPage.createCategory(page, category);
 
-        for (const transaction of transactions) {
-            await transactionPage.createTransaction(page, transaction);
-            break;
-        }
+        // Create an Account
+        const account = { name: "CANARA_BANK", balance: "1000" };
+        await accountsPage.createAccount(page, account);
+
+        // Create a Transaction
+        const transaction = { amount: "1000", type: "expense", accountName: "CANARA_BANK", categoryName: "Food", date: new Date().toISOString().split('T')[0], description: 'TEST AUTOMATION' };
+        await transactionPage.createTransaction(page, transaction);
 
     });
 
@@ -29,6 +34,6 @@ test.describe('Transaction Related Tests', () => {
 
         // EDIT THE RECORD===================================================================================
 
-        await transactionPage.editTransaction(page,transaction);
+        await transactionPage.editTransaction(page, transaction);
     });
 });

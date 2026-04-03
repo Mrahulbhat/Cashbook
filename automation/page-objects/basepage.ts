@@ -13,8 +13,9 @@ export class BasePage {
         return this.page.locator('table[data-testid="resultsTable"]');
     }
     get firstRowOfGrid(): Locator {
-        return this.page.locator('tr.tablebody').first();
+        return this.resultsTable.locator('tbody tr').first();
     }
+
     get recordCountOnTable(): Locator {
         return this.page.locator('#txnCount');
     }
@@ -114,7 +115,7 @@ export class BasePage {
         await this.amountInput.fill(amount);
         await expect(this.amountInput).toHaveValue(amount);
     }
-    
+
     // In selectAccount function
     async selectAccount(optionText: string) {
         await expect(this.accountDropdownContainer).toBeVisible();
@@ -125,19 +126,18 @@ export class BasePage {
         await this.accountDropdownContainer.selectOption({ label: optionText });
     }
 
-
     async selectCategory(optionText: string) {
         await expect(this.categoryDropdownContainer).toBeVisible();
-        try {
-            // Wait for at least one option beyond the placeholder
-            await expect(this.categoryDropdownContainer.locator('option').nth(1)).toBeAttached({ timeout: 15000 });
-        } catch (e) {
-            const currentOptions = await this.categoryDropdownContainer.locator('option').allTextContents();
-            console.error(`Timeout waiting for options in Category dropdown. Current options: [${currentOptions.join(', ')}]`);
-            throw e;
+
+        // Better error handling: Check what is actually available first
+        const options = await this.categoryDropdownContainer.locator('option').allTextContents();
+        if (!options.includes(optionText)) {
+            throw new Error(`Category "${optionText}" not found in dropdown. Available: [${options.join(', ')}]`);
         }
+
         await this.categoryDropdownContainer.selectOption({ label: optionText });
     }
+
 
     async selectDate(dateString: string = new Date().toISOString().split('T')[0]) {
         await expect(this.dateInput).toBeVisible();

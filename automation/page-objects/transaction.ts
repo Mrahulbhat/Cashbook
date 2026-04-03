@@ -26,9 +26,6 @@ export class TransactionPage extends BasePage {
 
     async createTransaction(page: Page, transaction: { type: string, amount: string, accountName: string, categoryName: string, date: string, description: string }) {
 
-        // Navigate to Dashboard Page
-        await navigateToPage(page, commonConstants.pageName.DASHBOARD);
-
         // Navigate to Transactions Page
         await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
 
@@ -60,19 +57,20 @@ export class TransactionPage extends BasePage {
             expect(page.getByText(commonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
         ]);
 
-        await expect(this.resultsTable).toBeVisible({timeout: 5000});
+        await expect(this.resultsTable).toBeVisible({ timeout: 5000 });
 
         // Verify if all details are correct in the latest transaction row
         await expect(this.firstTransactionRow).toContainText(transaction.type.toLowerCase());
         await expect(this.firstTransactionRow).toContainText(transaction.categoryName);
         await expect(this.firstTransactionRow).toContainText(transaction.accountName);
         await expect(this.firstTransactionRow).toContainText(`₹${Number(transaction.amount).toLocaleString('en-IN')}`);
-        const formattedDate = new Date(transaction.date).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        });
-        await expect(this.firstRowOfGrid).toContainText(formattedDate);
+        const dateObj = new Date(transaction.date);
+
+        // Match the standard locale string that the UI uses
+        const expectedUIDate = dateObj.toLocaleDateString();
+
+        await expect(this.firstRowOfGrid).toContainText(expectedUIDate);
+
     }
 
     async editTransaction(page: Page, transaction: { type: string, amount: string, accountName: string, categoryName: string, date: string, description: string }) {
@@ -128,7 +126,7 @@ export class TransactionPage extends BasePage {
         });
         await expect(this.firstRowOfGrid).toContainText(formattedDate1);
     };
- 
+
     async deleteAllTransactions(page: Page) {
         const initialTxnCountText = await this.recordCountOnTable.innerText();
         const initialTxnCount = parseInt(initialTxnCountText);

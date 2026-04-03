@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './basepage';
 import commonConstants from '../constants/commonConstants';
-import { waitForApiResponse } from './common-functions';
+import { navigateToPage, waitForApiResponse } from './common-functions';
 
 export class SettingsPage extends BasePage {
     readonly page: Page;
@@ -19,5 +19,11 @@ export class SettingsPage extends BasePage {
     }
     get deleteAccountButton(): Locator {
         return this.page.locator('#DeleteAccountBtn');
+    }
+
+    async wipeData() {
+        await navigateToPage(this.page,commonConstants.pageName.SETTINGS);
+        await this.wipeDataBtn.click();
+        await this.modalOkBtn.click();
     }
 }

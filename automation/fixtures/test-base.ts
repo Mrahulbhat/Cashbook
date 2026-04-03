@@ -1,6 +1,6 @@
 import { test as base } from '@playwright/test';
 import { BasePage } from '../page-objects/basepage';
-import { DashboardPage} from '../page-objects/dashboard';
+import { DashboardPage } from '../page-objects/dashboard';
 import { TransactionPage } from '../page-objects/transaction';
 import { AccountsPage } from '../page-objects/accounts';
 import { CategoryPage } from '../page-objects/category';
@@ -17,8 +17,8 @@ type fixtures = {
     categoryPage: CategoryPage;
     transferPage: TransferPage;
     statisticsPage: StatisticsPage;
-    loginPage:LoginPage;
-    settingsPage:SettingsPage;
+    loginPage: LoginPage;
+    settingsPage: SettingsPage;
 }
 
 export const test = base.extend<fixtures>({
