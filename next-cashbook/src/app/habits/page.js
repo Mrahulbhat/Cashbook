@@ -201,10 +201,20 @@ const HabitTracker = () => {
         setEditingHabitId(null);
     };
 
-    const deleteHabit = (id) => {
-        if (confirm('Delete this habit? This cannot be undone.')) {
-            setHabits(habits.filter(h => h.id !== id));
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [habitToDelete, setHabitToDelete] = useState(null);
+
+    const openDeleteModal = (habit) => {
+        setHabitToDelete(habit);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (habitToDelete) {
+            setHabits(habits.filter(h => h.id !== habitToDelete.id));
             toast.error('Habit removed');
+            setIsDeleteModalOpen(false);
+            setHabitToDelete(null);
         }
     };
 
@@ -372,7 +382,7 @@ const HabitTracker = () => {
                                             </div>
                                         </div>
                                         <button 
-                                            onClick={() => deleteHabit(habit.id)}
+                                            onClick={() => openDeleteModal(habit)}
                                             className="p-2 text-gray-600 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                                         >
                                             <Trash2 size={18} />
@@ -476,9 +486,17 @@ const HabitTracker = () => {
                                                 </button>
                                             </div>
                                         </div>
-                                        <div className="px-5 py-2 bg-gray-800/50 rounded-2xl text-amber-400 font-bold flex items-center gap-2 border border-gray-700/50">
-                                            <Zap size={18} fill="currentColor" />
-                                            {calculateStreak(habit)} Day Streak
+                                        <div className="flex items-center gap-2">
+                                            <div className="px-5 py-2 bg-gray-800/50 rounded-2xl text-amber-400 font-bold flex items-center gap-2 border border-gray-700/50">
+                                                <Zap size={18} fill="currentColor" />
+                                                {calculateStreak(habit)} Day Streak
+                                            </div>
+                                            <button 
+                                                onClick={() => openDeleteModal(habit)}
+                                                className="p-2.5 text-gray-600 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 bg-gray-800/30 rounded-xl"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
                                         </div>
                                     </div>
 
@@ -615,6 +633,43 @@ const HabitTracker = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                    <div className="bg-[#0f0f0f] border border-gray-800 w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl animate-in zoom-in-95 duration-200 text-white">
+                        <div className="flex flex-col items-center text-center space-y-4">
+                            <div className="p-4 bg-red-500/10 rounded-full text-red-500">
+                                <Trash2 size={32} />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold">Delete Habit?</h2>
+                                <p className="text-gray-400 mt-2">
+                                    Are you sure you want to delete <span className="text-blue-400 font-bold">"{habitToDelete?.name}"</span>? This action cannot be undone.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex gap-4 pt-8">
+                            <button 
+                                onClick={() => {
+                                    setIsDeleteModalOpen(false);
+                                    setHabitToDelete(null);
+                                }} 
+                                className="flex-1 px-6 py-4 rounded-2xl bg-gray-800 hover:bg-gray-700 font-bold transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={confirmDelete}
+                                className="flex-1 px-6 py-4 rounded-2xl bg-red-600 hover:bg-red-500 font-bold transition-all shadow-[0_0_20px_rgba(220,38,38,0.3)]"
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
