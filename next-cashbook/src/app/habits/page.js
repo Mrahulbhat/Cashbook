@@ -14,6 +14,7 @@ const HabitTracker = () => {
     const [habitName, setHabitName] = useState('');
     const [selectedColor, setSelectedColor] = useState('emerald');
     const [selectedDays, setSelectedDays] = useState([1, 2, 3, 4, 5]); // Default Weekdays
+    const [needsRating, setNeedsRating] = useState(false);
     const [stats, setStats] = useState({ totalCompletions: 0, currentStreak: 0 });
 
     const weekDays = [
@@ -57,7 +58,12 @@ const HabitTracker = () => {
         const activeToday = habits.filter(h => (h.activeDays || [0,1,2,3,4,5,6]).includes(currentDay));
         if (activeToday.length === 0) return 0;
         
-        const completed = activeToday.filter(h => h.completedDays.includes(today)).length;
+        const completed = activeToday.filter(h => {
+            if (typeof h.completedDays?.[0] === 'string') {
+                return h.completedDays.includes(today);
+            }
+            return h.completedDays?.some(d => d.date === today);
+        }).length;
         return Math.round((completed / activeToday.length) * 100);
     }, [habits, today]);
 
@@ -70,17 +76,16 @@ const HabitTracker = () => {
         setHabits(newHabits);
     };
 
+    const isFutureDate = (dateStr) => {
+        return new Date(dateStr) > new Date(today);
+    };
+
     // FIXED: Properly calculate days of current week without mutation
     const daysOfWeek = useMemo(() => {
-        const now = new Date();
-        const currentDay = now.getDay();
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - currentDay); // Sunday as start
-        
         const days = [];
-        for (let i = 0; i < 7; i++) {
-            const day = new Date(startOfWeek);
-            day.setDate(startOfWeek.getDate() + i);
+        for (let i = 6; i >= 0; i--) {
+            const day = new Date();
+            day.setDate(day.getDate() - i);
             days.push({
                 date: day.toISOString().split('T')[0],
                 label: day.toLocaleDateString('en-US', { weekday: 'short' }),
@@ -110,15 +115,32 @@ const HabitTracker = () => {
         return calendarGrid;
     }, [currentMonth]);
 
-    const toggleHabit = (habitId, date) => {
+    const toggleHabit = (habitId, date, rating = null) => {
+        if (isFutureDate(date)) {
+            toast.error("Cannot log future habits!");
+            return;
+        }
+
         setHabits(prevHabits => {
             return prevHabits.map(habit => {
                 if (habit.id === habitId) {
-                    const completedDays = [...habit.completedDays];
-                    if (completedDays.includes(date)) {
-                        return { ...habit, completedDays: completedDays.filter(d => d !== date) };
+                    let completedDays = [...(habit.completedDays || [])];
+                    // Normalize old string-based data if any
+                    completedDays = completedDays.map(d => typeof d === 'string' ? { date: d, rating: 3 } : d);
+                    
+                    const existingIndex = completedDays.findIndex(d => d.date === date);
+                    
+                    if (existingIndex !== -1) {
+                        if (rating && habit.needsRating) {
+                            // Update rating
+                            completedDays[existingIndex] = { ...completedDays[existingIndex], rating };
+                            return { ...habit, completedDays };
+                        }
+                        // Remove entry
+                        return { ...habit, completedDays: completedDays.filter(d => d.date !== date) };
                     } else {
-                        return { ...habit, completedDays: [...completedDays, date] };
+                        // Add new entry
+                        return { ...habit, completedDays: [...completedDays, { date, rating: rating || (habit.needsRating ? 3 : null) }] };
                     }
                 }
                 return habit;
@@ -134,7 +156,7 @@ const HabitTracker = () => {
             // Edit existing habit
             setHabits(prev => prev.map(h => 
                 h.id === editingHabitId 
-                ? { ...h, name: habitName.trim(), color: selectedColor, activeDays: selectedDays } 
+                ? { ...h, name: habitName.trim(), color: selectedColor, activeDays: selectedDays, needsRating: needsRating } 
                 : h
             ));
             toast.success('Habit updated!');
@@ -146,6 +168,7 @@ const HabitTracker = () => {
                 completedDays: [],
                 color: selectedColor,
                 activeDays: selectedDays,
+                needsRating: needsRating,
                 createdAt: new Date().toISOString()
             };
             setHabits([...habits, newHabit]);
@@ -160,6 +183,7 @@ const HabitTracker = () => {
         setHabitName('');
         setSelectedColor('emerald');
         setSelectedDays([1, 2, 3, 4, 5]);
+        setNeedsRating(false);
         setIsModalOpen(true);
     };
 
@@ -168,6 +192,7 @@ const HabitTracker = () => {
         setHabitName(habit.name);
         setSelectedColor(habit.color || 'emerald');
         setSelectedDays(habit.activeDays || [0, 1, 2, 3, 4, 5, 6]);
+        setNeedsRating(habit.needsRating || false);
         setIsModalOpen(true);
     };
 
@@ -184,7 +209,7 @@ const HabitTracker = () => {
     };
 
     const calculateStreak = (habit) => {
-        const { completedDays, activeDays = [0, 1, 2, 3, 4, 5, 6] } = habit;
+        const { completedDays = [], activeDays = [0, 1, 2, 3, 4, 5, 6] } = habit;
         if (!completedDays.length) return 0;
         
         let streak = 0;
@@ -193,7 +218,9 @@ const HabitTracker = () => {
             const dateStr = checkDate.toISOString().split('T')[0];
             const dayOfWeek = checkDate.getDay();
             
-            if (completedDays.includes(dateStr)) {
+            const isCompleted = completedDays.some(d => (typeof d === 'string' ? d === dateStr : d.date === dateStr));
+
+            if (isCompleted) {
                 streak++;
                 checkDate.setDate(checkDate.getDate() - 1);
             } else if (!activeDays.includes(dayOfWeek)) {
@@ -287,7 +314,7 @@ const HabitTracker = () => {
                         </div>
                         <div className="flex justify-between mt-3 text-sm font-medium">
                             <span className="text-gray-500">
-                                {habits.filter(h => (h.activeDays || [0,1,2,3,4,5,6]).includes(new Date().getDay()) && h.completedDays.includes(today)).length}/{habits.filter(h => (h.activeDays || [0,1,2,3,4,5,6]).includes(new Date().getDay())).length} active habits today
+                                {habits.filter(h => (h.activeDays || [0,1,2,3,4,5,6]).includes(new Date().getDay()) && h.completedDays?.some(d => (typeof d === 'string' ? d === today : d.date === today))).length}/{habits.filter(h => (h.activeDays || [0,1,2,3,4,5,6]).includes(new Date().getDay())).length} active habits today
                             </span>
                             <span className="text-blue-400/70">
                                 {dailyFulfillment === 100 ? 'Perfect day! 🔥' : dailyFulfillment > 50 ? 'Keep it up! 🚀' : 'Start your first habit! ✨'}
@@ -355,23 +382,44 @@ const HabitTracker = () => {
                                     <div className="flex justify-between items-center bg-black/20 p-4 rounded-2xl lg:w-2/3">
                                         {daysOfWeek.map((day, idx) => {
                                             const isToday = day.date === today;
-                                            const isCompleted = habit.completedDays.includes(day.date);
+                                            const completion = habit.completedDays?.find(d => (typeof d === 'string' ? d === day.date : d.date === day.date));
+                                            const isCompleted = !!completion;
                                             const isActive = (habit.activeDays || [0,1,2,3,4,5,6]).includes(new Date(day.date).getDay());
+                                            const isFuture = isFutureDate(day.date);
                                             
                                             return (
                                                 <div 
                                                     key={idx} 
-                                                    className={`flex flex-col items-center gap-3 cursor-pointer group/day ${!isActive ? 'opacity-40 grayscale-[0.5]' : ''}`}
-                                                    onClick={() => isActive && toggleHabit(habit.id, day.date)}
+                                                    className={`
+                                                        flex flex-col items-center gap-3 cursor-pointer group/day 
+                                                        ${!isActive ? 'opacity-20 grayscale' : ''} 
+                                                        ${isFuture ? 'cursor-not-allowed opacity-10' : ''}
+                                                    `}
+                                                    onClick={() => !isFuture && isActive && toggleHabit(habit.id, day.date)}
                                                 >
                                                     <span className={`text-xs font-bold uppercase tracking-tighter ${isToday ? 'text-blue-400' : 'text-gray-500'}`}>
                                                         {day.label}
                                                     </span>
-                                                    <div className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${isCompleted ? getProgressColor(habit.color) + ' shadow-lg scale-110 border-transparent' : 'bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700'}`}>
+                                                    <div className={`relative w-10 md:w-12 h-14 md:h-16 flex flex-col items-center justify-center rounded-2xl transition-all duration-300 ${isCompleted ? getProgressColor(habit.color) + ' shadow-lg border-transparent' : 'bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700'}`}>
                                                         {!isActive && !isCompleted ? (
                                                             <span className="text-[10px] font-black text-gray-600 uppercase tracking-tighter">OFF</span>
                                                         ) : isCompleted ? (
-                                                            <CheckCircle2 size={24} className="text-white" />
+                                                            <div className="flex flex-col items-center gap-1">
+                                                                <CheckCircle2 size={20} className="text-white" />
+                                                                {habit.needsRating && (
+                                                                    <div className="flex gap-0.5" onClick={(e) => e.stopPropagation()}>
+                                                                        {[1,2,3].map(star => (
+                                                                            <button 
+                                                                                key={star}
+                                                                                onClick={() => toggleHabit(habit.id, day.date, star)}
+                                                                                className={`text-[10px] transition-all hover:scale-125 ${star <= (completion.rating || 0) ? 'text-white' : 'text-white/30'}`}
+                                                                            >
+                                                                                ★
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         ) : (
                                                             <span className="text-sm font-bold text-gray-500">{day.dayNum}</span>
                                                         )}
@@ -443,26 +491,40 @@ const HabitTracker = () => {
                                         {calendarData.map((day, idx) => {
                                             if (!day) return <div key={`empty-${idx}`} className="aspect-square opacity-0"></div>;
                                             const isToday = day.date === today;
-                                            const isCompleted = habit.completedDays.includes(day.date);
+                                            const completion = habit.completedDays?.find(d => (typeof d === 'string' ? d === day.date : d.date === day.date));
+                                            const isCompleted = !!completion;
+                                            const isActive = (habit.activeDays || [0,1,2,3,4,5,6]).includes(new Date(day.date).getDay());
+                                            const isFuture = isFutureDate(day.date);
+
                                             return (
                                                 <div 
                                                     key={day.date}
-                                                    onClick={() => toggleHabit(habit.id, day.date)}
+                                                    onClick={() => !isFuture && isActive && toggleHabit(habit.id, day.date)}
                                                     className={`
-                                                        relative aspect-square flex items-center justify-center rounded-2xl cursor-pointer transition-all duration-300 group
+                                                        relative aspect-square flex flex-col items-center justify-center rounded-2xl cursor-pointer transition-all duration-300 group
                                                         ${isCompleted ? getProgressColor(habit.color) + ' shadow-[0_0_15px_rgba(37,99,235,0.2)]' : 'bg-gray-800/30 border border-gray-800/50 hover:bg-gray-800/50 hover:border-gray-700'}
                                                         ${isToday ? 'outline outline-2 outline-blue-500 outline-offset-4' : ''}
-                                                        ${!(habit.activeDays || [0,1,2,3,4,5,6]).includes(new Date(day.date).getDay()) && !isCompleted ? 'opacity-30 grayscale-[0.5]' : ''}
+                                                        ${!isActive && !isCompleted ? 'opacity-20 grayscale' : ''}
+                                                        ${isFuture ? 'opacity-5 cursor-not-allowed' : ''}
                                                     `}
                                                 >
                                                     <span className={`text-sm font-bold ${isCompleted ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'}`}>
                                                         {day.dayNum}
                                                     </span>
                                                     {isCompleted ? (
-                                                        <div className="absolute top-1 right-1">
-                                                            <CheckCircle2 size={12} className="text-white/50" />
+                                                        <div className="flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+                                                            {habit.needsRating && (
+                                                                <div className="flex gap-0.5 mt-1">
+                                                                    {[1,2,3].map(star => (
+                                                                        <span key={star} className={`text-[8px] ${star <= (completion.rating || 0) ? 'text-white' : 'text-white/20'}`}>★</span>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                            <div className="absolute top-1 right-1">
+                                                                <CheckCircle2 size={12} className="text-white/50" />
+                                                            </div>
                                                         </div>
-                                                    ) : !(habit.activeDays || [0,1,2,3,4,5,6]).includes(new Date(day.date).getDay()) && (
+                                                    ) : !isActive && (
                                                         <div className="absolute -top-1 -right-1 text-[8px] bg-gray-800 text-gray-500 px-1 rounded-full font-bold">OFF</div>
                                                     )}
                                                 </div>
@@ -534,6 +596,16 @@ const HabitTracker = () => {
                                             {day.label}
                                         </button>
                                     ))}
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 p-4 bg-gray-900/50 border border-gray-800 rounded-2xl cursor-pointer hover:bg-gray-900 transition-colors" onClick={() => setNeedsRating(!needsRating)}>
+                                <div className={`w-6 h-6 rounded-md flex items-center justify-center border-2 transition-all ${needsRating ? 'bg-blue-600 border-blue-600' : 'border-gray-700'}`}>
+                                    {needsRating && <CheckCircle2 size={14} className="text-white" />}
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-gray-200">Enable Entry Rating</span>
+                                    <span className="text-[10px] text-gray-500 uppercase font-black">Rate your performance 1-3 stars</span>
                                 </div>
                             </div>
                             <div className="flex gap-4 pt-2">
