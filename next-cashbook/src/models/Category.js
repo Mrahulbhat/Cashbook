@@ -15,16 +15,24 @@ const categorySchema = new mongoose.Schema(
             type: String, //income or expense
             required: true
         },
-        parentCategory: {
-            type: String,
-            required: true
-        },
         budget: {
             type: String,
+        },
+        yearlyBudget: {
+            type: Number,
+            default: 0
+        },
+        planningBucket: {
+            type: String,
+            enum: ['None', 'Long Term', 'Short Term', 'Wants', 'Needs'],
+            default: 'None'
         },
     },
     { timestamps: true }
 );
 
-const Category = mongoose.models.Category || mongoose.model("Category", categorySchema);
+if (mongoose.models.Category) {
+    delete mongoose.models.Category;
+}
+const Category = mongoose.model("Category", categorySchema);
 export default Category;

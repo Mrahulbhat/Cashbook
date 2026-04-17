@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat, CheckCircle2, Settings } from "lucide-react";
+import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat, CheckCircle2, Settings, Target } from "lucide-react";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -15,6 +15,7 @@ const Sidebar = () => {
 
     const tabs = [
         { name: "Dashboard", icon: Home, path: "/dashboard", id: "dashboard" },
+        { name: "Planning", icon: Target, path: "/planning", id: "planning" },
         { name: "Transactions", icon: TrendingUp, path: "/transactions", id: "transactions" },
         { name: "Accounts", icon: Wallet, path: "/accounts", id: "accounts" },
         { name: "Transfer", icon: Repeat, path: "/transfer", id: "transfer" },

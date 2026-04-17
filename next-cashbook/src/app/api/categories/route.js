@@ -23,7 +23,7 @@ export async function POST(req) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
-        const { name, type, parentCategory, budget } = await req.json();
+        const { name, type, budget, planningBucket, yearlyBudget } = await req.json();
         if (!name || !type) return NextResponse.json({ message: 'Name and type are required' }, { status: 400 });
 
         await dbConnect();
@@ -33,8 +33,9 @@ export async function POST(req) {
         const newCategory = new Category({
             name,
             type,
-            parentCategory: parentCategory || 'System',
             budget: budget || 0,
+            planningBucket: planningBucket || 'None',
+            yearlyBudget: yearlyBudget || 0,
             userId: user.userId
         });
 

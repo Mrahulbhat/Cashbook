@@ -13,11 +13,12 @@ const AddCategoryContent = () => {
     const [formData, setFormData] = useState({
         name: "",
         type: "expense",
-        parentCategory: "Needs",
         budget: "",
+        planningBucket: "None",
+        yearlyBudget: "",
     });
 
-    const parentCategories = ["Needs", "Wants", "Savings/Investment", "Income", "System"];
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -35,7 +36,8 @@ const AddCategoryContent = () => {
         try {
             await axiosInstance.post("/categories", {
                 ...formData,
-                budget: formData.budget ? parseFloat(formData.budget) : undefined,
+                budget: (formData.budget && formData.budget !== "") ? parseFloat(formData.budget) : 0,
+                yearlyBudget: (formData.yearlyBudget && formData.yearlyBudget !== "") ? parseFloat(formData.yearlyBudget) : 0,
             });
             toast.success("Category created successfully!");
             router.push("/categories");
@@ -88,20 +90,6 @@ const AddCategoryContent = () => {
                                 ))}
                             </div>
                         </div>
-
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-400 mb-2">Parent Category *</label>
-                            <select
-                                id="ParentDropdown"
-                                name="parentCategory"
-                                value={formData.parentCategory || ""}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white"
-                            >
-                                {parentCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                            </select>
-                        </div>
-
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Monthly Budget (Optional)</label>
                             <input
@@ -112,6 +100,36 @@ const AddCategoryContent = () => {
                                 onChange={handleInputChange}
                                 className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white"
                             />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-400 mb-2">Yearly Budget (Optional)</label>
+                            <input
+                                id="YearlyBudgetInput"
+                                type="number"
+                                name="yearlyBudget"
+                                value={formData.yearlyBudget}
+                                onChange={handleInputChange}
+                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white"
+                                placeholder="36000"
+                            />
+                            <p className="text-xs text-gray-500 mt-2">Setting this allows dynamic monthly budget tracking.</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-400 mb-2">Planning Bucket</label>
+                            <select
+                                id="PlanningBucketDropdown"
+                                name="planningBucket"
+                                value={formData.planningBucket}
+                                onChange={handleInputChange}
+                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white"
+                            >
+                                {['None', 'Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
+                                    <option key={bucket} value={bucket}>{bucket}</option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-gray-500 mt-2">Track this category against your targets in the Planning section.</p>
                         </div>
 
                         <div className="flex gap-4">

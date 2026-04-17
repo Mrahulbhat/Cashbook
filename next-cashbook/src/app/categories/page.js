@@ -85,6 +85,11 @@ const CategoriesContent = () => {
                                     <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold ${category.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                                         {category.type}
                                     </span>
+                                    {category.planningBucket && category.planningBucket !== 'None' && (
+                                        <span className="inline-block mt-2 ml-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400">
+                                            {category.planningBucket}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="flex gap-2 flex-shrink-0">
                                     <button id="EditBtn" onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">

@@ -151,11 +151,54 @@ const StatisticsContent = () => {
 
                 const catName = t.category?.name || 'Uncategorized';
                 if (!categoryMap[catName]) {
-                    categoryMap[catName] = { name: catName, value: 0, budget: Number(t.category?.budget) || 0 };
+                    categoryMap[catName] = { 
+                        name: catName, 
+                        value: 0, 
+                        budget: Number(t.category?.budget) || 0,
+                        yearlyBudget: Number(t.category?.yearlyBudget) || 0,
+                        yearSpent: 0
+                    };
                 }
                 categoryMap[catName].value += amount;
             }
         });
+
+        // Calculate yearly spent for categories with yearly budgets
+        transactions.forEach(t => {
+            if (t.type !== 'income') {
+                const d = new Date(t.date);
+                if (d.getFullYear() === currentYear) {
+                    const catName = t.category?.name || 'Uncategorized';
+                    if (categoryMap[catName]) {
+                        categoryMap[catName].yearSpent += Number(t.amount);
+                    }
+                }
+            }
+        });
+
+        // Process final category stats with dynamic budget logic
+        const currentMonthIndex = now.getMonth(); // 0-11
+        const monthsRemaining = 12 - currentMonthIndex;
+
+        const categoryStats = Object.values(categoryMap).map(cat => {
+            let suggestedMonthly = cat.budget;
+            let budgetType = 'monthly';
+            let remainingYearly = 0;
+
+            if (cat.yearlyBudget > 0) {
+                remainingYearly = Math.max(0, cat.yearlyBudget - cat.yearSpent);
+                suggestedMonthly = remainingYearly / monthsRemaining;
+                budgetType = 'yearly-dynamic';
+            }
+
+            return {
+                ...cat,
+                suggestedMonthly,
+                budgetType,
+                remainingYearly,
+                monthsRemaining
+            };
+        }).sort((a, b) => b.value - a.value);
 
         const monthWiseComparison = Object.values(monthMap)
             .sort((a, b) => a.key.localeCompare(b.key))
@@ -177,42 +220,11 @@ const StatisticsContent = () => {
             finalChartData = Object.values(chartMap).sort((a, b) => Number(a.name) - Number(b.name));
         }
 
-        const categoryStats = Object.values(categoryMap).sort((a, b) => b.value - a.value);
-        const savingsRate = totalIncome > 0 ? Math.max(0, Math.round(((totalIncome - totalExpense) / totalIncome) * 100)) : 0;
-        
-        let prevIncome = 0;
-        let prevExpense = 0;
-        prevFiltered.forEach(t => {
-            const amount = Number(t.amount);
-            if (t.type === 'income') prevIncome += amount;
-            else prevExpense += amount;
-        });
-
-        const prevIncomeDiff = prevIncome ? ((totalIncome - prevIncome) / prevIncome) * 100 : 0;
-        const prevExpenseDiff = prevExpense ? ((totalExpense - prevExpense) / prevExpense) * 100 : 0;
-
-        const weekdayStats = Object.entries(weekdayMap).map(([name, value]) => ({ name, value }));
-        const topSpendingDay = [...weekdayStats].sort((a, b) => b.value - a.value)[0]?.name || 'N/A';
-
-        const top10Expenses = filtered.filter(t => t.type === 'expense').sort((a,b) => Number(b.amount) - Number(a.amount)).slice(0, 10);
-        const largestExpense = top10Expenses[0] || null;
-
-        // Insights Logic
-        const insights = [];
-        if (savingsRate > 20) insights.push({ type: 'success', text: "Great! Your savings rate is healthy." });
-        else if (savingsRate > 0) insights.push({ type: 'info', text: "You're saving, but could improve." });
-        else insights.push({ type: 'warning', text: "Expenses are higher than income!" });
-
-        if (totalExpense > prevExpense && prevExpense > 0) insights.push({ type: 'warning', text: `Spending is up by ${prevExpenseDiff.toFixed(0)}% vs last period.` });
-        
-        insights.push({ type: 'info', text: `Most of your money goes to ${categoryStats[0]?.name || 'uncategorized items'}.` });
-        insights.push({ type: 'info', text: `Peak spending occurs on ${topSpendingDay}s.` });
-
-        return { 
-            totalIncome, 
-            totalExpense, 
-            savingsRate, 
-            categoryStats, 
+        return {
+            totalIncome,
+            totalExpense,
+            savingsRate,
+            categoryStats,
             chartData: finalChartData,
             monthWiseComparison,
             weekdayStats,
@@ -451,6 +463,93 @@ const StatisticsContent = () => {
                             </ResponsiveContainer>
                         </div>
                     </div>
+
+                    {/* Yearly Budget Dynamic Tracking Section */}
+                    <div className="bg-gray-900/30 border border-gray-800/60 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl mb-10">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 className="text-white text-xl font-bold flex items-center gap-2">
+                                    <Clock className="text-amber-400" size={20} />
+                                    Dynamic Yearly Budgets
+                                </h2>
+                                <p className="text-gray-500 text-sm mt-1">Monthly targets adjusted based on remaining annual budget</p>
+                            </div>
+                            <div className="px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-500 text-xs font-bold uppercase tracking-widest">
+                                {new Date().toLocaleString('default', { month: 'long' })} Target
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {categoryStats.filter(c => c.yearlyBudget > 0).map((cat, i) => {
+                                const monthsRemaining = cat.monthsRemaining;
+                                const monthlyTarget = cat.suggestedMonthly;
+                                const spentThisMonth = cat.value;
+                                const progress = monthlyTarget > 0 ? (spentThisMonth / monthlyTarget) * 100 : 0;
+                                const overspent = spentThisMonth > monthlyTarget;
+
+                                return (
+                                    <div key={i} className="bg-black/40 border border-gray-800 rounded-2xl p-6 transition-all hover:bg-black/60 group">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <h3 className="text-white font-bold text-lg group-hover:text-amber-400 transition-colors">{cat.name}</h3>
+                                                <p className="text-gray-500 text-xs mt-1">Yearly: {formatCurrency(cat.yearlyBudget)}</p>
+                                            </div>
+                                            <div className={`text-right ${overspent ? 'text-red-400' : 'text-green-400'}`}>
+                                                <p className="text-lg font-black">{Math.round(progress)}%</p>
+                                                <p className="text-[10px] uppercase font-bold tracking-tighter">used this month</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <div className="relative h-2 bg-gray-800 rounded-full overflow-hidden">
+                                                <div 
+                                                    className={`absolute h-full transition-all duration-1000 ${overspent ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]' : 'bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.4)]'}`}
+                                                    style={{ width: `${Math.min(progress, 100)}%` }}
+                                                ></div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4 pt-2">
+                                                <div>
+                                                    <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Suggested Monthly</p>
+                                                    <p className="text-white font-bold">{formatCurrency(monthlyTarget)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Remaining Yearly</p>
+                                                    <p className="text-white font-bold">{formatCurrency(cat.remainingYearly)}</p>
+                                                </div>
+                                            </div>
+
+                                            {overspent && (
+                                                <div className="flex items-center gap-2 text-red-400/80 text-[10px] font-bold uppercase bg-red-500/10 p-2 rounded-lg border border-red-500/10">
+                                                    <AlertCircle size={12} />
+                                                    Target exceeded by {formatCurrency(spentThisMonth - monthlyTarget)}
+                                                </div>
+                                            )}
+                                            {!overspent && progress > 80 && (
+                                                <div className="flex items-center gap-2 text-amber-400/80 text-[10px] font-bold uppercase bg-amber-500/10 p-2 rounded-lg border border-amber-500/10">
+                                                    <AlertCircle size={12} />
+                                                    Approaching monthly target
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            {categoryStats.filter(c => c.yearlyBudget > 0).length === 0 && (
+                                <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-500 border-2 border-dashed border-gray-800 rounded-3xl">
+                                    <Clock size={48} className="mb-4 opacity-10" />
+                                    <p className="font-medium">No yearly budgets setup yet</p>
+                                    <button 
+                                        onClick={() => router.push('/categories')}
+                                        className="mt-4 text-amber-500 hover:text-amber-400 text-sm font-bold flex items-center gap-1"
+                                    >
+                                        Setup in Categories <ChevronRight size={16} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
 
                     <div className="bg-gray-900/30 border border-gray-800/60 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl flex flex-col">
                         <h2 className="text-white text-xl font-bold mb-2 flex items-center gap-2">

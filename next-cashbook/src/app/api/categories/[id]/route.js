@@ -27,7 +27,7 @@ export async function PUT(req, { params }) {
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
         const { id } = await params;
-        const { name, type, parentCategory, budget } = await req.json();
+        const { name, type, budget, planningBucket, yearlyBudget } = await req.json();
 
         await dbConnect();
         const category = await Category.findOne({ _id: id, userId: user.userId });
@@ -40,8 +40,9 @@ export async function PUT(req, { params }) {
         }
 
         category.type = type || category.type;
-        category.parentCategory = parentCategory || category.parentCategory;
         category.budget = budget !== undefined ? budget : category.budget;
+        category.planningBucket = planningBucket || category.planningBucket;
+        category.yearlyBudget = yearlyBudget !== undefined ? yearlyBudget : category.yearlyBudget;
 
         const updatedCategory = await category.save();
         return NextResponse.json(updatedCategory, { status: 200 });

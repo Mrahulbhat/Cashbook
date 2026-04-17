@@ -12,7 +12,7 @@ const EditCategoryContent = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
-    const [formData, setFormData] = useState({ name: "", type: "expense", parentCategory: "Needs", budget: "" });
+    const [formData, setFormData] = useState({ name: "", type: "expense", budget: "", planningBucket: "None", yearlyBudget: "" });
 
     useEffect(() => {
         const fetchCategory = async () => {
@@ -21,8 +21,9 @@ const EditCategoryContent = () => {
                 setFormData({
                     name: response.data.name,
                     type: response.data.type,
-                    parentCategory: response.data.parentCategory,
                     budget: response.data.budget || "",
+                    planningBucket: response.data.planningBucket || "None",
+                    yearlyBudget: response.data.yearlyBudget || "",
                 });
             } catch (error) {
                 toast.error("Failed to fetch category");
@@ -40,7 +41,8 @@ const EditCategoryContent = () => {
         try {
             await axiosInstance.put(`/categories/${id}`, {
                 ...formData,
-                budget: formData.budget ? parseFloat(formData.budget) : undefined,
+                budget: (formData.budget && formData.budget !== "") ? parseFloat(formData.budget) : 0,
+                yearlyBudget: (formData.yearlyBudget && formData.yearlyBudget !== "") ? parseFloat(formData.yearlyBudget) : 0,
             });
             toast.success("Category updated!");
             router.push("/categories");
@@ -72,8 +74,26 @@ const EditCategoryContent = () => {
                             ))}
                         </div>
                         <div>
-                            <label className="block text-sm text-gray-400 mb-2">Budget (Optional)</label>
+                            <label className="block text-sm text-gray-400 mb-2">Monthly Budget (Optional)</label>
                             <input id="BudgetInput" type="number" value={formData.budget} onChange={e => setFormData({ ...formData, budget: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-gray-400 mb-2">Yearly Budget (Optional)</label>
+                            <input id="YearlyBudgetInput" type="number" value={formData.yearlyBudget} onChange={e => setFormData({ ...formData, yearlyBudget: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" placeholder="36000" />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-gray-400 mb-2">Planning Bucket</label>
+                            <select
+                                id="PlanningBucketDropdown"
+                                value={formData.planningBucket}
+                                onChange={e => setFormData({ ...formData, planningBucket: e.target.value })}
+                                className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none"
+                            >
+                                {['None', 'Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
+                                    <option key={bucket} value={bucket}>{bucket}</option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-gray-500 mt-2">Assign this category to a financial bucket for tracking.</p>
                         </div>
                         <button id="SaveBtn" disabled={loading} className="w-full py-4 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-500 transition-all flex justify-center items-center gap-2">
                             {loading ? <Loader className="animate-spin" size={18} /> : <Save size={18} />} Save Changes

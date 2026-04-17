@@ -12,11 +12,9 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
     const [categoryData, setCategoryData] = useState({
         name: '',
         type: initialType,
-        parentCategory: 'Needs',
         budget: '',
+        planningBucket: 'None',
     });
-
-    const parentCategories = ["Needs", "Wants", "Savings/Investment", "Income", "System"];
 
     if (!isOpen) return null;
 
@@ -126,17 +124,7 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-400 mb-2">Parent Category</label>
-                                <select
-                                    id="QuickCatParent"
-                                    value={categoryData.parentCategory || ""}
-                                    onChange={(e) => setCategoryData({ ...categoryData, parentCategory: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white"
-                                >
-                                    {parentCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                                </select>
-                            </div>
+
                             <button
                                 type="submit"
                                 disabled={isLoading}
