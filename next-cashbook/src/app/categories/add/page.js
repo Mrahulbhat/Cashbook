@@ -17,6 +17,7 @@ const AddCategoryContent = () => {
         planningBucket: "None",
         yearlyBudget: "",
     });
+    const [budgetType, setBudgetType] = useState("monthly"); // "monthly" or "yearly"
 
 
 
@@ -36,8 +37,8 @@ const AddCategoryContent = () => {
         try {
             await axiosInstance.post("/categories", {
                 ...formData,
-                budget: (formData.budget && formData.budget !== "") ? parseFloat(formData.budget) : 0,
-                yearlyBudget: (formData.yearlyBudget && formData.yearlyBudget !== "") ? parseFloat(formData.yearlyBudget) : 0,
+                budget: budgetType === 'monthly' && formData.budget ? parseFloat(formData.budget) : 0,
+                yearlyBudget: budgetType === 'yearly' && formData.yearlyBudget ? parseFloat(formData.yearlyBudget) : 0,
             });
             toast.success("Category created successfully!");
             router.push("/categories");
@@ -90,30 +91,59 @@ const AddCategoryContent = () => {
                                 ))}
                             </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-400 mb-2">Monthly Budget (Optional)</label>
-                            <input
-                                id="BudgetInput"
-                                type="number"
-                                name="budget"
-                                value={formData.budget}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white"
-                            />
-                        </div>
+                        <div className="bg-gray-800/50 p-6 rounded-2xl border border-gray-700/50 space-y-6">
+                            <div className="flex p-1 bg-black rounded-xl border border-gray-800">
+                                <button 
+                                    type="button"
+                                    onClick={() => setBudgetType('monthly')}
+                                    className={`flex-1 py-2 px-4 rounded-lg font-bold text-sm transition-all ${budgetType === 'monthly' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-gray-500 hover:text-gray-300'}`}
+                                >
+                                    Monthly Budget
+                                </button>
+                                <button 
+                                    type="button"
+                                    onClick={() => setBudgetType('yearly')}
+                                    className={`flex-1 py-2 px-4 rounded-lg font-bold text-sm transition-all ${budgetType === 'yearly' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-gray-500 hover:text-gray-300'}`}
+                                >
+                                    Yearly Budget
+                                </button>
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-400 mb-2">Yearly Budget (Optional)</label>
-                            <input
-                                id="YearlyBudgetInput"
-                                type="number"
-                                name="yearlyBudget"
-                                value={formData.yearlyBudget}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white"
-                                placeholder="36000"
-                            />
-                            <p className="text-xs text-gray-500 mt-2">Setting this allows dynamic monthly budget tracking.</p>
+                            {budgetType === 'monthly' ? (
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-1">Monthly Limit (INR)</label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                                        <input
+                                            id="BudgetInput"
+                                            type="number"
+                                            name="budget"
+                                            value={formData.budget}
+                                            onChange={handleInputChange}
+                                            className="w-full pl-10 pr-4 py-4 bg-gray-800/50 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white font-bold text-lg"
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-gray-500 mt-2 px-1">Calculates progress based on a fixed amount each month.</p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-1">Total Yearly Limit (INR)</label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                                        <input
+                                            id="YearlyBudgetInput"
+                                            type="number"
+                                            name="yearlyBudget"
+                                            value={formData.yearlyBudget}
+                                            onChange={handleInputChange}
+                                            className="w-full pl-10 pr-4 py-4 bg-gray-800/50 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white font-bold text-lg"
+                                            placeholder="36000"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-gray-500 mt-2 px-1">Smart Tracking: Automatically adjusts monthly targets based on remaining budget and months left.</p>
+                                </div>
+                            )}
                         </div>
 
                         <div>

@@ -14,7 +14,9 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
         type: initialType,
         budget: '',
         planningBucket: 'None',
+        yearlyBudget: '',
     });
+    const [budgetType, setBudgetType] = useState('monthly');
 
     if (!isOpen) return null;
 
@@ -43,7 +45,8 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
         try {
             const newCat = await createCategory({
                 ...categoryData,
-                budget: categoryData.budget ? parseFloat(categoryData.budget) : undefined,
+                budget: budgetType === 'monthly' && categoryData.budget ? parseFloat(categoryData.budget) : 0,
+                yearlyBudget: budgetType === 'yearly' && categoryData.yearlyBudget ? parseFloat(categoryData.yearlyBudget) : 0,
             });
             if (newCat) {
                 onSuccess(newCat._id, 'category');
@@ -113,7 +116,6 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
                     ) : (
                         <form id="QuickAddCategoryForm" onSubmit={handleCategorySubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-400 mb-2">Category Name</label>
                                 <input
                                     id="QuickCatName"
                                     type="text"
@@ -123,6 +125,55 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
                                     placeholder="e.g. Food, Salary"
                                     required
                                 />
+                            </div>
+
+                            <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700/50 space-y-4">
+                                <div className="flex p-1 bg-black rounded-lg border border-gray-800">
+                                    <button 
+                                        type="button"
+                                        onClick={() => setBudgetType('monthly')}
+                                        className={`flex-1 py-1.5 px-3 rounded-md font-bold text-xs transition-all ${budgetType === 'monthly' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-gray-500 hover:text-gray-300'}`}
+                                    >
+                                        Monthly
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        onClick={() => setBudgetType('yearly')}
+                                        className={`flex-1 py-1.5 px-3 rounded-md font-bold text-xs transition-all ${budgetType === 'yearly' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-gray-500 hover:text-gray-300'}`}
+                                    >
+                                        Yearly
+                                    </button>
+                                </div>
+
+                                {budgetType === 'monthly' ? (
+                                    <div>
+                                        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Monthly Budget (INR)</label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
+                                            <input
+                                                type="number"
+                                                value={categoryData.budget}
+                                                onChange={(e) => setCategoryData({ ...categoryData, budget: e.target.value })}
+                                                className="w-full pl-8 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white text-sm"
+                                                placeholder="0"
+                                            />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Yearly Budget (INR)</label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
+                                            <input
+                                                type="number"
+                                                value={categoryData.yearlyBudget}
+                                                onChange={(e) => setCategoryData({ ...categoryData, yearlyBudget: e.target.value })}
+                                                className="w-full pl-8 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white text-sm"
+                                                placeholder="36000"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <button

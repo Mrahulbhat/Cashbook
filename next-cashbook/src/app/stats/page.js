@@ -156,7 +156,8 @@ const StatisticsContent = () => {
                         value: 0, 
                         budget: Number(t.category?.budget) || 0,
                         yearlyBudget: Number(t.category?.yearlyBudget) || 0,
-                        yearSpent: 0
+                        yearSpentTillLastMonth: 0,
+                        yearSpentIncludingCurrent: 0
                     };
                 }
                 categoryMap[catName].value += amount;
@@ -170,7 +171,10 @@ const StatisticsContent = () => {
                 if (d.getFullYear() === currentYear) {
                     const catName = t.category?.name || 'Uncategorized';
                     if (categoryMap[catName]) {
-                        categoryMap[catName].yearSpent += Number(t.amount);
+                        categoryMap[catName].yearSpentIncludingCurrent += Number(t.amount);
+                        if (d.getMonth() < currentMonthIndex) {
+                            categoryMap[catName].yearSpentTillLastMonth += Number(t.amount);
+                        }
                     }
                 }
             }
@@ -186,8 +190,8 @@ const StatisticsContent = () => {
             let remainingYearly = 0;
 
             if (cat.yearlyBudget > 0) {
-                remainingYearly = Math.max(0, cat.yearlyBudget - cat.yearSpent);
-                suggestedMonthly = remainingYearly / monthsRemaining;
+                remainingYearly = Math.max(0, cat.yearlyBudget - cat.yearSpentIncludingCurrent);
+                suggestedMonthly = Math.max(0, (cat.yearlyBudget - cat.yearSpentTillLastMonth) / monthsRemaining);
                 budgetType = 'yearly-dynamic';
             }
 

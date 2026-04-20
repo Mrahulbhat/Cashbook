@@ -68,6 +68,29 @@ export class CategoryPage extends BasePage {
         await expect(this.page.locator(`#categoryCard-${slug}`)).toBeVisible(); //verify if category is visible in grid
     }
 
+    async editCategory(page: Page, categoryName: string, updatedCategory: { name?: string; budget?: string; }) {
+        await navigateToPage(page, commonConstants.pageName.CATEGORIES);
+
+        const slug = categoryName.replace(/\s+/g, '-').toLowerCase();
+        const categoryCard = this.page.locator(`#categoryCard-${slug}`);
+        await expect(categoryCard).toBeVisible();
+
+        await categoryCard.locator('#EditBtn').click();
+        await page.waitForLoadState("networkidle");
+
+        if (updatedCategory.name) {
+            await this.nameInput.fill(updatedCategory.name);
+        }
+
+        if (updatedCategory.budget) {
+            await this.budgetInput.fill(updatedCategory.budget);
+        }
+
+        await this.saveButton.click();
+        await page.waitForResponse((response) => response.url().includes(commonConstants.urls.newCategoryAPI) && response.status() === 200 && response.request().method() === "PUT", { timeout: 15000 });
+        await expect(page.getByText(commonConstants.toastMessages.CATEGORY_UPDATED_SUCCESSFULLY)).toBeVisible();
+    }
+
     async deleteAllCategories(page: Page) {
 
         //no records; return 

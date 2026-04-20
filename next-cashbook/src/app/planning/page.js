@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Target, Loader, ChevronRight, TrendingUp, ShoppingBag, Home, Calculator, Save, AlertCircle, List } from "lucide-react";
+import { Target, Loader, ChevronRight, TrendingUp, ShoppingBag, Home, Calculator, Save, AlertCircle, List, Calendar, Plus, Trash2, CheckCircle } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { useCategoryStore } from "@/store/useCategoryStore";
+import { useUpcomingStore } from "@/store/useUpcomingStore";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -14,10 +15,33 @@ const PlanningContent = () => {
     const { transactions, fetchTransactions } = useTransactionStore();
     const { categories, loadCategories } = useCategoryStore();
     
+    const { upcomingExpenses, fetchUpcoming, addUpcoming, deleteUpcoming } = useUpcomingStore();
+
+    const totalUpcomingThisMonth = useMemo(() => {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        
+        return upcomingExpenses.reduce((sum, e) => {
+            const dueDate = new Date(e.dueDate);
+            if (dueDate >= startOfMonth && dueDate <= endOfMonth && e.status === 'pending') {
+                return sum + Number(e.amount);
+            }
+            return sum;
+        }, 0);
+    }, [upcomingExpenses]);
+    
     const [plan, setPlan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [editingTargets, setEditingTargets] = useState({});
+    const [upcomingForm, setUpcomingForm] = useState({
+        amount: '',
+        description: '',
+        category: '',
+        dueDate: ''
+    });
+    const [addingUpcoming, setAddingUpcoming] = useState(false);
 
     useEffect(() => {
         const init = async () => {
@@ -25,7 +49,8 @@ const PlanningContent = () => {
                 setLoading(true);
                 await Promise.all([
                     fetchTransactions(),
-                    loadCategories()
+                    loadCategories(),
+                    fetchUpcoming()
                 ]);
                 const planRes = await axiosInstance.get('/plan');
                 setPlan(planRes.data);
@@ -95,6 +120,24 @@ const PlanningContent = () => {
             toast.error("Failed to save targets");
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleAddUpcoming = async (e) => {
+        e.preventDefault();
+        try {
+            setAddingUpcoming(true);
+            await addUpcoming(upcomingForm);
+            setUpcomingForm({
+                amount: '',
+                description: '',
+                category: '',
+                dueDate: ''
+            });
+        } catch (error) {
+            // Error handled in store
+        } finally {
+            setAddingUpcoming(false);
         }
     };
 
@@ -210,6 +253,132 @@ const PlanningContent = () => {
                     </div>
                 </div>
 
+                {/* Upcoming Expenses Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                    {/* Add Upcoming Form */}
+                    <section className="lg:col-span-1 bg-gray-900/40 backdrop-blur-xl border border-gray-800 rounded-[2.5rem] p-8 h-fit">
+                        <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-6">
+                            <Plus className="w-5 h-5 text-blue-400" />
+                            Add Upcoming
+                        </h2>
+                        <form onSubmit={handleAddUpcoming} className="space-y-4">
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Amount</label>
+                                <input 
+                                    type="number"
+                                    required
+                                    value={upcomingForm.amount}
+                                    onChange={(e) => setUpcomingForm({ ...upcomingForm, amount: e.target.value })}
+                                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-xl py-3 px-4 text-white font-bold focus:outline-none focus:border-blue-500/50 transition-all"
+                                    placeholder="0"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Description</label>
+                                <input 
+                                    type="text"
+                                    value={upcomingForm.description}
+                                    onChange={(e) => setUpcomingForm({ ...upcomingForm, description: e.target.value })}
+                                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-xl py-3 px-4 text-white font-bold focus:outline-none focus:border-blue-500/50 transition-all"
+                                    placeholder="Rent, Insurance, etc."
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Category</label>
+                                <select 
+                                    required
+                                    value={upcomingForm.category}
+                                    onChange={(e) => setUpcomingForm({ ...upcomingForm, category: e.target.value })}
+                                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-xl py-3 px-4 text-white font-bold focus:outline-none focus:border-blue-500/50 transition-all appearance-none"
+                                >
+                                    <option value="">Select Category</option>
+                                    {categories.filter(c => c.type === 'expense').map(c => (
+                                        <option key={c._id} value={c._id}>{c.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Due Date</label>
+                                <input 
+                                    type="date"
+                                    required
+                                    value={upcomingForm.dueDate}
+                                    onChange={(e) => setUpcomingForm({ ...upcomingForm, dueDate: e.target.value })}
+                                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-xl py-3 px-4 text-white font-bold focus:outline-none focus:border-blue-500/50 transition-all"
+                                />
+                            </div>
+                            <button 
+                                type="submit"
+                                disabled={addingUpcoming}
+                                className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-900/20 active:scale-95 flex justify-center items-center gap-2 mt-4"
+                            >
+                                {addingUpcoming ? <Loader className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                                Schedule Expense
+                            </button>
+                        </form>
+                    </section>
+
+                    {/* Upcoming List */}
+                    <section className="lg:col-span-2 bg-gray-900/30 backdrop-blur-xl border border-gray-800 rounded-[2.5rem] p-8">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Calendar className="w-5 h-5 text-emerald-400" />
+                                Upcoming Bills & Payments
+                            </h2>
+                            <div className="flex items-center gap-3">
+                                <div className="text-right hidden sm:block">
+                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Monthly Total</p>
+                                    <p className="text-emerald-400 font-bold leading-none">{formatCurrency(totalUpcomingThisMonth)}</p>
+                                </div>
+                                <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-black rounded-full border border-emerald-500/20 uppercase tracking-wider">
+                                    {upcomingExpenses.length} Pending
+                                </span>
+                            </div>
+                        </div>
+
+                        {upcomingExpenses.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-12 text-gray-600">
+                                <div className="p-4 bg-gray-800/30 rounded-full mb-4">
+                                    <Calendar className="w-8 h-8 opacity-20" />
+                                </div>
+                                <p className="font-bold">No upcoming expenses scheduled</p>
+                                <p className="text-sm">Great job keeping on top of your bills!</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 no-scrollbar">
+                                {upcomingExpenses.map((expense) => (
+                                    <div key={expense._id} className="group bg-gray-800/40 border border-gray-700/50 rounded-2xl p-5 flex items-center justify-between transition-all hover:bg-gray-800/60 hover:border-gray-600">
+                                        <div className="flex items-center gap-5">
+                                            <div className="p-3 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-all">
+                                                <Calendar className="w-6 h-6 text-blue-400" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-white font-bold text-lg leading-none mb-1">{expense.description || expense.category?.name}</h3>
+                                                <div className="flex items-center gap-3 text-sm">
+                                                    <span className="text-gray-500 font-medium">Due: {new Date(expense.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                                                    <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+                                                    <span className="text-blue-400 font-bold uppercase text-[10px] tracking-widest">{expense.category?.name}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-6">
+                                            <div className="text-right">
+                                                <div className="text-white font-black text-xl">{formatCurrency(expense.amount)}</div>
+                                            </div>
+                                            <button 
+                                                onClick={() => deleteUpcoming(expense._id)}
+                                                className="p-2 text-gray-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+                </div>
+
                 {/* Category Mapping Info */}
                 <div className="bg-green-600/5 border border-green-500/20 rounded-[2.5rem] p-10 text-center mb-12">
                     <h2 className="text-2xl font-bold text-white mb-4">How it works</h2>
@@ -262,8 +431,22 @@ const PlanningContent = () => {
                                     const estimation = daysPassed > 0 ? (spent / daysPassed) * daysInMonth : 0;
                                     
                                     const monthlyBudget = Number(cat.budget) || 0;
-                                    const yearlyBudgetProRata = cat.yearlyBudget ? (cat.yearlyBudget / 12) : 0;
-                                    const targetBudget = monthlyBudget || yearlyBudgetProRata;
+                                    let targetBudget = monthlyBudget;
+                                    
+                                    if (targetBudget === 0 && cat.yearlyBudget > 0) {
+                                        // Calculate total spent in this year BEFORE current month
+                                        const startOfYear = new Date(currentYear, 0, 1);
+                                        const startOfCurrentMonth = new Date(currentYear, currentMonth, 1);
+                                        
+                                        const pastMonthsTxns = transactions.filter(t => {
+                                            const d = new Date(t.date);
+                                            return d >= startOfYear && d < startOfCurrentMonth && (t.category?._id === cat._id || t.category === cat._id);
+                                        });
+                                        
+                                        const spentInPastMonths = pastMonthsTxns.reduce((sum, t) => sum + Number(t.amount), 0);
+                                        const monthsRemaining = 12 - currentMonth;
+                                        targetBudget = Math.max(0, (cat.yearlyBudget - spentInPastMonths) / monthsRemaining);
+                                    }
                                     
                                     const isAtRisk = estimation > targetBudget && targetBudget > 0;
                                     const isExceeded = spent > targetBudget && targetBudget > 0;
