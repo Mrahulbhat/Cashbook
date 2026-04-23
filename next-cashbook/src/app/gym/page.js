@@ -10,17 +10,30 @@ import {
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const EXERCISE_CATEGORIES = [
     "chest", "legs", "back", "shoulders", "biceps", "triceps", "arms", "pushups", "cardio"
 ];
 
 const GymTrackerContent = () => {
-    const [activeTab, setActiveTab] = useState("workout"); // "workout" | "exercises" | "history"
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const tabParam = searchParams.get('tab') || 'workout';
+    
+    const [activeTab, setActiveTab] = useState(tabParam);
     const [exercises, setExercises] = useState([]);
     const [workouts, setWorkouts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        setActiveTab(tabParam);
+    }, [tabParam]);
+
+    const handleTabChange = (newTab) => {
+        router.push(`/gym?tab=${newTab}`);
+    };
 
     // Exercise form state
     const [showExerciseForm, setShowExerciseForm] = useState(false);
@@ -170,7 +183,7 @@ const GymTrackerContent = () => {
                 notes: ""
             });
             toast.success("Workout logged successfully!");
-            setActiveTab("history");
+            handleTabChange("history");
         } catch (error) {
             toast.error("Failed to save workout");
         } finally {
@@ -225,7 +238,7 @@ const GymTrackerContent = () => {
                         ].map(tab => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
+                                onClick={() => handleTabChange(tab.id)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                                     activeTab === tab.id 
                                     ? "bg-orange-500 text-white shadow-lg shadow-orange-900/20" 

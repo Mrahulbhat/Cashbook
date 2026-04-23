@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat, Target } from "lucide-react";
+import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat, Target, Dumbbell, History, List } from "lucide-react";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +16,9 @@ const Sidebar = () => {
         return null;
     }
 
-    const tabs = [
+    const isGym = pathname?.startsWith("/gym");
+
+    const cashbookTabs = [
         { name: "Dashboard", icon: Home, path: "/dashboard", id: "dashboard" },
         { name: "Planning", icon: Target, path: "/planning", id: "planning" },
         { name: "Transactions", icon: TrendingUp, path: "/transactions", id: "transactions" },
@@ -25,6 +27,17 @@ const Sidebar = () => {
         { name: "Categories", icon: Tag, path: "/categories", id: "categories" },
         { name: "Statistics", icon: TrendingUp, path: "/stats", id: "statistics" },
     ];
+
+    const gymTabs = [
+        { name: "Log Workout", icon: Dumbbell, path: "/gym", id: "gym-workout", tab: "workout" },
+        { name: "Exercises", icon: List, path: "/gym", id: "gym-exercises", tab: "exercises" },
+        { name: "History", icon: History, path: "/gym", id: "gym-history", tab: "history" },
+    ];
+
+    const tabs = isGym ? gymTabs : cashbookTabs;
+    const activeGradient = isGym ? "from-orange-600 to-red-600" : "from-green-600 to-emerald-600";
+    const activeGlow = isGym ? "shadow-orange-500/25" : "shadow-green-500/25";
+    const toggleBg = isGym ? "from-orange-600 to-red-600" : "from-green-600 to-emerald-600";
 
     const handleNavigation = (path) => {
         router.push(path);
@@ -38,7 +51,7 @@ const Sidebar = () => {
             <button
                 id="sidebarMenuToggle"
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed top-20 left-4 z-50 p-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg md:hidden"
+                className={`fixed top-20 left-4 z-50 p-2 bg-gradient-to-r ${toggleBg} text-white rounded-lg md:hidden`}
             >
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -54,15 +67,17 @@ const Sidebar = () => {
 
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
-                        const active = isActive(tab.path);
+                        const active = isGym 
+                            ? (new URLSearchParams(window.location.search).get('tab') === tab.tab || (!new URLSearchParams(window.location.search).get('tab') && tab.tab === 'workout'))
+                            : isActive(tab.path);
 
                         return (
                             <button
                                 id={tab.id}
                                 key={tab.id}
-                                onClick={() => handleNavigation(tab.path)}
+                                onClick={() => handleNavigation(isGym ? `${tab.path}?tab=${tab.tab}` : tab.path)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 transform ${active
-                                    ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/25 scale-105"
+                                    ? `bg-gradient-to-r ${activeGradient} text-white shadow-lg ${activeGlow} scale-105`
                                     : "text-gray-400 hover:text-white hover:bg-gray-800/50 hover:translate-x-1"
                                     }`}
                             >
