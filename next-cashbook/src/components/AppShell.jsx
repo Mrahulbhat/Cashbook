@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 
@@ -45,7 +46,9 @@ export default function AppShell({ children }) {
         <div className="h-screen flex flex-col">
             <Navbar />
             <div className="flex flex-1 bg-black overflow-hidden">
-                <Sidebar />
+                <Suspense fallback={<div className="w-64 bg-gray-900 animate-pulse" />}>
+                    <Sidebar />
+                </Suspense>
                 <main className="flex-1 overflow-auto">
                     {children}
                 </main>

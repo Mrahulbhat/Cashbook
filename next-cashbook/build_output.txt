@@ -1,0 +1,26 @@
+
+> next-cashbook@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1719.8ms
+  Running TypeScript ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/25) ...
+⨯ useSearchParams() should be wrapped in a suspense boundary at page "/accounts/add". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+    at Q (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/.next/server/chunks/ssr/node_modules_cf1f3d2c._.js:2:2111)
+    at o (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/.next/server/chunks/ssr/node_modules_cf1f3d2c._.js:4:5284)
+    at z (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/.next/server/chunks/ssr/[root-of-the-server]__45dd04a5._.js:179:2513)
+    at an (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:84360)
+    at ai (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:86179)
+    at al (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:107953)
+    at as (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:105368)
+    at am (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:112882)
+    at au (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:109985)
+    at al (/Users/mrahulbhat/Desktop/Projects/Cashbook/Cashbook/next-cashbook/node_modules/next/dist/compiled/next-server/app-page-turbo.runtime.prod.js:2:108231)
+Error occurred prerendering page "/accounts/add". Read more: https://nextjs.org/docs/messages/prerender-error
+Export encountered an error on /accounts/add/page: /accounts/add, exiting the build.
+⨯ Next.js build worker exited with code: 1 and signal: null

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { 
     Dumbbell, Plus, Trash2, Edit2, CheckCircle, 
     ChevronRight, History, Activity, Save, X, 
@@ -616,7 +616,13 @@ const GymTrackerContent = () => {
 export default function GymTrackerPage() {
     return (
         <ProtectedRoute>
-            <GymTrackerContent />
+            <Suspense fallback={
+                <div className="min-h-screen bg-black flex justify-center items-center">
+                    <Loader className="w-12 h-12 animate-spin text-orange-400" />
+                </div>
+            }>
+                <GymTrackerContent />
+            </Suspense>
         </ProtectedRoute>
     );
 }

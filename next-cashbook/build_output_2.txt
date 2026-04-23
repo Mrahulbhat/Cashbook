@@ -1,0 +1,72 @@
+
+> next-cashbook@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1675.1ms
+  Running TypeScript ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/25) ...
+  Generating static pages using 9 workers (6/25) 
+  Generating static pages using 9 workers (12/25) 
+  Generating static pages using 9 workers (18/25) 
+✓ Generating static pages using 9 workers (25/25) in 147.8ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /accounts
+├ ○ /accounts/add
+├ ƒ /accounts/edit/[id]
+├ ○ /add-transaction
+├ ○ /admin
+├ ○ /admin/login
+├ ƒ /api/accounts
+├ ƒ /api/accounts/[id]
+├ ƒ /api/admin/accounts
+├ ƒ /api/admin/auth
+├ ƒ /api/admin/users
+├ ƒ /api/admin/users/[userId]
+├ ƒ /api/auth/google
+├ ƒ /api/auth/google/callback
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/me
+├ ƒ /api/auth/signup
+├ ƒ /api/categories
+├ ƒ /api/categories/[id]
+├ ƒ /api/db-stats
+├ ƒ /api/gym/exercises
+├ ƒ /api/gym/exercises/[id]
+├ ƒ /api/gym/workouts
+├ ƒ /api/gym/workouts/[id]
+├ ƒ /api/plan
+├ ƒ /api/transactions
+├ ƒ /api/transactions/[id]
+├ ƒ /api/upcoming
+├ ƒ /api/upcoming/[id]
+├ ƒ /api/user
+├ ○ /categories
+├ ○ /categories/add
+├ ƒ /categories/edit/[id]
+├ ○ /dashboard
+├ ƒ /edit-transaction/[id]
+├ ○ /gym
+├ ○ /habits
+├ ○ /login
+├ ○ /planning
+├ ○ /select-app
+├ ○ /settings
+├ ○ /signup
+├ ○ /stats
+├ ○ /transactions
+└ ○ /transfer
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

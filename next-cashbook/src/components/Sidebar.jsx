@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat, Target, Dumbbell, History, List } from "lucide-react";
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const currentTab = searchParams.get('tab');
 
     // Sidebar is only mounted under Cashbook routes — AppShell never renders
     // it on /habits, /login, /signup, /select-app, or /admin.
@@ -68,7 +70,7 @@ const Sidebar = () => {
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         const active = isGym 
-                            ? (new URLSearchParams(window.location.search).get('tab') === tab.tab || (!new URLSearchParams(window.location.search).get('tab') && tab.tab === 'workout'))
+                            ? (currentTab === tab.tab || (!currentTab && tab.tab === 'workout'))
                             : isActive(tab.path);
 
                         return (
