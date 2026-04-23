@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus, Loader, Tag } from "lucide-react";
+import { ArrowLeft, Plus, Loader, Tag, ChevronRight } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -13,11 +13,8 @@ const AddCategoryContent = () => {
     const [formData, setFormData] = useState({
         name: "",
         type: "expense",
-        budget: "",
         planningBucket: "None",
-        yearlyBudget: "",
     });
-    const [budgetType, setBudgetType] = useState("monthly"); // "monthly" or "yearly"
 
 
 
@@ -35,11 +32,7 @@ const AddCategoryContent = () => {
 
         setLoading(true);
         try {
-            await axiosInstance.post("/categories", {
-                ...formData,
-                budget: budgetType === 'monthly' && formData.budget ? parseFloat(formData.budget) : 0,
-                yearlyBudget: budgetType === 'yearly' && formData.yearlyBudget ? parseFloat(formData.yearlyBudget) : 0,
-            });
+            await axiosInstance.post("/categories", formData);
             toast.success("Category created successfully!");
             router.push("/categories");
         } catch (error) {
@@ -91,74 +84,25 @@ const AddCategoryContent = () => {
                                 ))}
                             </div>
                         </div>
-                        <div className="bg-gray-800/50 p-6 rounded-2xl border border-gray-700/50 space-y-6">
-                            <div className="flex p-1 bg-black rounded-xl border border-gray-800">
-                                <button 
-                                    type="button"
-                                    onClick={() => setBudgetType('monthly')}
-                                    className={`flex-1 py-2 px-4 rounded-lg font-bold text-sm transition-all ${budgetType === 'monthly' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-gray-500 hover:text-gray-300'}`}
-                                >
-                                    Monthly Budget
-                                </button>
-                                <button 
-                                    type="button"
-                                    onClick={() => setBudgetType('yearly')}
-                                    className={`flex-1 py-2 px-4 rounded-lg font-bold text-sm transition-all ${budgetType === 'yearly' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-gray-500 hover:text-gray-300'}`}
-                                >
-                                    Yearly Budget
-                                </button>
-                            </div>
-
-                            {budgetType === 'monthly' ? (
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-1">Monthly Limit (INR)</label>
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
-                                        <input
-                                            id="BudgetInput"
-                                            type="number"
-                                            name="budget"
-                                            value={formData.budget}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-10 pr-4 py-4 bg-gray-800/50 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white font-bold text-lg"
-                                            placeholder="0"
-                                        />
-                                    </div>
-                                    <p className="text-[10px] text-gray-500 mt-2 px-1">Calculates progress based on a fixed amount each month.</p>
-                                </div>
-                            ) : (
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-1">Total Yearly Limit (INR)</label>
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
-                                        <input
-                                            id="YearlyBudgetInput"
-                                            type="number"
-                                            name="yearlyBudget"
-                                            value={formData.yearlyBudget}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-10 pr-4 py-4 bg-gray-800/50 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white font-bold text-lg"
-                                            placeholder="36000"
-                                        />
-                                    </div>
-                                    <p className="text-[10px] text-gray-500 mt-2 px-1">Smart Tracking: Automatically adjusts monthly targets based on remaining budget and months left.</p>
-                                </div>
-                            )}
-                        </div>
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Planning Bucket</label>
-                            <select
-                                id="PlanningBucketDropdown"
-                                name="planningBucket"
-                                value={formData.planningBucket}
-                                onChange={handleInputChange}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white"
-                            >
-                                {['None', 'Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
-                                    <option key={bucket} value={bucket}>{bucket}</option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <select
+                                    id="PlanningBucketDropdown"
+                                    name="planningBucket"
+                                    value={formData.planningBucket}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white appearance-none cursor-pointer"
+                                >
+                                    {['None', 'Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
+                                        <option key={bucket} value={bucket}>{bucket}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                                    <ChevronRight size={18} className="rotate-90" />
+                                </div>
+                            </div>
                             <p className="text-xs text-gray-500 mt-2">Track this category against your targets in the Planning section.</p>
                         </div>
 

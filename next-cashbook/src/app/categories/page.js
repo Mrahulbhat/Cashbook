@@ -100,18 +100,6 @@ const CategoriesContent = () => {
                                     </button>
                                 </div>
                             </div>
-                            {category.budget > 0 && (
-                                <div className="pt-3 border-t border-gray-700/30">
-                                    <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Monthly Budget</p>
-                                    <p className="text-white font-bold text-lg">₹{category.budget}</p>
-                                </div>
-                            )}
-                            {category.yearlyBudget > 0 && (
-                                <div className="pt-3 border-t border-gray-700/30">
-                                    <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Yearly Budget</p>
-                                    <p className="text-purple-400 font-bold text-lg">₹{category.yearlyBudget}</p>
-                                </div>
-                            )}
                         </div>
                     ))}
                 </div>

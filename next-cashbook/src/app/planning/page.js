@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Target, Loader, ChevronRight, TrendingUp, ShoppingBag, Home, Calculator, Save, AlertCircle, List, Calendar, Plus, Trash2, CheckCircle } from "lucide-react";
+import { Target, Loader, ChevronRight, TrendingUp, ShoppingBag, Home, Calculator, Save, AlertCircle, List, Calendar, Plus, Trash2, CheckCircle, Tag } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { useCategoryStore } from "@/store/useCategoryStore";
 import { useUpcomingStore } from "@/store/useUpcomingStore";
@@ -34,11 +34,11 @@ const PlanningContent = () => {
     const [plan, setPlan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [editingTargets, setEditingTargets] = useState({});
+    const [editingTargets, setEditingTargets] = useState({}); // { bucketName: { amount: 0, yearlyAmount: 0 } }
+    
     const [upcomingForm, setUpcomingForm] = useState({
         amount: '',
         description: '',
-        category: '',
         dueDate: ''
     });
     const [addingUpcoming, setAddingUpcoming] = useState(false);
@@ -56,8 +56,12 @@ const PlanningContent = () => {
                 setPlan(planRes.data);
                 
                 const targets = {};
-                planRes.data.targets.forEach(t => {
-                    targets[t.bucket] = t.amount;
+                ['Needs', 'Wants', 'Short Term', 'Long Term'].forEach(b => {
+                    const t = planRes.data.targets.find(target => target.bucket === b);
+                    targets[b] = { 
+                        amount: t?.amount || 0, 
+                        yearlyAmount: t?.yearlyAmount || 0 
+                    };
                 });
                 setEditingTargets(targets);
             } catch (error) {
@@ -70,10 +74,12 @@ const PlanningContent = () => {
     }, []);
 
     const bucketData = useMemo(() => {
-        if (!plan || !categories) return [];
+        if (!categories) return [];
 
         const now = new Date();
-        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
         
         const monthlyTransactions = transactions.filter(t => {
             const d = new Date(t.date);
@@ -87,10 +93,39 @@ const PlanningContent = () => {
             { name: 'Long Term', icon: Target, color: 'purple' },
         ];
 
+        // Financial Year: April to March
+        let startOfCycle;
+        let monthsRemaining;
+        if (currentMonth >= 3) {
+            startOfCycle = new Date(currentYear, 3, 1);
+            monthsRemaining = 12 - (currentMonth - 3);
+        } else {
+            startOfCycle = new Date(currentYear - 1, 3, 1);
+            monthsRemaining = 3 - currentMonth;
+        }
+
         return buckets.map(bucket => {
-            const target = plan.targets.find(t => t.bucket === bucket.name)?.amount || 0;
             const bucketCategories = categories.filter(c => c.planningBucket === bucket.name);
             const categoryIds = bucketCategories.map(c => c._id);
+            
+            const planTarget = plan?.targets.find(t => t.bucket === bucket.name);
+            const yearlyAmount = planTarget?.yearlyAmount || 0;
+            const monthlyAmount = planTarget?.amount || 0;
+
+            let target = 0;
+            if (yearlyAmount > 0) {
+                const startOfCurrentMonth = new Date(currentYear, currentMonth, 1);
+                // Calculate spent in this financial year BEFORE current month for all categories in this bucket
+                const pastMonthsTxns = transactions.filter(t => {
+                    const d = new Date(t.date);
+                    const catId = t.category?._id || t.category;
+                    return d >= startOfCycle && d < startOfCurrentMonth && categoryIds.includes(catId);
+                });
+                const spentInPastMonths = pastMonthsTxns.reduce((sum, t) => sum + Number(t.amount), 0);
+                target = Math.max(0, (yearlyAmount - spentInPastMonths) / monthsRemaining);
+            } else {
+                target = monthlyAmount;
+            }
             
             const spent = monthlyTransactions
                 .filter(t => categoryIds.includes(t.category?._id || t.category))
@@ -131,7 +166,6 @@ const PlanningContent = () => {
             setUpcomingForm({
                 amount: '',
                 description: '',
-                category: '',
                 dueDate: ''
             });
         } catch (error) {
@@ -166,25 +200,28 @@ const PlanningContent = () => {
 
             <div className="relative z-10 max-w-5xl mx-auto">
                 <header className="mb-12">
-                    <div className="flex items-center gap-4 mb-2">
+                    <div className="flex items-center gap-4">
                         <div className="p-3 bg-green-500/10 rounded-2xl border border-green-500/20">
                             <Target className="text-green-400 w-8 h-8" />
                         </div>
                         <div>
                             <h1 className="text-4xl font-black text-white tracking-tight">Financial Planning</h1>
-                            <p className="text-gray-400 font-medium">Monthly budget targets and bucket tracking</p>
+                            <p className="text-gray-400 font-medium">Smart Yearly Budgeting (April-March Cycle)</p>
                         </div>
                     </div>
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                    {/* Targets Configuration */}
+                    {/* Yearly Targets Configuration */}
                     <section className="bg-gray-900/40 backdrop-blur-xl border border-gray-800 rounded-[2.5rem] p-8">
                         <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                <Calculator className="w-5 h-5 text-gray-400" />
-                                Set Monthly Targets
-                            </h2>
+                            <div>
+                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <Calculator className="w-5 h-5 text-green-400" />
+                                    Bucket Targets
+                                </h2>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">April to April Cycle</p>
+                            </div>
                             <button 
                                 onClick={handleSaveTargets}
                                 disabled={saving}
@@ -195,19 +232,43 @@ const PlanningContent = () => {
                             </button>
                         </div>
 
-                        <div className="space-y-6">
+                        <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
                             {['Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
-                                <div key={bucket} className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-400 uppercase tracking-widest px-1">{bucket}</label>
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-lg">₹</span>
-                                        <input 
-                                            type="number"
-                                            value={editingTargets[bucket] || ''}
-                                            onChange={(e) => setEditingTargets({ ...editingTargets, [bucket]: e.target.value })}
-                                            className="w-full bg-gray-800/50 border border-gray-700/50 rounded-2xl py-4 pl-10 pr-6 text-white font-bold text-xl focus:outline-none focus:border-green-500/50 focus:ring-4 focus:ring-green-500/5 transition-all"
-                                            placeholder="0"
-                                        />
+                                <div key={bucket} className="p-4 bg-black/20 rounded-2xl border border-gray-800/50">
+                                    <label className="text-xs font-black text-gray-500 uppercase tracking-[0.2em] block mb-4">{bucket}</label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[9px] font-bold text-gray-600 uppercase block mb-1 ml-1">Yearly Amount</label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₹</span>
+                                                <input 
+                                                    type="number"
+                                                    value={editingTargets[bucket]?.yearlyAmount || ''}
+                                                    onChange={(e) => setEditingTargets({ 
+                                                        ...editingTargets, 
+                                                        [bucket]: { ...editingTargets[bucket], yearlyAmount: e.target.value } 
+                                                    })}
+                                                    className="w-full bg-gray-800/30 border border-gray-700/50 rounded-xl py-2 pl-7 pr-3 text-white font-bold focus:outline-none focus:border-green-500/50 transition-all text-sm"
+                                                    placeholder="Yearly"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-[9px] font-bold text-gray-600 uppercase block mb-1 ml-1">Or Monthly</label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₹</span>
+                                                <input 
+                                                    type="number"
+                                                    value={editingTargets[bucket]?.amount || ''}
+                                                    onChange={(e) => setEditingTargets({ 
+                                                        ...editingTargets, 
+                                                        [bucket]: { ...editingTargets[bucket], amount: e.target.value } 
+                                                    })}
+                                                    className="w-full bg-gray-800/30 border border-gray-700/50 rounded-xl py-2 pl-7 pr-3 text-white font-bold focus:outline-none focus:border-green-500/50 transition-all text-sm"
+                                                    placeholder="Monthly"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -215,7 +276,7 @@ const PlanningContent = () => {
                     </section>
 
                     {/* Progress Overview */}
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         {bucketData.map((bucket, idx) => (
                             <div key={idx} className="bg-gray-900/40 backdrop-blur-xl border border-gray-800 rounded-3xl p-6 transition-all hover:bg-gray-900/60">
                                 <div className="flex items-start justify-between mb-4">
@@ -284,20 +345,6 @@ const PlanningContent = () => {
                                 />
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Category</label>
-                                <select 
-                                    required
-                                    value={upcomingForm.category}
-                                    onChange={(e) => setUpcomingForm({ ...upcomingForm, category: e.target.value })}
-                                    className="w-full bg-gray-800/50 border border-gray-700/50 rounded-xl py-3 px-4 text-white font-bold focus:outline-none focus:border-blue-500/50 transition-all appearance-none"
-                                >
-                                    <option value="">Select Category</option>
-                                    {categories.filter(c => c.type === 'expense').map(c => (
-                                        <option key={c._id} value={c._id}>{c.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
                                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Due Date</label>
                                 <input 
                                     type="date"
@@ -353,11 +400,9 @@ const PlanningContent = () => {
                                                 <Calendar className="w-6 h-6 text-blue-400" />
                                             </div>
                                             <div>
-                                                <h3 className="text-white font-bold text-lg leading-none mb-1">{expense.description || expense.category?.name}</h3>
+                                                <h3 className="text-white font-bold text-lg leading-none mb-1">{expense.description}</h3>
                                                 <div className="flex items-center gap-3 text-sm">
                                                     <span className="text-gray-500 font-medium">Due: {new Date(expense.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
-                                                    <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
-                                                    <span className="text-blue-400 font-bold uppercase text-[10px] tracking-widest">{expense.category?.name}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -383,7 +428,7 @@ const PlanningContent = () => {
                 <div className="bg-green-600/5 border border-green-500/20 rounded-[2.5rem] p-10 text-center mb-12">
                     <h2 className="text-2xl font-bold text-white mb-4">How it works</h2>
                     <p className="text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        To track your progress, assign your categories to one of the four buckets (Needs, Wants, Short Term, or Long Term) in the <span className="text-green-400 font-bold cursor-pointer hover:underline" onClick={() => router.push('/categories')}>Categories</span> section. Every transaction will then automatically contribute to your monthly targets.
+                        To track your progress, assign your categories to a bucket in the <span className="text-green-400 font-bold cursor-pointer hover:underline" onClick={() => router.push('/categories')}>Categories</span> section. Then, set your **Yearly Bucket Targets** above. Every transaction will then automatically contribute to your adjusted monthly targets for that bucket.
                     </p>
                 </div>
 
@@ -403,12 +448,10 @@ const PlanningContent = () => {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-gray-800">
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest">Category</th>
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest">Bucket</th>
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest">Target Budget</th>
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest">Current Use</th>
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest">Pro-rata Projection</th>
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest text-right">Status</th>
+                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest text-left">Category</th>
+                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest text-left">Bucket</th>
+                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest text-left">Current Use</th>
+                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest text-right">Pro-rata Projection</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -429,27 +472,6 @@ const PlanningContent = () => {
                                     
                                     // Estimation: Pro-rata projection
                                     const estimation = daysPassed > 0 ? (spent / daysPassed) * daysInMonth : 0;
-                                    
-                                    const monthlyBudget = Number(cat.budget) || 0;
-                                    let targetBudget = monthlyBudget;
-                                    
-                                    if (targetBudget === 0 && cat.yearlyBudget > 0) {
-                                        // Calculate total spent in this year BEFORE current month
-                                        const startOfYear = new Date(currentYear, 0, 1);
-                                        const startOfCurrentMonth = new Date(currentYear, currentMonth, 1);
-                                        
-                                        const pastMonthsTxns = transactions.filter(t => {
-                                            const d = new Date(t.date);
-                                            return d >= startOfYear && d < startOfCurrentMonth && (t.category?._id === cat._id || t.category === cat._id);
-                                        });
-                                        
-                                        const spentInPastMonths = pastMonthsTxns.reduce((sum, t) => sum + Number(t.amount), 0);
-                                        const monthsRemaining = 12 - currentMonth;
-                                        targetBudget = Math.max(0, (cat.yearlyBudget - spentInPastMonths) / monthsRemaining);
-                                    }
-                                    
-                                    const isAtRisk = estimation > targetBudget && targetBudget > 0;
-                                    const isExceeded = spent > targetBudget && targetBudget > 0;
 
                                     return (
                                         <tr key={cat._id} className="border-b border-gray-800/50 hover:bg-white/5 transition-colors group">
@@ -461,33 +483,13 @@ const PlanningContent = () => {
                                                     {cat.planningBucket || 'None'}
                                                 </span>
                                             </td>
-                                            <td className="py-5 px-4 text-gray-300 font-mono">
-                                                {targetBudget > 0 ? formatCurrency(targetBudget) : <span className="text-gray-600 text-xs italic">Not set</span>}
-                                            </td>
                                             <td className="py-5 px-4 font-bold text-white font-mono">
                                                 {formatCurrency(spent)}
                                             </td>
-                                            <td className="py-5 px-4 font-mono">
-                                                <div className={isAtRisk ? 'text-amber-400' : 'text-gray-400'}>
+                                            <td className="py-5 px-4 font-mono text-right">
+                                                <div className="text-gray-400">
                                                     {formatCurrency(estimation)}
                                                 </div>
-                                            </td>
-                                            <td className="py-5 px-4 text-right">
-                                                {targetBudget === 0 ? (
-                                                    <span className="text-gray-600 text-[10px] font-bold uppercase">No Budget</span>
-                                                ) : isExceeded ? (
-                                                    <span className="inline-flex items-center gap-1 text-red-400 text-[10px] font-black uppercase bg-red-500/10 px-2 py-1 rounded border border-red-500/20">
-                                                        <AlertCircle size={10} /> Exceeded
-                                                    </span>
-                                                ) : isAtRisk ? (
-                                                    <span className="inline-flex items-center gap-1 text-amber-500 text-[10px] font-black uppercase bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
-                                                        <TrendingUp size={10} /> At Risk
-                                                    </span>
-                                                ) : (
-                                                    <span className="inline-flex items-center gap-1 text-green-400 text-[10px] font-black uppercase bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
-                                                        On Track
-                                                    </span>
-                                                )}
                                             </td>
                                         </tr>
                                     );

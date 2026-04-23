@@ -32,9 +32,9 @@ export async function POST(req) {
             return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
         }
 
-        const { amount, description, category, dueDate } = await req.json();
+        const { amount, description, dueDate } = await req.json();
 
-        if (!amount || !category || !dueDate) {
+        if (!amount || !dueDate) {
             return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
         }
 
@@ -43,7 +43,6 @@ export async function POST(req) {
             userId: user.userId,
             amount,
             description,
-            category,
             dueDate,
             status: 'pending'
         });
