@@ -221,8 +221,9 @@ const Navbar = () => {
                             {/* Avatar circle with first letter */}
                             <div
                                 id="userAvatar"
-                                title={user.name}
-                                className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm select-none flex-shrink-0 shadow-lg shadow-blue-500/30 ring-2 ring-white/10"
+                                title="Profile Settings"
+                                onClick={() => router.push("/settings")}
+                                className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm select-none flex-shrink-0 shadow-lg shadow-blue-500/30 ring-2 ring-white/10 cursor-pointer hover:scale-110 hover:ring-white/30 transition-all duration-200"
                             >
                                 {user.name?.charAt(0).toUpperCase()}
                             </div>
