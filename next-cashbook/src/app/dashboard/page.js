@@ -73,9 +73,10 @@ const DashboardContent = () => {
 
         filteredTransactions.forEach((t) => {
             const amount = Number(t.amount);
-            if (t.type.toLowerCase() === "income") {
+            const type = t.type.toLowerCase();
+            if (type === "income") {
                 totalIncome += amount;
-            } else {
+            } else if (type === "expense") {
                 totalExpense += amount;
             }
         });
@@ -195,7 +196,7 @@ const DashboardContent = () => {
                                     {lastTransactions.map((transaction, index) => (
                                         <tr key={transaction._id} id={`transactionRow-${index}`} className="border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors">
                                             <td className="px-8 py-4 capitalize">{transaction.type}</td>
-                                            <td className={`px-8 py-4 font-bold ${transaction.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
+                                            <td className={`px-8 py-4 font-bold ${transaction.type === 'income' ? 'text-green-400' : transaction.type === 'investment' ? 'text-blue-400' : 'text-red-400'}`}>
                                                 {formatCurrency(transaction.amount)}
                                             </td>
                                             <td className="px-8 py-4">{transaction.category?.name || 'N/A'}</td>

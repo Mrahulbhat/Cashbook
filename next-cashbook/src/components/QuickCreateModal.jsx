@@ -12,11 +12,9 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
     const [categoryData, setCategoryData] = useState({
         name: '',
         type: initialType,
-        budget: '',
         planningBucket: 'None',
-        yearlyBudget: '',
     });
-    const [budgetType, setBudgetType] = useState('monthly');
+
 
     if (!isOpen) return null;
 
@@ -43,11 +41,7 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
             return;
         }
         try {
-            const newCat = await createCategory({
-                ...categoryData,
-                budget: budgetType === 'monthly' && categoryData.budget ? parseFloat(categoryData.budget) : 0,
-                yearlyBudget: budgetType === 'yearly' && categoryData.yearlyBudget ? parseFloat(categoryData.yearlyBudget) : 0,
-            });
+            const newCat = await createCategory(categoryData);
             if (newCat) {
                 onSuccess(newCat._id, 'category');
                 onClose();
@@ -126,54 +120,29 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
                                     required
                                 />
                             </div>
-
-                            <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700/50 space-y-4">
-                                <div className="flex p-1 bg-black rounded-lg border border-gray-800">
+                            <div className="flex gap-4 p-1 bg-black/40 rounded-xl border border-gray-800">
+                                {['income', 'expense', 'investment'].map(t => (
                                     <button 
+                                        key={t}
                                         type="button"
-                                        onClick={() => setBudgetType('monthly')}
-                                        className={`flex-1 py-1.5 px-3 rounded-md font-bold text-xs transition-all ${budgetType === 'monthly' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-gray-500 hover:text-gray-300'}`}
+                                        onClick={() => setCategoryData({ ...categoryData, type: t })}
+                                        className={`flex-1 py-2 px-3 rounded-lg capitalize text-xs font-bold transition-all ${categoryData.type === t ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
                                     >
-                                        Monthly
+                                        {t}
                                     </button>
-                                    <button 
-                                        type="button"
-                                        onClick={() => setBudgetType('yearly')}
-                                        className={`flex-1 py-1.5 px-3 rounded-md font-bold text-xs transition-all ${budgetType === 'yearly' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/20' : 'text-gray-500 hover:text-gray-300'}`}
-                                    >
-                                        Yearly
-                                    </button>
-                                </div>
-
-                                {budgetType === 'monthly' ? (
-                                    <div>
-                                        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Monthly Budget (INR)</label>
-                                        <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
-                                            <input
-                                                type="number"
-                                                value={categoryData.budget}
-                                                onChange={(e) => setCategoryData({ ...categoryData, budget: e.target.value })}
-                                                className="w-full pl-8 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white text-sm"
-                                                placeholder="0"
-                                            />
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Yearly Budget (INR)</label>
-                                        <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
-                                            <input
-                                                type="number"
-                                                value={categoryData.yearlyBudget}
-                                                onChange={(e) => setCategoryData({ ...categoryData, yearlyBudget: e.target.value })}
-                                                className="w-full pl-8 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white text-sm"
-                                                placeholder="36000"
-                                            />
-                                        </div>
-                                    </div>
-                                )}
+                                ))}
+                            </div>                            <div>
+                                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-1">Planning Bucket</label>
+                                <select 
+                                    id="QuickCatBucket"
+                                    value={categoryData.planningBucket}
+                                    onChange={(e) => setCategoryData({ ...categoryData, planningBucket: e.target.value })}
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white text-sm cursor-pointer"
+                                >
+                                    {['None', 'Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
+                                        <option key={bucket} value={bucket}>{bucket}</option>
+                                    ))}
+                                </select>
                             </div>
 
                             <button

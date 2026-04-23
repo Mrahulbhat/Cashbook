@@ -113,14 +113,14 @@ const PlanningContent = () => {
                 const pastMonthsTxns = transactions.filter(t => {
                     const d = new Date(t.date);
                     const catId = t.category?._id || t.category;
-                    return d >= startOfCycle && d < startOfCurrentMonth && categoryIds.includes(catId);
+                    return d >= startOfCycle && d < startOfCurrentMonth && categoryIds.includes(catId) && (t.type === 'expense' || t.type === 'investment');
                 });
                 const spentInPastMonths = pastMonthsTxns.reduce((sum, t) => sum + Number(t.amount), 0);
                 target = Math.max(0, (yearlyAmount - spentInPastMonths) / monthsRemaining);
             }
             
             const spent = monthlyTransactions
-                .filter(t => categoryIds.includes(t.category?._id || t.category))
+                .filter(t => categoryIds.includes(t.category?._id || t.category) && (t.type === 'expense' || t.type === 'investment'))
                 .reduce((sum, t) => sum + Number(t.amount), 0);
             
             return {

@@ -94,10 +94,12 @@ const TransactionsContent = () => {
                                     {filteredTransactions.map((t, index) => (
                                         <tr key={t._id} id={`transactionRow-${index}`} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
                                             <td className="px-8 py-4 flex items-center gap-2">
-                                                {t.type === 'income' ? <ArrowDownLeft className="text-green-400" size={16} /> : <ArrowUpRight className="text-red-400" size={16} />}
+                                                {t.type === 'income' ? <ArrowDownLeft className="text-green-400" size={16} /> : 
+                                                 t.type === 'investment' ? <Repeat className="text-blue-400" size={16} /> :
+                                                 <ArrowUpRight className="text-red-400" size={16} />}
                                                 <span className="capitalize">{t.type}</span>
                                             </td>
-                                            <td className={`px-8 py-4 font-bold ${t.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>{formatCurrency(t.amount)}</td>
+                                            <td className={`px-8 py-4 font-bold ${t.type === 'income' ? 'text-green-400' : t.type === 'investment' ? 'text-blue-400' : 'text-red-400'}`}>{formatCurrency(t.amount)}</td>
                                             <td className="px-8 py-4">{t.category?.name || 'N/A'}</td>
                                             <td className="px-8 py-4">{t.account?.name || 'N/A'}</td>
                                             <td className="px-8 py-4">{new Date(t.date).toLocaleDateString()}</td>

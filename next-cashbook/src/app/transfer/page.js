@@ -22,6 +22,7 @@ const TransferContent = () => {
         toAccount: "",
         amount: "",
         description: "",
+        categoryId: "",
     });
 
     useEffect(() => {
@@ -31,15 +32,7 @@ const TransferContent = () => {
 
     // Find suitable categories for transfer
     const transferCategories = useMemo(() => {
-        const expenseCat = categories.find(c => c.name.toLowerCase().includes('transfer') && c.type === 'expense') 
-                        || categories.find(c => c.type === 'expense') 
-                        || null;
-        
-        const incomeCat = categories.find(c => c.name.toLowerCase().includes('transfer') && c.type === 'income')
-                        || categories.find(c => c.type === 'income')
-                        || null;
-        
-        return { expenseCat, incomeCat };
+        return categories.filter(c => c.type === 'expense' || c.type === 'investment');
     }, [categories]);
 
     const handleSubmit = async (e) => {
@@ -61,8 +54,14 @@ const TransferContent = () => {
             return;
         }
 
-        if (!transferCategories.expenseCat || !transferCategories.incomeCat) {
-            toast.error("Please create at least one income and one expense category first");
+        if (!formData.categoryId) {
+            toast.error("Please select a category (purpose) for this transfer");
+            return;
+        }
+
+        const incomeCat = categories.find(c => c.type === 'income');
+        if (!incomeCat) {
+            toast.error("Please create at least one income category first");
             return;
         }
 
@@ -75,12 +74,13 @@ const TransferContent = () => {
         setLoading(true);
         try {
             // Outflow from source account
+            const selectedCategory = categories.find(c => c._id === formData.categoryId);
             await axiosInstance.post("/transactions", {
-                type: 'expense',
+                type: selectedCategory?.type || 'expense',
                 amount: amount,
                 account: formData.fromAccount,
                 description: `Transfer to ${accounts.find(a => a._id === formData.toAccount)?.name}${formData.description ? ': ' + formData.description : ''}`,
-                category: transferCategories.expenseCat._id,
+                category: formData.categoryId,
                 date: new Date(),
             });
 
@@ -90,7 +90,7 @@ const TransferContent = () => {
                 amount: amount,
                 account: formData.toAccount,
                 description: `Transfer from ${accounts.find(a => a._id === formData.fromAccount)?.name}${formData.description ? ': ' + formData.description : ''}`,
-                category: transferCategories.incomeCat._id,
+                category: incomeCat._id,
                 date: new Date(),
             });
 
@@ -165,6 +165,24 @@ const TransferContent = () => {
                                     <option value="">Select destination account</option>
                                     {accounts.map(a => <option key={a._id} value={a._id}>{a.name} (₹{a.balance})</option>)}
                                 </select>
+                            </div>
+
+                            <div className="group">
+                                <label className="block text-sm font-semibold text-gray-400 mb-3 ml-1 group-focus-within:text-blue-400 transition-colors">Category (Purpose)</label>
+                                <select 
+                                    id="CategoryDropdown" 
+                                    value={formData.categoryId} 
+                                    onChange={e => setFormData({ ...formData, categoryId: e.target.value })} 
+                                    className="w-full p-4 bg-gray-800/80 border border-gray-700/50 rounded-2xl text-white outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all appearance-none cursor-pointer"
+                                >
+                                    <option value="">Select purpose of transfer</option>
+                                    {transferCategories.map(c => (
+                                        <option key={c._id} value={c._id}>
+                                            {c.name} {c.planningBucket && c.planningBucket !== 'None' ? `(${c.planningBucket})` : ''}
+                                        </option>
+                                    ))}
+                                </select>
+                                <p className="text-[10px] text-gray-500 mt-2 ml-1">Tip: Create specific categories for SIP/PPF and map them to "Long Term" bucket.</p>
                             </div>
 
                             <div className="group">

@@ -112,10 +112,10 @@ const EditTransactionContent = () => {
                     <h1 className="text-2xl font-bold text-white mb-8">Edit Transaction</h1>
                     <form id="EditTransactionForm" onSubmit={handleSubmit} className="space-y-6">
                         <div className="flex gap-4 mb-4">
-                            {['income', 'expense'].map(t => (
+                            {['income', 'expense', 'investment'].map(t => (
                                 <label key={t} className="flex items-center gap-2 cursor-pointer capitalize text-gray-300">
                                     <input 
-                                        id={t === 'income' ? 'TypeRadio-income' : 'TypeRadio-expense'} 
+                                        id={`TypeRadio-${t}`} 
                                         type="radio" 
                                         name="type" 
                                         value={t} 

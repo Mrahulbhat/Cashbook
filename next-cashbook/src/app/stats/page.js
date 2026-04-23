@@ -68,13 +68,14 @@ const StatisticsContent = () => {
 
     const stats = useMemo(() => {
         const now = new Date();
-        const currentMonth = now.getMonth();
+        const currentMonthIndex = now.getMonth();
         const currentYear = now.getFullYear();
+        const monthsRemaining = 12 - currentMonthIndex;
 
         const filtered = transactions.filter(t => {
             if (filter === 'monthly') {
                 const d = new Date(t.date);
-                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+                return d.getMonth() === currentMonthIndex && d.getFullYear() === currentYear;
             }
             if (filter === 'yearly') {
                 return new Date(t.date).getFullYear() === currentYear;
@@ -85,8 +86,8 @@ const StatisticsContent = () => {
         const prevFiltered = transactions.filter(t => {
             if (filter === 'monthly') {
                 const d = new Date(t.date);
-                return d.getMonth() === (currentMonth === 0 ? 11 : currentMonth - 1) && 
-                       d.getFullYear() === (currentMonth === 0 ? currentYear - 1 : currentYear);
+                return d.getMonth() === (currentMonthIndex === 0 ? 11 : currentMonthIndex - 1) && 
+                       d.getFullYear() === (currentMonthIndex === 0 ? currentYear - 1 : currentYear);
             }
             if (filter === 'yearly') {
                 return new Date(t.date).getFullYear() === currentYear - 1;
@@ -96,6 +97,7 @@ const StatisticsContent = () => {
 
         let totalIncome = 0;
         let totalExpense = 0;
+        let totalInvestment = 0;
         const categoryMap = {};
         const chartMap = {};
         const weekdayMap = { 'Sun': 0, 'Mon': 0, 'Tue': 0, 'Wed': 0, 'Thu': 0, 'Fri': 0, 'Sat': 0 };
@@ -114,7 +116,7 @@ const StatisticsContent = () => {
 
             if (t.type === 'income') {
                 monthMap[mKey].Income += amount;
-            } else {
+            } else if (t.type === 'expense' || t.type === 'investment') {
                 monthMap[mKey].Expense += amount;
             }
             monthMap[mKey].Savings = monthMap[mKey].Income - monthMap[mKey].Expense;
@@ -136,13 +138,13 @@ const StatisticsContent = () => {
             }
 
             if (!chartMap[timeKey]) {
-                chartMap[timeKey] = { name: timeKey, Income: 0, Expense: 0 };
+                chartMap[timeKey] = { name: timeKey, Income: 0, Expense: 0, Investment: 0 };
             }
 
             if (t.type === 'income') {
                 totalIncome += amount;
                 chartMap[timeKey].Income += amount;
-            } else {
+            } else if (t.type === 'expense') {
                 totalExpense += amount;
                 chartMap[timeKey].Expense += amount;
                 
@@ -161,12 +163,28 @@ const StatisticsContent = () => {
                     };
                 }
                 categoryMap[catName].value += amount;
+            } else if (t.type === 'investment') {
+                totalInvestment += amount;
+                chartMap[timeKey].Investment += amount;
+
+                const catName = t.category?.name || 'Uncategorized';
+                if (!categoryMap[catName]) {
+                    categoryMap[catName] = { 
+                        name: catName, 
+                        value: 0, 
+                        budget: 0,
+                        yearlyBudget: Number(t.category?.yearlyBudget) || 0,
+                        yearSpentTillLastMonth: 0,
+                        yearSpentIncludingCurrent: 0
+                    };
+                }
+                categoryMap[catName].value += amount;
             }
         });
 
         // Calculate yearly spent for categories with yearly budgets
         transactions.forEach(t => {
-            if (t.type !== 'income') {
+            if (t.type === 'expense' || t.type === 'investment') {
                 const d = new Date(t.date);
                 if (d.getFullYear() === currentYear) {
                     const catName = t.category?.name || 'Uncategorized';
@@ -180,9 +198,7 @@ const StatisticsContent = () => {
             }
         });
 
-        // Process final category stats with dynamic budget logic
-        const currentMonthIndex = now.getMonth(); // 0-11
-        const monthsRemaining = 12 - currentMonthIndex;
+
 
         const categoryStats = Object.values(categoryMap).map(cat => {
             let suggestedMonthly = cat.budget;
@@ -210,7 +226,7 @@ const StatisticsContent = () => {
 
         let finalChartData = [];
         if (filter === 'monthly') {
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysInMonth = new Date(currentYear, currentMonthIndex + 1, 0).getDate();
             for (let i = 1; i <= daysInMonth; i++) {
                 const key = i.toString();
                 finalChartData.push(chartMap[key] || { name: key, Income: 0, Expense: 0 });
@@ -227,15 +243,19 @@ const StatisticsContent = () => {
         // Calculate totals for previous period
         let prevIncome = 0;
         let prevExpense = 0;
+        let prevInvestment = 0;
         prevFiltered.forEach(t => {
             if (t.type === 'income') prevIncome += Number(t.amount);
-            else prevExpense += Number(t.amount);
+            else if (t.type === 'expense') prevExpense += Number(t.amount);
+            else if (t.type === 'investment') prevInvestment += Number(t.amount);
         });
 
         const prevIncomeDiff = prevIncome > 0 ? ((totalIncome - prevIncome) / prevIncome) * 100 : 0;
         const prevExpenseDiff = prevExpense > 0 ? ((totalExpense - prevExpense) / prevExpense) * 100 : 0;
-
-        const savingsRate = totalIncome > 0 ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0;
+        const prevInvestmentDiff = prevInvestment > 0 ? ((totalInvestment - prevInvestment) / prevInvestment) * 100 : 0;
+        const netSavings = totalIncome - totalExpense;
+        const cashFlow = totalIncome - totalExpense - totalInvestment;
+        const savingsRate = totalIncome > 0 ? Math.round((netSavings / totalIncome) * 100) : 0;
 
         const weekdayStats = Object.keys(weekdayMap).map(name => ({ name, value: weekdayMap[name] }));
         const topSpendingDay = Object.keys(weekdayMap).reduce((a, b) => weekdayMap[a] > weekdayMap[b] ? a : b, 'Mon');
@@ -256,6 +276,9 @@ const StatisticsContent = () => {
         return {
             totalIncome,
             totalExpense,
+            totalInvestment,
+            netSavings,
+            cashFlow,
             savingsRate,
             categoryStats,
             chartData: finalChartData,
@@ -265,6 +288,7 @@ const StatisticsContent = () => {
             transactionCount: filtered.length,
             prevIncomeDiff,
             prevExpenseDiff,
+            prevInvestmentDiff,
             largestExpense,
             top10Expenses,
             insights
@@ -428,40 +452,62 @@ const StatisticsContent = () => {
                     <div id="statsExpenseCard" className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 p-6 rounded-3xl relative overflow-hidden group hover:border-red-500/50 transition-colors">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl group-hover:bg-red-500/20 transition-all"></div>
                         <div className="flex justify-between items-start mb-4 relative z-10">
-                            <span className="text-gray-400 font-medium">Total Expense</span>
-                            <div className="p-2 bg-red-500/20 rounded-xl"><TrendingUp size={20} className="text-red-400 rotate-180" /></div>
+                            <span className="text-gray-400 font-medium">Expenses</span>
+                            <div className="p-2 bg-red-500/20 rounded-xl"><ArrowUpRight size={20} className="text-red-400" /></div>
                         </div>
-                        <p className="text-3xl font-bold text-white relative z-10">{formatCurrency(stats.totalExpense)}</p>
+                        <p id="totalExpense" className="text-3xl font-bold text-white relative z-10">{formatCurrency(stats.totalExpense)}</p>
                         <div className="relative z-10">{renderTrend(stats.prevExpenseDiff, true)}</div>
                     </div>
-                    
-                    <div id="statsSavingsCard" className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 p-6 rounded-3xl relative overflow-hidden group hover:border-blue-500/50 transition-colors">
+
+                    <div id="statsInvestmentCard" className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 p-6 rounded-3xl relative overflow-hidden group hover:border-blue-500/50 transition-colors">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all"></div>
                         <div className="flex justify-between items-start mb-4 relative z-10">
-                            <span className="text-gray-400 font-medium">Net Balance</span>
-                            <div className="p-2 bg-blue-500/20 rounded-xl"><Wallet size={20} className="text-blue-400" /></div>
+                            <span className="text-gray-400 font-medium">Investments</span>
+                            <div className="p-2 bg-blue-500/20 rounded-xl"><TrendingUp size={20} className="text-blue-400" /></div>
                         </div>
-                        <p className={`text-3xl font-bold relative z-10 ${stats.totalIncome - stats.totalExpense >= 0 ? 'text-white' : 'text-red-400'}`}>
-                            {formatCurrency(stats.totalIncome - stats.totalExpense)}
+                        <p id="totalInvestment" className="text-3xl font-bold text-white relative z-10">{formatCurrency(stats.totalInvestment)}</p>
+                        <div className="relative z-10">{renderTrend(stats.prevInvestmentDiff)}</div>
+                    </div>
+                    
+                    <div id="statsSavingsCard" className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 p-6 rounded-3xl relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all"></div>
+                        <div className="flex justify-between items-start mb-4 relative z-10">
+                            <span className="text-gray-400 font-medium">Net Savings</span>
+                            <div className="p-2 bg-emerald-500/20 rounded-xl"><Award size={20} className="text-emerald-400" /></div>
+                        </div>
+                        <p id="netSavings" className={`text-3xl font-bold relative z-10 ${stats.netSavings >= 0 ? 'text-white' : 'text-red-400'}`}>
+                            {formatCurrency(stats.netSavings)}
                         </p>
                         <div className="relative z-10">
-                            {filter !== 'lifetime' && (
-                                <p className="text-xs text-gray-500 mt-2 font-medium">For the selected period</p>
-                            )}
+                            <p className="text-xs text-emerald-500/60 mt-2 font-medium tracking-wide uppercase text-[10px]">Wealth Increase (Inc - Exp)</p>
+                        </div>
+                    </div>
+
+                    <div id="statsCashFlowCard" className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 p-6 rounded-3xl relative overflow-hidden group hover:border-amber-500/50 transition-colors">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all"></div>
+                        <div className="flex justify-between items-start mb-4 relative z-10">
+                            <span className="text-gray-400 font-medium">Cash Flow</span>
+                            <div className="p-2 bg-amber-500/20 rounded-xl"><Wallet size={20} className="text-amber-400" /></div>
+                        </div>
+                        <p id="cashFlow" className={`text-3xl font-bold relative z-10 ${stats.cashFlow >= 0 ? 'text-white' : 'text-amber-400'}`}>
+                            {formatCurrency(stats.cashFlow)}
+                        </p>
+                        <div className="relative z-10">
+                            <p className="text-xs text-amber-500/60 mt-2 font-medium tracking-wide uppercase text-[10px]">Liquid Balance (Inc - Exp - Inv)</p>
                         </div>
                     </div>
                     
-                    <div id="statsSavingsRateCard" className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 p-6 rounded-3xl relative overflow-hidden group hover:border-amber-500/50 transition-colors">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all"></div>
+                    <div id="statsSavingsRateCard" className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 p-6 rounded-3xl relative overflow-hidden group hover:border-purple-500/50 transition-colors">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all"></div>
                         <div className="flex justify-between items-start mb-4 relative z-10">
                             <span className="text-gray-400 font-medium">Savings Rate</span>
-                            <div className="p-2 bg-amber-500/20 rounded-xl"><Target size={20} className="text-amber-400" /></div>
+                            <div className="p-2 bg-purple-500/20 rounded-xl"><Target size={20} className="text-purple-400" /></div>
                         </div>
                         <div className="flex items-end gap-3 relative z-10">
                             <p className="text-3xl font-bold text-white">{stats.savingsRate}%</p>
                         </div>
                         <div className="w-full bg-gray-800/50 h-1.5 rounded-full mt-4 relative z-10">
-                            <div className="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full shadow-[0_0_10px_rgba(251,191,36,0.5)]" style={{ width: `${stats.savingsRate}%` }}></div>
+                            <div className="bg-gradient-to-r from-purple-600 to-blue-600 h-full rounded-full shadow-[0_0_10px_rgba(147,51,234,0.5)]" style={{ width: `${stats.savingsRate}%` }}></div>
                         </div>
                     </div>
                 </div>
@@ -484,6 +530,10 @@ const StatisticsContent = () => {
                                             <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
                                             <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
                                         </linearGradient>
+                                        <linearGradient id="colorInvestment" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                        </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
                                     <XAxis dataKey="name" stroke="#9ca3af" axisLine={false} tickLine={false} tickMargin={12} fontSize={12} />
@@ -492,6 +542,7 @@ const StatisticsContent = () => {
                                     <Legend verticalAlign="top" height={36} iconType="circle" />
                                     <Area type="monotone" dataKey="Income" stroke="#22c55e" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" />
                                     <Area type="monotone" dataKey="Expense" stroke="#ef4444" strokeWidth={3} fillOpacity={1} fill="url(#colorExpense)" />
+                                    <Area type="monotone" dataKey="Investment" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorInvestment)" />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
@@ -513,7 +564,7 @@ const StatisticsContent = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {categoryStats.filter(c => c.yearlyBudget > 0).map((cat, i) => {
+                            {stats.categoryStats.filter(c => c.yearlyBudget > 0).map((cat, i) => {
                                 const monthsRemaining = cat.monthsRemaining;
                                 const monthlyTarget = cat.suggestedMonthly;
                                 const spentThisMonth = cat.value;
@@ -568,7 +619,7 @@ const StatisticsContent = () => {
                                     </div>
                                 );
                             })}
-                            {categoryStats.filter(c => c.yearlyBudget > 0).length === 0 && (
+                            {stats.categoryStats.filter(c => c.yearlyBudget > 0).length === 0 && (
                                 <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-500 border-2 border-dashed border-gray-800 rounded-3xl">
                                     <Clock size={48} className="mb-4 opacity-10" />
                                     <p className="font-medium">No yearly budgets setup yet</p>
@@ -686,7 +737,7 @@ const StatisticsContent = () => {
                                                 <p className="text-xs text-gray-500">{new Date(txn.date).toLocaleDateString()}</p>
                                             </div>
                                         </div>
-                                        <span className="text-white font-bold">{formatCurrency(txn.amount)}</span>
+                                        <span className={`font-bold ${txn.type === 'investment' ? 'text-blue-400' : 'text-white'}`}>{formatCurrency(txn.amount)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -711,7 +762,8 @@ const StatisticsContent = () => {
                                             <Pie
                                                 data={[
                                                     { name: 'Income', value: stats.totalIncome, fill: '#22c55e' },
-                                                    { name: 'Expense', value: stats.totalExpense, fill: '#ef4444' }
+                                                    { name: 'Expense', value: stats.totalExpense, fill: '#ef4444' },
+                                                    { name: 'Investment', value: stats.totalInvestment, fill: '#3b82f6' }
                                                 ]}
                                                 cx="50%"
                                                 cy="50%"
@@ -723,24 +775,32 @@ const StatisticsContent = () => {
                                             >
                                                 <Cell key="cell-income" fill="#22c55e" />
                                                 <Cell key="cell-expense" fill="#ef4444" />
+                                                <Cell key="cell-investment" fill="#3b82f6" />
                                             </Pie>
                                             <RechartsTooltip content={<CustomPieTooltip />} />
                                         </RechartsPieChart>
                                     </ResponsiveContainer>
                                 </div>
-                                <div className="mt-6 flex justify-center gap-8">
+                                <div className="mt-6 grid grid-cols-3 gap-4">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 rounded-full bg-green-500"></div>
+                                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
                                         <div className="flex flex-col">
-                                            <span className="text-gray-400 text-xs">Income</span>
-                                            <span className="text-white font-bold">{((stats.totalIncome / (stats.totalIncome + stats.totalExpense)) * 100 || 0).toFixed(1)}%</span>
+                                            <span className="text-gray-400 text-[10px] uppercase font-bold">Income</span>
+                                            <span className="text-white text-xs font-bold">{((stats.totalIncome / (stats.totalIncome + stats.totalExpense + stats.totalInvestment)) * 100 || 0).toFixed(1)}%</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 rounded-full bg-red-500"></div>
+                                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
                                         <div className="flex flex-col">
-                                            <span className="text-gray-400 text-xs">Expense</span>
-                                            <span className="text-white font-bold">{((stats.totalExpense / (stats.totalIncome + stats.totalExpense)) * 100 || 0).toFixed(1)}%</span>
+                                            <span className="text-gray-400 text-[10px] uppercase font-bold">Expense</span>
+                                            <span className="text-white text-xs font-bold">{((stats.totalExpense / (stats.totalIncome + stats.totalExpense + stats.totalInvestment)) * 100 || 0).toFixed(1)}%</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                                        <div className="flex flex-col">
+                                            <span className="text-gray-400 text-[10px] uppercase font-bold">Investment</span>
+                                            <span className="text-white text-xs font-bold">{((stats.totalInvestment / (stats.totalIncome + stats.totalExpense + stats.totalInvestment)) * 100 || 0).toFixed(1)}%</span>
                                         </div>
                                     </div>
                                 </div>

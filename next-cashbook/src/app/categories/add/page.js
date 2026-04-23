@@ -76,7 +76,7 @@ const AddCategoryContent = () => {
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-3">Type *</label>
                             <div className="flex gap-4">
-                                {['income', 'expense'].map(t => (
+                                {['income', 'expense', 'investment'].map(t => (
                                     <label key={t} className="flex items-center gap-2 cursor-pointer capitalize text-gray-300">
                                         <input id={`TypeRadio-${t}`} type="radio" name="type" value={t} checked={formData.type === t} onChange={handleInputChange} className="accent-purple-500" />
                                         {t}

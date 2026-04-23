@@ -61,7 +61,7 @@ const EditCategoryContent = () => {
                             <input id="NameInput" type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
                         </div>
                         <div className="flex gap-4">
-                            {['income', 'expense'].map(t => (
+                            {['income', 'expense', 'investment'].map(t => (
                                 <label key={t} className="flex items-center gap-2 text-gray-300 capitalize cursor-pointer">
                                     <input id={`TypeRadio-${t}`} type="radio" checked={formData.type === t} onChange={() => setFormData({ ...formData, type: t })} /> {t}
                                 </label>
