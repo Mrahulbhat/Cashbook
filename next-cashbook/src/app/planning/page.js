@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Target, Loader, ChevronRight, TrendingUp, ShoppingBag, Home, Calculator, Save, AlertCircle, List, Calendar, Plus, Trash2, CheckCircle, Tag } from "lucide-react";
+import { Target, Loader, ChevronRight, TrendingUp, ShoppingBag, Home, Calculator, Save, AlertCircle, List, Calendar, Plus, Trash2, CheckCircle, Tag, Activity } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { useCategoryStore } from "@/store/useCategoryStore";
 import { useUpcomingStore } from "@/store/useUpcomingStore";
@@ -35,6 +35,7 @@ const PlanningContent = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [editingTargets, setEditingTargets] = useState({}); // { bucketName: { amount: 0, yearlyAmount: 0 } }
+    const [editingNotes, setEditingNotes] = useState("");
     
     const [upcomingForm, setUpcomingForm] = useState({
         amount: '',
@@ -64,6 +65,7 @@ const PlanningContent = () => {
                     };
                 });
                 setEditingTargets(targets);
+                setEditingNotes(planRes.data.notes || "");
             } catch (error) {
                 toast.error("Failed to load planning data");
             } finally {
@@ -139,9 +141,12 @@ const PlanningContent = () => {
                 yearlyAmount: Number(editingTargets[bucket]?.yearlyAmount || 0)
             }));
             
-            await axiosInstance.post('/plan', { targets });
-            setPlan({ ...plan, targets });
-            toast.success("Yearly targets updated!");
+            await axiosInstance.post('/plan', { 
+                targets,
+                notes: editingNotes
+            });
+            setPlan({ ...plan, targets, notes: editingNotes });
+            toast.success("Yearly targets & notes updated!");
         } catch (error) {
             toast.error("Failed to save targets");
         } finally {
@@ -211,7 +216,12 @@ const PlanningContent = () => {
                                     <Calculator className="w-5 h-5 text-green-400" />
                                     Bucket Targets
                                 </h2>
-                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Calendar Year Cycle</p>
+                                <div className="mt-2 space-y-1">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Calendar Year Cycle</p>
+                                    <p className="text-xs font-bold text-green-400/80">
+                                        Total Yearly: {formatCurrency(Object.values(editingTargets).reduce((sum, t) => sum + (Number(t.yearlyAmount) || 0), 0))}
+                                    </p>
+                                </div>
                             </div>
                             <button 
                                 onClick={handleSaveTargets}
@@ -396,12 +406,18 @@ const PlanningContent = () => {
                     </section>
                 </div>
 
-                {/* Category Mapping Info */}
-                <div className="bg-green-600/5 border border-green-500/20 rounded-[2.5rem] p-10 text-center mb-12">
-                    <h2 className="text-2xl font-bold text-white mb-4">How it works</h2>
-                    <p className="text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        To track your progress, assign your categories to a bucket in the <span className="text-green-400 font-bold cursor-pointer hover:underline" onClick={() => router.push('/categories')}>Categories</span> section. Then, set your **Yearly Bucket Targets** above. Every transaction will then automatically contribute to your adjusted monthly targets for that bucket.
-                    </p>
+                {/* Financial Notes Section */}
+                <div className="bg-purple-600/5 border border-purple-500/20 rounded-[2.5rem] p-8 mb-12">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Activity className="text-purple-400" size={24} />
+                        <h2 className="text-2xl font-bold text-white">Financial Notes</h2>
+                    </div>
+                    <textarea 
+                        value={editingNotes}
+                        onChange={(e) => setEditingNotes(e.target.value)}
+                        placeholder="Add your financial goals, reminders, or general planning notes here..."
+                        className="w-full h-32 bg-black/20 border border-gray-800 rounded-2xl p-4 text-gray-300 focus:outline-none focus:border-purple-500/50 transition-all resize-none font-medium leading-relaxed"
+                    />
                 </div>
 
                 {/* Financial Plan Table Section */}
