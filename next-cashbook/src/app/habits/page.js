@@ -34,9 +34,9 @@ const HabitTracker = () => {
             setHabits(JSON.parse(savedHabits));
         } else {
             const defaultHabits = [
-                { id: 1, name: 'Read for 30 mins', completedDays: [], color: 'emerald', createdAt: new Date().toISOString() },
-                { id: 2, name: 'Workout', completedDays: [], color: 'blue', createdAt: new Date().toISOString() },
-                { id: 3, name: 'Meditate', completedDays: [], color: 'purple', createdAt: new Date().toISOString() }
+                { id: 1, name: 'Gym', completedDays: [], color: 'emerald', createdAt: new Date().toISOString() },
+                { id: 2, name: 'No Junk Food', completedDays: [], color: 'rose', createdAt: new Date().toISOString() },
+                { id: 3, name: 'Sleep', completedDays: [], color: 'blue', createdAt: new Date().toISOString() }
             ];
             setHabits(defaultHabits);
             localStorage.setItem('cashbook-habits', JSON.stringify(defaultHabits));
@@ -268,14 +268,6 @@ const HabitTracker = () => {
                 
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div>
-                        <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-white via-blue-200 to-gray-500 bg-clip-text text-transparent">
-                            Habit Tracker
-                        </h1>
-                        <p className="text-gray-400 mt-2 text-lg">Master your routines, master your life.</p>
-                    </div>
-                    
-                    {/* Motivational Quote - Quick Feature */}
                     <div className="hidden lg:block bg-gray-900/40 border border-gray-800/40 px-6 py-3 rounded-2xl backdrop-blur-sm">
                         <p className="text-sm font-medium italic text-gray-400">
                             "Success is the sum of small efforts, repeated day in and day out."

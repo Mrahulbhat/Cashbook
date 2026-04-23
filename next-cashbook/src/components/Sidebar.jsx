@@ -9,7 +9,10 @@ const Sidebar = () => {
     const router = useRouter();
     const pathname = usePathname();
 
-    if (pathname === "/login" || pathname === "/signup") {
+    // Sidebar is only mounted under Cashbook routes — AppShell never renders
+    // it on /habits, /login, /signup, /select-app, or /admin.
+    // This guard is just a safety net.
+    if (pathname === "/login" || pathname === "/signup" || pathname === "/select-app") {
         return null;
     }
 

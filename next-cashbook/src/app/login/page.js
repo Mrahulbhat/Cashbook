@@ -25,7 +25,7 @@ const LoginPage = () => {
             // If the server redirects with a token, we might need to fetch the user profile.
             // For now, let's just trigger a reload or check the session.
             window.history.replaceState({}, document.title, window.location.pathname);
-            window.location.href = "/dashboard";
+            window.location.href = "/select-app";
         }
     }, []);
 
@@ -47,7 +47,7 @@ const LoginPage = () => {
             if (response.data.success) {
                 toast.success("Login successful!");
                 setUser(response.data.user);
-                router.push("/dashboard");
+                router.push("/select-app");
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "Login failed");

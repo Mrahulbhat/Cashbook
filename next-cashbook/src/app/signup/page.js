@@ -63,7 +63,7 @@ const SignupPage = () => {
             if (response.data.success) {
                 toast.success("Account created successfully!");
                 setUser(response.data.user);
-                router.push("/dashboard");
+                router.push("/select-app");
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "Signup failed");
