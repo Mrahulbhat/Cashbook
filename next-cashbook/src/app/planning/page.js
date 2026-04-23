@@ -408,9 +408,19 @@ const PlanningContent = () => {
 
                 {/* Financial Notes Section */}
                 <div className="bg-purple-600/5 border border-purple-500/20 rounded-[2.5rem] p-8 mb-12">
-                    <div className="flex items-center gap-3 mb-4">
-                        <Activity className="text-purple-400" size={24} />
-                        <h2 className="text-2xl font-bold text-white">Financial Notes</h2>
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                            <Activity className="text-purple-400" size={24} />
+                            <h2 className="text-2xl font-bold text-white">Financial Notes</h2>
+                        </div>
+                        <button 
+                            onClick={handleSaveTargets}
+                            disabled={saving}
+                            className="px-6 py-2 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-500 transition-all flex items-center gap-2 text-sm"
+                        >
+                            {saving ? <Loader size={16} className="animate-spin" /> : <Save size={16} />}
+                            Save Notes
+                        </button>
                     </div>
                     <textarea 
                         value={editingNotes}
@@ -420,72 +430,6 @@ const PlanningContent = () => {
                     />
                 </div>
 
-                {/* Financial Plan Table Section */}
-                <section className="bg-gray-900/30 backdrop-blur-xl border border-gray-800 rounded-[2.5rem] p-8 mb-12 overflow-hidden">
-                    <div className="flex items-center justify-between mb-8">
-                        <div>
-                            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                                <List className="text-blue-400" />
-                                Category-wise Financial Plan
-                            </h2>
-                            <p className="text-gray-500 text-sm mt-1">Detailed breakdown and end-of-month projections</p>
-                        </div>
-                    </div>
-
-                    <div className="overflow-x-auto no-scrollbar">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b border-gray-800">
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest text-left">Category</th>
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest text-left">Bucket</th>
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest text-left">Current Use</th>
-                                    <th className="py-4 px-4 text-gray-500 text-xs font-bold uppercase tracking-widest text-right">Pro-rata Projection</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {categories.filter(c => c.type === 'expense').map(cat => {
-                                    const now = new Date();
-                                    const currentYear = now.getFullYear();
-                                    const currentMonth = now.getMonth();
-                                    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-                                    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-                                    const daysPassed = now.getDate();
-
-                                    const monthlyTxns = transactions.filter(t => {
-                                        const d = new Date(t.date);
-                                        return d >= firstDayOfMonth && d <= now && (t.category?._id === cat._id || t.category === cat._id);
-                                    });
-
-                                    const spent = monthlyTxns.reduce((sum, t) => sum + Number(t.amount), 0);
-                                    
-                                    // Estimation: Pro-rata projection
-                                    const estimation = daysPassed > 0 ? (spent / daysPassed) * daysInMonth : 0;
-
-                                    return (
-                                        <tr key={cat._id} className="border-b border-gray-800/50 hover:bg-white/5 transition-colors group">
-                                            <td className="py-5 px-4">
-                                                <div className="font-bold text-white group-hover:text-blue-400 transition-colors">{cat.name}</div>
-                                            </td>
-                                            <td className="py-5 px-4">
-                                                <span className={`text-[10px] font-black uppercase tracking-tighter px-2 py-1 rounded bg-gray-800 text-gray-400`}>
-                                                    {cat.planningBucket || 'None'}
-                                                </span>
-                                            </td>
-                                            <td className="py-5 px-4 font-bold text-white font-mono">
-                                                {formatCurrency(spent)}
-                                            </td>
-                                            <td className="py-5 px-4 font-mono text-right">
-                                                <div className="text-gray-400">
-                                                    {formatCurrency(estimation)}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
             </div>
             
             {/* Dynamic CSS for bucket colors since Tailwind might not catch dynamic classes */}
