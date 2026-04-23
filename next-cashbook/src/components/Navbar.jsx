@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { LogOut, LayoutGrid, Wallet, ListTodo, Plus, X, ArrowRight } from "lucide-react";
+import { LogOut, LayoutGrid, Wallet, ListTodo, Plus, X, ArrowRight, Dumbbell } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 // ── App catalogue ──────────────────────────────────────────────
@@ -30,6 +30,18 @@ const APPS = [
         glow: "shadow-blue-500/25",
         border: "hover:border-blue-500/40",
         matchPaths: ["/habits"],
+    },
+    {
+        id: "gym",
+        label: "Gym Tracker",
+        description: "Log your workouts",
+        detail: "Track your progress, manage exercises, and stay on top of your fitness goals.",
+        route: "/gym",
+        icon: Dumbbell,
+        gradient: "from-orange-500 to-red-600",
+        glow: "shadow-orange-500/25",
+        border: "hover:border-orange-500/40",
+        matchPaths: ["/gym"],
     },
     {
         id: "new",

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { Wallet, ListTodo, Plus, LogOut, ArrowRight, Sparkles } from "lucide-react";
+import { Wallet, ListTodo, Plus, LogOut, ArrowRight, Sparkles, Dumbbell } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -29,6 +29,18 @@ const APPS = [
         iconBg: "bg-blue-500/10",
         accent: "group-hover:text-blue-400",
         tag: "Wellness",
+    },
+    {
+        id: "gym",
+        name: "Gym Tracker",
+        description: "Log workouts & track progress",
+        icon: Dumbbell,
+        route: "/gym",
+        iconColor: "text-orange-400",
+        iconRing: "ring-orange-500/20",
+        iconBg: "bg-orange-500/10",
+        accent: "group-hover:text-orange-400",
+        tag: "Fitness",
     },
 ];
 
