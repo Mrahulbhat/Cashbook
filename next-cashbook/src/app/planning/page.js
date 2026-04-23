@@ -93,16 +93,9 @@ const PlanningContent = () => {
             { name: 'Long Term', icon: Target, color: 'purple' },
         ];
 
-        // Financial Year: April to March
-        let startOfCycle;
-        let monthsRemaining;
-        if (currentMonth >= 3) {
-            startOfCycle = new Date(currentYear, 3, 1);
-            monthsRemaining = 12 - (currentMonth - 3);
-        } else {
-            startOfCycle = new Date(currentYear - 1, 3, 1);
-            monthsRemaining = 3 - currentMonth;
-        }
+        // Financial Year: Calendar Year (Jan to Dec)
+        let startOfCycle = new Date(currentYear, 0, 1);
+        let monthsRemaining = 12 - currentMonth;
 
         return buckets.map(bucket => {
             const bucketCategories = categories.filter(c => c.planningBucket === bucket.name);
@@ -204,7 +197,7 @@ const PlanningContent = () => {
                         </div>
                         <div>
                             <h1 className="text-4xl font-black text-white tracking-tight">Financial Planning</h1>
-                            <p className="text-gray-400 font-medium">Smart Yearly Budgeting (April-March Cycle)</p>
+                            <p className="text-gray-400 font-medium">Smart Yearly Budgeting (Jan-Dec Cycle)</p>
                         </div>
                     </div>
                 </header>
@@ -218,7 +211,7 @@ const PlanningContent = () => {
                                     <Calculator className="w-5 h-5 text-green-400" />
                                     Bucket Targets
                                 </h2>
-                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">April to April Cycle</p>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Calendar Year Cycle</p>
                             </div>
                             <button 
                                 onClick={handleSaveTargets}
