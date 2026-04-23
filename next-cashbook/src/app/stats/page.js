@@ -224,6 +224,35 @@ const StatisticsContent = () => {
             finalChartData = Object.values(chartMap).sort((a, b) => Number(a.name) - Number(b.name));
         }
 
+        // Calculate totals for previous period
+        let prevIncome = 0;
+        let prevExpense = 0;
+        prevFiltered.forEach(t => {
+            if (t.type === 'income') prevIncome += Number(t.amount);
+            else prevExpense += Number(t.amount);
+        });
+
+        const prevIncomeDiff = prevIncome > 0 ? ((totalIncome - prevIncome) / prevIncome) * 100 : 0;
+        const prevExpenseDiff = prevExpense > 0 ? ((totalExpense - prevExpense) / prevExpense) * 100 : 0;
+
+        const savingsRate = totalIncome > 0 ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0;
+
+        const weekdayStats = Object.keys(weekdayMap).map(name => ({ name, value: weekdayMap[name] }));
+        const topSpendingDay = Object.keys(weekdayMap).reduce((a, b) => weekdayMap[a] > weekdayMap[b] ? a : b, 'Mon');
+
+        const expenseTransactions = filtered.filter(t => t.type === 'expense').sort((a, b) => Number(b.amount) - Number(a.amount));
+        const largestExpense = expenseTransactions[0] || null;
+        const top10Expenses = expenseTransactions.slice(0, 10);
+
+        // Smart Insights
+        const insights = [];
+        if (savingsRate > 20) insights.push({ text: "Great job! Your savings rate is above 20%.", type: 'success' });
+        else if (savingsRate < 0) insights.push({ text: "You're spending more than you earn this month.", type: 'warning' });
+        else insights.push({ text: "Try to increase your savings to at least 20% of your income.", type: 'info' });
+
+        if (totalExpense > prevExpense && prevExpense > 0) insights.push({ text: `Your spending increased by ${Math.abs(prevExpenseDiff).toFixed(1)}% vs last period.`, type: 'warning' });
+        if (totalIncome > totalExpense) insights.push({ text: "You have a positive cashflow. Consider investing.", type: 'success' });
+
         return {
             totalIncome,
             totalExpense,
