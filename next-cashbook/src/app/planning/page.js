@@ -110,7 +110,6 @@ const PlanningContent = () => {
             
             const planTarget = plan?.targets.find(t => t.bucket === bucket.name);
             const yearlyAmount = planTarget?.yearlyAmount || 0;
-            const monthlyAmount = planTarget?.amount || 0;
 
             let target = 0;
             if (yearlyAmount > 0) {
@@ -123,8 +122,6 @@ const PlanningContent = () => {
                 });
                 const spentInPastMonths = pastMonthsTxns.reduce((sum, t) => sum + Number(t.amount), 0);
                 target = Math.max(0, (yearlyAmount - spentInPastMonths) / monthsRemaining);
-            } else {
-                target = monthlyAmount;
             }
             
             const spent = monthlyTransactions
@@ -145,12 +142,13 @@ const PlanningContent = () => {
             setSaving(true);
             const targets = Object.keys(editingTargets).map(bucket => ({
                 bucket,
-                amount: Number(editingTargets[bucket])
+                amount: 0, // Reset monthly
+                yearlyAmount: Number(editingTargets[bucket]?.yearlyAmount || 0)
             }));
             
             await axiosInstance.post('/plan', { targets });
             setPlan({ ...plan, targets });
-            toast.success("Targets updated successfully!");
+            toast.success("Yearly targets updated!");
         } catch (error) {
             toast.error("Failed to save targets");
         } finally {
@@ -235,39 +233,20 @@ const PlanningContent = () => {
                         <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
                             {['Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
                                 <div key={bucket} className="p-4 bg-black/20 rounded-2xl border border-gray-800/50">
-                                    <label className="text-xs font-black text-gray-500 uppercase tracking-[0.2em] block mb-4">{bucket}</label>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-[9px] font-bold text-gray-600 uppercase block mb-1 ml-1">Yearly Amount</label>
-                                            <div className="relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₹</span>
-                                                <input 
-                                                    type="number"
-                                                    value={editingTargets[bucket]?.yearlyAmount || ''}
-                                                    onChange={(e) => setEditingTargets({ 
-                                                        ...editingTargets, 
-                                                        [bucket]: { ...editingTargets[bucket], yearlyAmount: e.target.value } 
-                                                    })}
-                                                    className="w-full bg-gray-800/30 border border-gray-700/50 rounded-xl py-2 pl-7 pr-3 text-white font-bold focus:outline-none focus:border-green-500/50 transition-all text-sm"
-                                                    placeholder="Yearly"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="text-[9px] font-bold text-gray-600 uppercase block mb-1 ml-1">Or Monthly</label>
-                                            <div className="relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₹</span>
-                                                <input 
-                                                    type="number"
-                                                    value={editingTargets[bucket]?.amount || ''}
-                                                    onChange={(e) => setEditingTargets({ 
-                                                        ...editingTargets, 
-                                                        [bucket]: { ...editingTargets[bucket], amount: e.target.value } 
-                                                    })}
-                                                    className="w-full bg-gray-800/30 border border-gray-700/50 rounded-xl py-2 pl-7 pr-3 text-white font-bold focus:outline-none focus:border-green-500/50 transition-all text-sm"
-                                                    placeholder="Monthly"
-                                                />
-                                            </div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <label className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">{bucket}</label>
+                                        <div className="relative w-64">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₹</span>
+                                            <input 
+                                                type="number"
+                                                value={editingTargets[bucket]?.yearlyAmount || ''}
+                                                onChange={(e) => setEditingTargets({ 
+                                                    ...editingTargets, 
+                                                    [bucket]: { ...editingTargets[bucket], yearlyAmount: e.target.value } 
+                                                })}
+                                                className="w-full bg-gray-800/30 border border-gray-700/50 rounded-xl py-2 pl-10 pr-4 text-white font-bold focus:outline-none focus:border-green-500/50 transition-all text-sm"
+                                                placeholder="Yearly Budget"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -502,6 +481,16 @@ const PlanningContent = () => {
             
             {/* Dynamic CSS for bucket colors since Tailwind might not catch dynamic classes */}
             <style jsx>{`
+                /* Hide number input spinners */
+                input::-webkit-outer-spin-button,
+                input::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+                input[type=number] {
+                    -moz-appearance: textfield;
+                }
+
                 .bg-blue-500 { background-color: #3b82f6; }
                 .text-blue-400 { color: #60a5fa; }
                 .bg-blue-500\/10 { background-color: rgba(59, 130, 246, 0.1); }
