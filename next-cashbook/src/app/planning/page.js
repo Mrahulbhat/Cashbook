@@ -106,28 +106,35 @@ const PlanningContent = () => {
             const planTarget = plan?.targets.find(t => t.bucket === bucket.name);
             const yearlyAmount = planTarget?.yearlyAmount || 0;
 
+            const startOfCurrentMonth = new Date(currentYear, currentMonth, 1);
+            
+            // Calculate spent in this financial year BEFORE current month for all categories in this bucket
+            const pastMonthsTxns = transactions.filter(t => {
+                const d = new Date(t.date);
+                const catId = t.category?._id || t.category;
+                return d >= startOfCycle && d < startOfCurrentMonth && categoryIds.includes(catId) && (t.type === 'expense' || t.type === 'investment');
+            });
+            const spentInPastMonths = pastMonthsTxns.reduce((sum, t) => sum + Number(t.amount), 0);
+
             let target = 0;
             if (yearlyAmount > 0) {
-                const startOfCurrentMonth = new Date(currentYear, currentMonth, 1);
-                // Calculate spent in this financial year BEFORE current month for all categories in this bucket
-                const pastMonthsTxns = transactions.filter(t => {
-                    const d = new Date(t.date);
-                    const catId = t.category?._id || t.category;
-                    return d >= startOfCycle && d < startOfCurrentMonth && categoryIds.includes(catId) && (t.type === 'expense' || t.type === 'investment');
-                });
-                const spentInPastMonths = pastMonthsTxns.reduce((sum, t) => sum + Number(t.amount), 0);
                 target = Math.max(0, (yearlyAmount - spentInPastMonths) / monthsRemaining);
             }
             
             const spent = monthlyTransactions
                 .filter(t => categoryIds.includes(t.category?._id || t.category) && (t.type === 'expense' || t.type === 'investment'))
                 .reduce((sum, t) => sum + Number(t.amount), 0);
+
+            const yearlySpent = spentInPastMonths + spent;
             
             return {
                 ...bucket,
                 target,
                 spent,
-                progress: target > 0 ? (spent / target) * 100 : 0
+                yearlyTarget: yearlyAmount,
+                yearlySpent,
+                progress: target > 0 ? (spent / target) * 100 : 0,
+                yearlyProgress: yearlyAmount > 0 ? (yearlySpent / yearlyAmount) * 100 : 0
             };
         });
     }, [plan, categories, transactions]);
@@ -268,27 +275,73 @@ const PlanningContent = () => {
                                         </div>
                                         <div>
                                             <h3 className="text-white font-bold text-lg">{bucket.name}</h3>
-                                            <p className="text-gray-500 text-sm font-medium">
-                                                {formatCurrency(bucket.spent)} / {formatCurrency(bucket.target)}
-                                            </p>
+                                            <div className="flex flex-col gap-1 mt-1">
+                                                <p className="text-gray-400 text-sm font-medium flex items-center gap-2">
+                                                    <span className="text-gray-500 text-xs uppercase tracking-wider font-bold w-14">Monthly</span>
+                                                    <span>{formatCurrency(bucket.spent)} / {formatCurrency(bucket.target)}</span>
+                                                </p>
+                                                <p className="text-gray-400 text-sm font-medium flex items-center gap-2">
+                                                    <span className="text-gray-500 text-xs uppercase tracking-wider font-bold w-14">Yearly</span>
+                                                    <span>{formatCurrency(bucket.yearlySpent)} / {formatCurrency(bucket.yearlyTarget)}</span>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className={`text-2xl font-black text-${bucket.color}-400`}>
-                                        {Math.round(bucket.progress)}%
+                                    <div className="flex flex-col items-end gap-1 text-right">
+                                        <div className={`text-2xl font-black text-${bucket.color}-400 leading-none`}>
+                                            {formatCurrency(Math.max(0, bucket.target - bucket.spent))}
+                                        </div>
+                                        <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                                            Monthly Left
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="relative h-3 bg-gray-800 rounded-full overflow-hidden">
-                                    <div 
-                                        className={`absolute top-0 left-0 h-full bg-${bucket.color}-500 transition-all duration-1000 shadow-[0_0_15px_rgba(var(--color-rgb),0.5)]`}
-                                        style={{ 
-                                            width: `${Math.min(bucket.progress, 100)}%`,
-                                        }}
-                                    ></div>
+                                <div className="space-y-3">
+                                    {/* Monthly Progress Bar */}
+                                    <div className="relative">
+                                        <div className="flex justify-between text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">
+                                            <span>Monthly Budget Usage</span>
+                                        </div>
+                                        <div className="relative h-2 bg-gray-800 rounded-full overflow-hidden">
+                                            <div 
+                                                className={`absolute top-0 left-0 h-full bg-${bucket.color}-500 transition-all duration-1000 shadow-[0_0_15px_rgba(var(--color-rgb),0.5)]`}
+                                                style={{ 
+                                                    width: `${Math.min(bucket.progress, 100)}%`,
+                                                }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Yearly Progress Bar */}
+                                    <div className="relative">
+                                        <div className="flex justify-between text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-wider">
+                                            <span>Yearly Budget Usage</span>
+                                            <span>{Math.round(bucket.yearlyProgress)}%</span>
+                                        </div>
+                                        <div className="relative h-2 bg-gray-800 rounded-full overflow-hidden">
+                                            <div 
+                                                className={`absolute top-0 left-0 h-full bg-${bucket.color}-500/40 transition-all duration-1000`}
+                                                style={{ 
+                                                    width: `${Math.min(bucket.yearlyProgress, 100)}%`,
+                                                }}
+                                            ></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                {bucket.progress > 100 && (
-                                    <div className="flex items-center gap-2 mt-3 text-red-400 text-xs font-bold uppercase tracking-wider">
-                                        <AlertCircle size={14} />
-                                        Exceeded target by {formatCurrency(bucket.spent - bucket.target)}
+                                {(bucket.progress > 100 || bucket.yearlyProgress > 100) && (
+                                    <div className="flex flex-col gap-1 mt-4">
+                                        {bucket.progress > 100 && (
+                                            <div className="flex items-center gap-2 text-red-400 text-xs font-bold uppercase tracking-wider bg-red-500/10 p-2 rounded-lg border border-red-500/20">
+                                                <AlertCircle size={14} />
+                                                Exceeded monthly by {formatCurrency(bucket.spent - bucket.target)}
+                                            </div>
+                                        )}
+                                        {bucket.yearlyProgress > 100 && (
+                                            <div className="flex items-center gap-2 text-red-400 text-xs font-bold uppercase tracking-wider bg-red-500/10 p-2 rounded-lg border border-red-500/20">
+                                                <AlertCircle size={14} />
+                                                Exceeded yearly by {formatCurrency(bucket.yearlySpent - bucket.yearlyTarget)}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
