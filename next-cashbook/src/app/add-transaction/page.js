@@ -6,7 +6,7 @@ import { ArrowLeft, Plus, Loader } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { useAccountStore } from "@/store/useAccountStore";
 import { useCategoryStore } from "@/store/useCategoryStore";
-import toast from "react-hot-toast";
+
 import ProtectedRoute from "@/components/ProtectedRoute";
 import QuickCreateModal from "@/components/QuickCreateModal";
 
@@ -65,16 +65,13 @@ const AddTransactionContent = () => {
             return;
         }
 
-        try {
-            await addTransaction({
+        const result = await addTransaction({
                 ...formData,
                 amount: parseFloat(formData.amount),
                 date: new Date(formData.date),
             });
-            toast.success("Transaction recorded successfully!");
+        if (result) {
             router.push("/transactions");
-        } catch (error) {
-            toast.error("Failed to add transaction");
         }
     };
 

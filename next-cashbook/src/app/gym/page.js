@@ -46,6 +46,7 @@ const GymTrackerContent = () => {
         exercises: [],
         notes: ""
     });
+    const [editingWorkoutId, setEditingWorkoutId] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -122,32 +123,49 @@ const GymTrackerContent = () => {
 
     const updateSet = (exerciseIndex, setIndex, field, value) => {
         const updatedExercises = [...currentWorkout.exercises];
-        updatedExercises[exerciseIndex].sets[setIndex][field] = value;
+        const updatedSets = [...updatedExercises[exerciseIndex].sets];
+        updatedSets[setIndex] = { ...updatedSets[setIndex], [field]: value };
+        updatedExercises[exerciseIndex] = { ...updatedExercises[exerciseIndex], sets: updatedSets };
         setCurrentWorkout({ ...currentWorkout, exercises: updatedExercises });
     };
 
     const addSet = (exerciseIndex) => {
         const updatedExercises = [...currentWorkout.exercises];
         const lastSet = updatedExercises[exerciseIndex].sets[updatedExercises[exerciseIndex].sets.length - 1];
-        updatedExercises[exerciseIndex].sets.push({ 
-            reps: lastSet?.reps || "", 
-            weight: lastSet?.weight || "", 
-            notes: "" 
-        });
+        updatedExercises[exerciseIndex] = {
+            ...updatedExercises[exerciseIndex],
+            sets: [
+                ...updatedExercises[exerciseIndex].sets,
+                { reps: lastSet?.reps || "", weight: lastSet?.weight || "", notes: "" }
+            ]
+        };
         setCurrentWorkout({ ...currentWorkout, exercises: updatedExercises });
     };
 
     const removeSet = (exerciseIndex, setIndex) => {
         const updatedExercises = [...currentWorkout.exercises];
         if (updatedExercises[exerciseIndex].sets.length === 1) return;
-        updatedExercises[exerciseIndex].sets.splice(setIndex, 1);
+        const updatedSets = updatedExercises[exerciseIndex].sets.filter((_, i) => i !== setIndex);
+        updatedExercises[exerciseIndex] = { ...updatedExercises[exerciseIndex], sets: updatedSets };
         setCurrentWorkout({ ...currentWorkout, exercises: updatedExercises });
     };
 
     const removeExerciseFromWorkout = (index) => {
-        const updatedExercises = [...currentWorkout.exercises];
-        updatedExercises.splice(index, 1);
+        const updatedExercises = currentWorkout.exercises.filter((_, i) => i !== index);
         setCurrentWorkout({ ...currentWorkout, exercises: updatedExercises });
+    };
+
+    const editWorkout = (workout) => {
+        setCurrentWorkout({
+            date: workout.date.split('T')[0],
+            exercises: workout.exercises.map(ex => ({
+                exerciseId: ex.exerciseId,
+                sets: ex.sets.map(s => ({ reps: s.reps, weight: s.weight, notes: s.notes || "" }))
+            })),
+            notes: workout.notes || ""
+        });
+        setEditingWorkoutId(workout._id);
+        handleTabChange("workout");
     };
 
     const saveWorkout = async () => {
@@ -175,14 +193,21 @@ const GymTrackerContent = () => {
                     sets: ex.sets
                 }))
             };
-            const res = await axiosInstance.post("/gym/workouts", payload);
-            setWorkouts([res.data, ...workouts]);
+            if (editingWorkoutId) {
+                const res = await axiosInstance.put(`/gym/workouts/${editingWorkoutId}`, payload);
+                setWorkouts(workouts.map(w => w._id === editingWorkoutId ? res.data : w));
+                toast.success("Workout updated successfully!");
+                setEditingWorkoutId(null);
+            } else {
+                const res = await axiosInstance.post("/gym/workouts", payload);
+                setWorkouts([res.data, ...workouts]);
+                toast.success("Workout logged successfully!");
+            }
             setCurrentWorkout({
                 date: new Date().toISOString().split('T')[0],
                 exercises: [],
                 notes: ""
             });
-            toast.success("Workout logged successfully!");
             handleTabChange("history");
         } catch (error) {
             toast.error("Failed to save workout");
@@ -363,7 +388,7 @@ const GymTrackerContent = () => {
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                                 <h2 className="text-2xl font-black text-white flex items-center gap-3">
                                     <Activity className="text-orange-400" />
-                                    New Session
+                                    {editingWorkoutId ? "Edit Session" : "New Session"}
                                 </h2>
                                 <input 
                                     type="date"
@@ -506,8 +531,24 @@ const GymTrackerContent = () => {
                                     className="w-full mt-6 py-5 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 disabled:opacity-50 text-white rounded-2xl font-black text-lg tracking-tight transition-all shadow-xl shadow-orange-900/40 active:scale-95 flex justify-center items-center gap-3"
                                 >
                                     {saving ? <Loader className="w-6 h-6 animate-spin" /> : <CheckCircle className="w-6 h-6" />}
-                                    Finish Workout
+                                    {editingWorkoutId ? "Update Workout" : "Finish Workout"}
                                 </button>
+                                {editingWorkoutId && (
+                                    <button 
+                                        onClick={() => {
+                                            setEditingWorkoutId(null);
+                                            setCurrentWorkout({
+                                                date: new Date().toISOString().split('T')[0],
+                                                exercises: [],
+                                                notes: ""
+                                            });
+                                            handleTabChange("history");
+                                        }}
+                                        className="w-full mt-4 py-4 bg-gray-800 hover:bg-gray-700 text-white rounded-2xl font-bold transition-all"
+                                    >
+                                        Cancel Edit
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -554,12 +595,20 @@ const GymTrackerContent = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button 
-                                                onClick={() => deleteWorkout(workout._id)}
-                                                className="p-2 text-gray-600 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
-                                            >
-                                                <Trash2 size={20} />
-                                            </button>
+                                            <div className="flex gap-2">
+                                                <button 
+                                                    onClick={() => editWorkout(workout)}
+                                                    className="p-2 text-gray-600 hover:text-blue-400 hover:bg-blue-400/10 rounded-xl transition-all"
+                                                >
+                                                    <Edit2 size={20} />
+                                                </button>
+                                                <button 
+                                                    onClick={() => deleteWorkout(workout._id)}
+                                                    className="p-2 text-gray-600 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
+                                                >
+                                                    <Trash2 size={20} />
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className="p-6">
