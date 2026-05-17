@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import dbConnect from '@/lib/dbConnect';
 import Transaction from '@/models/Transaction';
 import Account from '@/models/Account';
+import Iou from '@/models/Iou';
 import { getAuthUser } from '@/lib/getAuthUser';
 
 export async function GET(req, { params }) {
@@ -105,6 +106,9 @@ export async function DELETE(req, { params }) {
         }
         
         await Transaction.findByIdAndDelete(id);
+
+        // If this transaction had a linked IOU, delete it too
+        await Iou.findOneAndDelete({ linkedTransactionId: id, userId: user.userId });
 
         return NextResponse.json({ message: 'Transaction deleted successfully' }, { status: 200 });
     } catch (error) {
