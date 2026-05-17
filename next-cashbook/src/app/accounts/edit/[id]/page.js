@@ -12,13 +12,13 @@ const EditAccountContent = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
-    const [formData, setFormData] = useState({ name: "", balance: "" });
+    const [formData, setFormData] = useState({ name: "", balance: "", isDefault: false });
 
     useEffect(() => {
         const fetchAccount = async () => {
             try {
                 const response = await axiosInstance.get(`/accounts/${id}`);
-                setFormData({ name: response.data.name, balance: response.data.balance });
+                setFormData({ name: response.data.name, balance: response.data.balance, isDefault: response.data.isDefault || false });
             } catch (error) {
                 toast.error("Failed to fetch account details");
                 router.push("/accounts");
@@ -36,6 +36,7 @@ const EditAccountContent = () => {
             await axiosInstance.put(`/accounts/${id}`, {
                 name: formData.name,
                 balance: parseFloat(formData.balance),
+                isDefault: formData.isDefault,
             });
             toast.success("Account updated successfully!");
             router.push("/accounts");
@@ -62,6 +63,18 @@ const EditAccountContent = () => {
                         <div>
                             <label className="block text-sm text-gray-400 mb-2">Balance</label>
                             <input id="BalanceInput" type="number" value={formData.balance} onChange={e => setFormData({ ...formData, balance: e.target.value })} className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none" required />
+                        </div>
+                        <div>
+                            <label className="flex items-center gap-2 cursor-pointer text-gray-400 text-sm font-semibold">
+                                <input
+                                    id="DefaultCheckbox"
+                                    type="checkbox"
+                                    checked={formData.isDefault}
+                                    onChange={e => setFormData({ ...formData, isDefault: e.target.checked })}
+                                    className="accent-blue-500"
+                                />
+                                Set as Default Account
+                            </label>
                         </div>
                         <div className="flex gap-4">
                             <button id="CancelBtn" type="button" onClick={() => router.back()} className="flex-1 py-4 bg-gray-800 text-white rounded-xl font-bold hover:bg-gray-700 transition-all">Cancel</button>

@@ -27,7 +27,7 @@ export async function PUT(req, { params }) {
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
         const { id } = await params;
-        const { name, balance } = await req.json();
+        const { name, balance, isDefault } = await req.json();
 
         await dbConnect();
         const account = await Account.findOne({ _id: id, userId: user.userId });
@@ -41,6 +41,14 @@ export async function PUT(req, { params }) {
 
         if (balance !== undefined) {
             account.balance = balance;
+        }
+
+        if (isDefault !== undefined) {
+            if (isDefault && !account.isDefault) {
+                // If setting to true, unset others
+                await Account.updateMany({ userId: user.userId }, { isDefault: false });
+            }
+            account.isDefault = isDefault;
         }
 
         const updatedAccount = await account.save();

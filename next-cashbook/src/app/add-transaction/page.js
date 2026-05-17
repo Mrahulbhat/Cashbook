@@ -41,31 +41,6 @@ const AddTransactionContent = () => {
         loadCategories();
     }, [fetchAccounts, loadCategories]);
 
-    useEffect(() => {
-        if (accounts.length > 0 && !formData.account) {
-            const defaultAccount = accounts.find(acc => acc.isDefault);
-            if (defaultAccount) {
-                setFormData(prev => ({ ...prev, account: defaultAccount._id }));
-            }
-        }
-    }, [accounts, formData.account]);
-
-    useEffect(() => {
-        if (categories.length > 0) {
-            const defaultCategory = categories.find(cat => cat.isDefault && cat.type === formData.type);
-            if (defaultCategory) {
-                setFormData(prev => ({ ...prev, category: defaultCategory._id }));
-            } else {
-                // If no default, we might want to keep the current one if it matches the type
-                // But if it doesn't match the type (e.g. type changed), we should reset it
-                const currentCat = categories.find(cat => cat._id === formData.category);
-                if (!currentCat || currentCat.type !== formData.type) {
-                    setFormData(prev => ({ ...prev, category: "" }));
-                }
-            }
-        }
-    }, [formData.type, categories, formData.category]);
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         
@@ -89,25 +64,33 @@ const AddTransactionContent = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!formData.amount || !formData.category || !formData.account) {
+    const submitTransaction = async () => {
+        // Derive defaults if not explicitly selected
+        const defaultAccount = accounts.find(acc => acc.isDefault);
+        const accountToUse = formData.account || (defaultAccount ? defaultAccount._id : "");
+        
+        const defaultCategory = categories.find(cat => cat.isDefault && cat.type === formData.type);
+        const categoryToUse = formData.category || (defaultCategory ? defaultCategory._id : "");
+
+        if (!formData.amount || !categoryToUse || !accountToUse) {
             toast.error("Please fill in all required fields");
-            return;
+            return null;
         }
         if (iouEnabled) {
             if (!iouFriend.trim()) {
                 toast.error("Please enter your friend's name");
-                return;
+                return null;
             }
             if (!iouAmountToGetBack || parseFloat(iouAmountToGetBack) <= 0) {
                 toast.error("Please enter a valid amount to get back");
-                return;
+                return null;
             }
         }
 
         const result = await addTransaction({
             ...formData,
+            account: accountToUse,
+            category: categoryToUse,
             amount: parseFloat(formData.amount),
             date: new Date(formData.date),
         });
@@ -123,11 +106,46 @@ const AddTransactionContent = () => {
                     linkedTransactionId: result._id,
                 });
             }
+            return result;
+        }
+        return null;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const result = await submitTransaction();
+        if (result) {
             router.push("/transactions");
         }
     };
 
+    const handleSaveAndAnother = async () => {
+        const result = await submitTransaction();
+        if (result) {
+            toast.success("Transaction saved!");
+            // Reset form but KEEP date
+            setFormData(prev => ({
+                amount: "",
+                type: prev.type,
+                description: "",
+                category: "",
+                date: prev.date, // KEEP DATE
+                account: prev.account, // Keep account for convenience
+            }));
+            // Also reset IOU state
+            setIouFriend("");
+            setIouAmountToGetBack("");
+            setIouEnabled(false);
+        }
+    };
+
     const filteredCategories = categories.filter(cat => cat.type === formData.type);
+
+    const defaultAccount = accounts.find(acc => acc.isDefault);
+    const accountToUse = formData.account || (defaultAccount ? defaultAccount._id : "");
+
+    const defaultCategory = categories.find(cat => cat.isDefault && cat.type === formData.type);
+    const categoryToUse = formData.category || (defaultCategory ? defaultCategory._id : "");
 
     const isLoading = accLoading || catLoading || transLoading;
 
@@ -173,8 +191,10 @@ const AddTransactionContent = () => {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-400 mb-2">Account *</label>
-                                <select id="AccountDropdown" name="account" value={formData.account || ""} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
+                                <label className="block text-sm font-semibold text-gray-400 mb-2">
+                                    Account * {defaultAccount && <span className="text-xs text-green-400 font-normal">(Auto-selected default: {defaultAccount.name})</span>}
+                                </label>
+                                <select id="AccountDropdown" name="account" value={accountToUse} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
                                     <option value="">Select Account</option>
                                     <optgroup label="Actions">
                                         <option value="ADD_NEW_ACCOUNT">+ Add New Account</option>
@@ -185,8 +205,10 @@ const AddTransactionContent = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-400 mb-2">Category *</label>
-                                <select id="CategoryDropdown" name="category" value={formData.category || ""} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
+                                <label className="block text-sm font-semibold text-gray-400 mb-2">
+                                    Category * {defaultCategory && <span className="text-xs text-green-400 font-normal">(Auto-selected default: {defaultCategory.name})</span>}
+                                </label>
+                                <select id="CategoryDropdown" name="category" value={categoryToUse} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
                                     <option value="">Select Category</option>
                                     <optgroup label="Actions">
                                         <option value="ADD_NEW_CATEGORY">+ Add New Category</option>
@@ -252,10 +274,13 @@ const AddTransactionContent = () => {
                             </div>
                         )}
 
-                        <div className="flex gap-4">
+                        <div className="flex flex-col sm:flex-row gap-4">
                             <button id="CancelBtn" type="button" onClick={() => router.back()} className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Cancel</button>
                             <button id="SaveBtn" type="submit" disabled={isLoading} className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-500 flex items-center justify-center gap-2 transition-transform transform hover:scale-105">
-                                {isLoading ? <Loader className="animate-spin" size={18} /> : <Plus size={18} />} Save Transaction
+                                {isLoading ? <Loader className="animate-spin" size={18} /> : <Plus size={18} />} Save & Go Back
+                            </button>
+                            <button id="SaveAndAnotherBtn" type="button" onClick={handleSaveAndAnother} disabled={isLoading} className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-500 flex items-center justify-center gap-2 transition-transform transform hover:scale-105">
+                                {isLoading ? <Loader className="animate-spin" size={18} /> : <Plus size={18} />} Save & Add Another
                             </button>
                         </div>
                     </form>
