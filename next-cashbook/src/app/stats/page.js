@@ -4,16 +4,17 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { 
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-    Cell, PieChart as RechartsPieChart, Pie, Legend, BarChart, Bar, ResponsiveContainer as RC,
-    ComposedChart, Line
+    Cell, PieChart as RechartsPieChart, Pie, Legend, BarChart, Bar, ResponsiveContainer as RC, Line
 } from 'recharts';
 import { 
     ArrowLeft, TrendingUp, Target, PieChart, Loader, Activity, CalendarDays, Wallet, 
-    ArrowUpRight, ArrowDownRight, Award, List, DollarSign, BarChart3, 
-    Calendar, Zap, Clock, Info, ChevronRight, ChevronDown, CheckCircle2, AlertCircle, TrendingDown
+    ArrowUpRight, ArrowDownRight, Award, List, BarChart3, 
+    Calendar, Zap, Info, CheckCircle2, TrendingDown
 } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { useCategoryStore } from "@/store/useCategoryStore";
+import { useUpcomingStore } from "@/store/useUpcomingStore";
+import { axiosInstance } from "@/lib/axios";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 const COLORS = ['#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6'];
@@ -56,15 +57,23 @@ const StatisticsContent = () => {
     const router = useRouter();
     const { transactions, fetchTransactions, loading: transLoading } = useTransactionStore();
     const { categories, loadCategories, loading: catLoading } = useCategoryStore();
+    const { upcomingExpenses, fetchUpcoming } = useUpcomingStore();
 
     const [filter, setFilter] = useState("monthly");
+    const [plan, setPlan] = useState(null);
 
     useEffect(() => {
-        fetchTransactions();
-        loadCategories();
-
-
-    }, [fetchTransactions, loadCategories]);
+        const init = async () => {
+            fetchTransactions();
+            loadCategories();
+            fetchUpcoming();
+            try {
+                const planRes = await axiosInstance.get('/plan');
+                setPlan(planRes.data);
+            } catch (e) { /* plan may not exist */ }
+        };
+        init();
+    }, [fetchTransactions, loadCategories, fetchUpcoming]);
 
     const stats = useMemo(() => {
         const now = new Date();
@@ -284,6 +293,62 @@ const StatisticsContent = () => {
         };
     }, [transactions, filter]);
 
+    const BUCKET_COLORS = {
+        'Needs':      { hex: '#3b82f6', text: '#60a5fa', bg: 'rgba(59,130,246,0.08)',  border: 'rgba(59,130,246,0.25)' },
+        'Wants':      { hex: '#f59e0b', text: '#fbbf24', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.25)' },
+        'Short Term': { hex: '#10b981', text: '#34d399', bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.25)' },
+        'Long Term':  { hex: '#8b5cf6', text: '#a78bfa', bg: 'rgba(139,92,246,0.08)', border: 'rgba(139,92,246,0.25)' },
+    };
+
+    const { bucketStats, upcomingThisMonth, planHealthScore } = useMemo(() => {
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const startOfCycle = new Date(currentYear, 0, 1);
+        const startOfCurrentMonth = new Date(currentYear, currentMonth, 1);
+        const monthsRemaining = Math.max(1, 12 - currentMonth);
+
+        const bStats = ['Needs', 'Wants', 'Short Term', 'Long Term'].map(name => {
+            const catIds = (categories || []).filter(c => c.planningBucket === name).map(c => c._id);
+            const planTarget = plan?.targets?.find(t => t.bucket === name);
+            const yearlyTarget = planTarget?.yearlyAmount || 0;
+
+            const pastSpent = transactions.filter(t => {
+                const d = new Date(t.date); const cid = t.category?._id || t.category;
+                return d >= startOfCycle && d < startOfCurrentMonth && catIds.includes(cid) && (t.type === 'expense' || t.type === 'investment');
+            }).reduce((s, t) => s + Number(t.amount), 0);
+
+            const monthlyTarget = yearlyTarget > 0 ? Math.max(0, (yearlyTarget - pastSpent) / monthsRemaining) : 0;
+
+            const monthlySpent = transactions.filter(t => {
+                const d = new Date(t.date); const cid = t.category?._id || t.category;
+                return d >= startOfCurrentMonth && d <= now && catIds.includes(cid) && (t.type === 'expense' || t.type === 'investment');
+            }).reduce((s, t) => s + Number(t.amount), 0);
+
+            const yearlySpent = pastSpent + monthlySpent;
+            return {
+                name, yearlyTarget, yearlySpent, monthlyTarget, monthlySpent,
+                yearlyProgress: yearlyTarget > 0 ? (yearlySpent / yearlyTarget) * 100 : 0,
+                monthlyProgress: monthlyTarget > 0 ? (monthlySpent / monthlyTarget) * 100 : 0,
+                ...BUCKET_COLORS[name]
+            };
+        });
+
+        const withTargets = bStats.filter(b => b.yearlyTarget > 0);
+        const health = withTargets.length === 0 ? null : Math.max(0, Math.round(
+            100 - withTargets.reduce((s, b) => s + Math.max(0, b.yearlyProgress - 100), 0) / withTargets.length
+        ));
+
+        const mStart = new Date(currentYear, currentMonth, 1);
+        const mEnd = new Date(currentYear, currentMonth + 1, 0);
+        const upcoming = (upcomingExpenses || []).filter(e => {
+            const d = new Date(e.dueDate);
+            return d >= mStart && d <= mEnd && e.status === 'pending';
+        }).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+        return { bucketStats: bStats, upcomingThisMonth: upcoming, planHealthScore: health };
+    }, [plan, categories, transactions, upcomingExpenses]);
+
     const formatCurrency = (amount) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(amount);
 
     const renderTrend = (diff, invertColors = false) => {
@@ -500,6 +565,110 @@ const StatisticsContent = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* ── Budget Tracker ── */}
+                <div className="bg-gray-900/30 border border-gray-800/60 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-white text-xl font-bold flex items-center gap-2">
+                            <Target className="text-green-400" size={20} />
+                            Budget Tracker
+                        </h2>
+                        {planHealthScore !== null && (
+                            <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border ${planHealthScore >= 75 ? 'bg-green-500/10 border-green-500/30 text-green-400' : planHealthScore >= 50 ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
+                                <Zap size={14} />
+                                Health: {planHealthScore}/100
+                            </div>
+                        )}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        {bucketStats.map(b => (
+                            <div key={b.name} className="p-5 rounded-2xl border" style={{ backgroundColor: b.bg, borderColor: b.border }}>
+                                <div className="flex items-center justify-between mb-4">
+                                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: b.text }}>{b.name}</span>
+                                    {b.yearlyTarget > 0 && (
+                                        <span className="text-xs font-bold" style={{ color: b.text }}>{b.yearlyProgress.toFixed(0)}%</span>
+                                    )}
+                                </div>
+                                {b.yearlyTarget > 0 ? (
+                                    <>
+                                        <div className="mb-3">
+                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
+                                                <span>Monthly</span>
+                                                <span className={b.monthlyProgress > 100 ? 'text-red-400' : 'text-gray-400'}>{formatCurrency(b.monthlySpent)} / {formatCurrency(b.monthlyTarget)}</span>
+                                            </div>
+                                            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(b.monthlyProgress, 100)}%`, backgroundColor: b.monthlyProgress > 100 ? '#ef4444' : b.hex }} />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
+                                                <span>Yearly</span>
+                                                <span className={b.yearlyProgress > 100 ? 'text-red-400' : 'text-gray-400'}>{formatCurrency(b.yearlySpent)} / {formatCurrency(b.yearlyTarget)}</span>
+                                            </div>
+                                            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(b.yearlyProgress, 100)}%`, backgroundColor: b.yearlyProgress > 100 ? '#ef4444' : b.hex, opacity: 0.55 }} />
+                                            </div>
+                                        </div>
+                                        <div className="mt-3 pt-3 border-t border-gray-800/50 flex justify-between items-center">
+                                            <span className="text-[10px] text-gray-600 font-bold uppercase">Yearly Left</span>
+                                            <span className={`text-sm font-bold ${b.yearlySpent > b.yearlyTarget ? 'text-red-400' : 'text-gray-300'}`}>
+                                                {b.yearlySpent > b.yearlyTarget ? '-' : ''}{formatCurrency(Math.abs(b.yearlyTarget - b.yearlySpent))}
+                                            </span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <p className="text-gray-600 text-xs mt-2">No target set</p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    {/* Budget Alerts row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        {bucketStats.filter(b => b.yearlyTarget > 0).map(b => (
+                            <div key={b.name} className={`flex items-center justify-between p-3 rounded-xl text-xs font-bold border ${b.yearlyProgress > 100 ? 'bg-red-500/10 text-red-400 border-red-500/20' : b.yearlyProgress > 80 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'}`}>
+                                <span>{b.name}</span>
+                                <span>{b.yearlyProgress > 100 ? `Over by ${formatCurrency(b.yearlySpent - b.yearlyTarget)}` : b.yearlyProgress > 80 ? `${(100 - b.yearlyProgress).toFixed(0)}% budget left` : 'On Track ✓'}</span>
+                            </div>
+                        ))}
+                        {bucketStats.every(b => b.yearlyTarget === 0) && (
+                            <p className="text-gray-600 text-xs col-span-4">Set yearly targets in Planning to see budget alerts here.</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* ── Upcoming Bills This Month ── */}
+                {upcomingThisMonth.length > 0 && (
+                    <div className="bg-gray-900/30 border border-gray-800/60 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-white text-xl font-bold flex items-center gap-2">
+                                <Calendar className="text-blue-400" size={20} />
+                                Upcoming Bills This Month
+                            </h2>
+                            <div className="text-right">
+                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Total Due</p>
+                                <p className="text-blue-400 font-bold">{formatCurrency(upcomingThisMonth.reduce((s, e) => s + Number(e.amount), 0))}</p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {upcomingThisMonth.map(expense => {
+                                const daysLeft = Math.ceil((new Date(expense.dueDate) - new Date()) / 86400000);
+                                const urgency = daysLeft < 0 ? 'overdue' : daysLeft <= 3 ? 'urgent' : daysLeft <= 7 ? 'soon' : 'ok';
+                                const cls = { overdue: 'bg-red-500/15 border-red-500/40 text-red-400', urgent: 'bg-red-500/10 border-red-500/25 text-red-400', soon: 'bg-amber-500/10 border-amber-500/25 text-amber-400', ok: 'bg-blue-500/10 border-blue-500/20 text-blue-400' }[urgency];
+                                return (
+                                    <div key={expense._id} className={`p-4 rounded-2xl border flex items-center justify-between ${cls}`}>
+                                        <div>
+                                            <p className="text-white font-bold text-sm">{expense.description}</p>
+                                            <p className={`text-xs font-semibold mt-1 ${cls.split(' ')[2]}`}>
+                                                {daysLeft < 0 ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? 'Due Today!' : `${daysLeft}d left`}
+                                            </p>
+                                        </div>
+                                        <span className="text-white font-bold text-base ml-4">{formatCurrency(expense.amount)}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
                     <div className="lg:col-span-2 bg-gray-900/30 border border-gray-800/60 rounded-[2rem] p-6 sm:p-8 backdrop-blur-xl">
