@@ -14,13 +14,12 @@ const AddCategoryContent = () => {
         name: "",
         type: "expense",
         planningBucket: "None",
+        isDefault: false,
     });
 
-
-
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
     const handleSubmit = async (e) => {
@@ -104,6 +103,20 @@ const AddCategoryContent = () => {
                                 </div>
                             </div>
                             <p className="text-xs text-gray-500 mt-2">Track this category against your targets in the Planning section.</p>
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-2 cursor-pointer text-gray-400 text-sm font-semibold">
+                                <input
+                                    id="DefaultCheckbox"
+                                    type="checkbox"
+                                    name="isDefault"
+                                    checked={formData.isDefault}
+                                    onChange={handleInputChange}
+                                    className="accent-purple-500"
+                                />
+                                Set as Default Category for this type
+                            </label>
                         </div>
 
                         <div className="flex gap-4">

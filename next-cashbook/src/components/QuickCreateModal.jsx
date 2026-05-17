@@ -8,11 +8,12 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
     const { addAccount, loading: accLoading } = useAccountStore();
     const { createCategory, loading: catLoading } = useCategoryStore();
 
-    const [accountData, setAccountData] = useState({ name: '', balance: '' });
+    const [accountData, setAccountData] = useState({ name: '', balance: '', isDefault: false });
     const [categoryData, setCategoryData] = useState({
         name: '',
         type: initialType,
         planningBucket: 'None',
+        isDefault: false,
     });
 
 
@@ -27,6 +28,7 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
         const newAcc = await addAccount({
             name: accountData.name,
             balance: parseFloat(accountData.balance),
+            isDefault: accountData.isDefault,
         });
         if (newAcc) {
             onSuccess(newAcc._id, 'account');
@@ -99,6 +101,18 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
                                     required
                                 />
                             </div>
+                            <div>
+                                <label className="flex items-center gap-2 cursor-pointer text-gray-400 text-sm font-semibold">
+                                    <input
+                                        id="QuickAccDefault"
+                                        type="checkbox"
+                                        checked={accountData.isDefault}
+                                        onChange={(e) => setAccountData({ ...accountData, isDefault: e.target.checked })}
+                                        className="accent-blue-500"
+                                    />
+                                    Set as Default Account
+                                </label>
+                            </div>
                             <button
                                 type="submit"
                                 disabled={isLoading}
@@ -143,6 +157,19 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
                                         <option key={bucket} value={bucket}>{bucket}</option>
                                     ))}
                                 </select>
+                            </div>
+
+                            <div>
+                                <label className="flex items-center gap-2 cursor-pointer text-gray-400 text-sm font-semibold">
+                                    <input
+                                        id="QuickCatDefault"
+                                        type="checkbox"
+                                        checked={categoryData.isDefault}
+                                        onChange={(e) => setCategoryData({ ...categoryData, isDefault: e.target.checked })}
+                                        className="accent-purple-500"
+                                    />
+                                    Set as Default Category for this type
+                                </label>
                             </div>
 
                             <button

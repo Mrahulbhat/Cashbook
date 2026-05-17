@@ -20,6 +20,10 @@ const categorySchema = new mongoose.Schema(
             enum: ['None', 'Long Term', 'Short Term', 'Wants', 'Needs'],
             default: 'None'
         },
+        isDefault: {
+            type: Boolean,
+            default: false
+        },
     },
     { timestamps: true }
 );

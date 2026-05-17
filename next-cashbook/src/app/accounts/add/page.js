@@ -13,11 +13,12 @@ const AddAccountContent = () => {
     const [formData, setFormData] = useState({
         name: "",
         balance: "",
+        isDefault: false,
     });
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
     const handleSubmit = async (e) => {
@@ -32,6 +33,7 @@ const AddAccountContent = () => {
             await axiosInstance.post("/accounts", {
                 name: formData.name,
                 balance: parseFloat(formData.balance),
+                isDefault: formData.isDefault,
             });
             toast.success("Account created successfully!");
             router.push("/accounts");
@@ -85,6 +87,20 @@ const AddAccountContent = () => {
                                 className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 text-white"
                                 required
                             />
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-2 cursor-pointer text-gray-400 text-sm font-semibold">
+                                <input
+                                    id="DefaultCheckbox"
+                                    type="checkbox"
+                                    name="isDefault"
+                                    checked={formData.isDefault}
+                                    onChange={handleInputChange}
+                                    className="accent-blue-500"
+                                />
+                                Set as Default Account
+                            </label>
                         </div>
 
                         <div className="flex gap-4">

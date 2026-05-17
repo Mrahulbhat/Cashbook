@@ -27,7 +27,7 @@ export async function POST(req) {
             return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
         }
 
-        const { name, balance } = await req.json();
+        const { name, balance, isDefault } = await req.json();
 
         if (!name || balance === undefined) {
             return NextResponse.json({ message: 'Missing required fields: name, balance' }, { status: 400 });
@@ -39,7 +39,11 @@ export async function POST(req) {
             return NextResponse.json({ message: 'Account with this name already exists' }, { status: 400 });
         }
 
-        const account = new Account({ userId: user.userId, name, balance });
+        if (isDefault) {
+            await Account.updateMany({ userId: user.userId }, { isDefault: false });
+        }
+
+        const account = new Account({ userId: user.userId, name, balance, isDefault: !!isDefault });
         const savedAccount = await account.save();
 
         return NextResponse.json(savedAccount, { status: 201 });

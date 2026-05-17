@@ -23,12 +23,16 @@ export async function POST(req) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
-        const { name, type, budget, planningBucket, yearlyBudget } = await req.json();
+        const { name, type, budget, planningBucket, yearlyBudget, isDefault } = await req.json();
         if (!name || !type) return NextResponse.json({ message: 'Name and type are required' }, { status: 400 });
 
         await dbConnect();
         const existingCategory = await Category.findOne({ name, userId: user.userId });
         if (existingCategory) return NextResponse.json({ message: 'Category with this name already exists' }, { status: 400 });
+
+        if (isDefault) {
+            await Category.updateMany({ userId: user.userId, type }, { isDefault: false });
+        }
 
         const newCategory = new Category({
             name,
@@ -36,6 +40,7 @@ export async function POST(req) {
             budget: budget || 0,
             planningBucket: planningBucket || 'None',
             yearlyBudget: yearlyBudget || 0,
+            isDefault: !!isDefault,
             userId: user.userId
         });
 

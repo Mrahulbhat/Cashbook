@@ -10,7 +10,7 @@ export async function DELETE(req, { params }) {
             return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
         }
 
-        const { id } = params;
+        const { id } = await params;
         await dbConnect();
 
         const deleted = await UpcomingExpense.findOneAndDelete({ 
@@ -35,7 +35,7 @@ export async function PATCH(req, { params }) {
             return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
         }
 
-        const { id } = params;
+        const { id } = await params;
         const updates = await req.json();
         
         await dbConnect();

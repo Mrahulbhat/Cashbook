@@ -41,6 +41,31 @@ const AddTransactionContent = () => {
         loadCategories();
     }, [fetchAccounts, loadCategories]);
 
+    useEffect(() => {
+        if (accounts.length > 0 && !formData.account) {
+            const defaultAccount = accounts.find(acc => acc.isDefault);
+            if (defaultAccount) {
+                setFormData(prev => ({ ...prev, account: defaultAccount._id }));
+            }
+        }
+    }, [accounts, formData.account]);
+
+    useEffect(() => {
+        if (categories.length > 0) {
+            const defaultCategory = categories.find(cat => cat.isDefault && cat.type === formData.type);
+            if (defaultCategory) {
+                setFormData(prev => ({ ...prev, category: defaultCategory._id }));
+            } else {
+                // If no default, we might want to keep the current one if it matches the type
+                // But if it doesn't match the type (e.g. type changed), we should reset it
+                const currentCat = categories.find(cat => cat._id === formData.category);
+                if (!currentCat || currentCat.type !== formData.type) {
+                    setFormData(prev => ({ ...prev, category: "" }));
+                }
+            }
+        }
+    }, [formData.type, categories, formData.category]);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         
