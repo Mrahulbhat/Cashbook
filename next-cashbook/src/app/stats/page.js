@@ -336,7 +336,12 @@ const StatisticsContent = () => {
 
         const withTargets = bStats.filter(b => b.yearlyTarget > 0);
         const health = withTargets.length === 0 ? null : Math.max(0, Math.round(
-            100 - withTargets.reduce((s, b) => s + Math.max(0, b.yearlyProgress - 100), 0) / withTargets.length
+            100 - withTargets.reduce((s, b) => {
+                // Penalize monthly overage (weight 0.6) + yearly overage (weight 0.4)
+                const monthlyPenalty = b.monthlyTarget > 0 ? Math.max(0, b.monthlyProgress - 100) * 0.6 : 0;
+                const yearlyPenalty = Math.max(0, b.yearlyProgress - 100) * 0.4;
+                return s + monthlyPenalty + yearlyPenalty;
+            }, 0) / withTargets.length
         ));
 
         const mStart = new Date(currentYear, currentMonth, 1);
@@ -624,12 +629,26 @@ const StatisticsContent = () => {
                     </div>
                     {/* Budget Alerts row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        {bucketStats.filter(b => b.yearlyTarget > 0).map(b => (
-                            <div key={b.name} className={`flex items-center justify-between p-3 rounded-xl text-xs font-bold border ${b.yearlyProgress > 100 ? 'bg-red-500/10 text-red-400 border-red-500/20' : b.yearlyProgress > 80 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20'}`}>
-                                <span>{b.name}</span>
-                                <span>{b.yearlyProgress > 100 ? `Over by ${formatCurrency(b.yearlySpent - b.yearlyTarget)}` : b.yearlyProgress > 80 ? `${(100 - b.yearlyProgress).toFixed(0)}% budget left` : 'On Track ✓'}</span>
-                            </div>
-                        ))}
+                        {bucketStats.filter(b => b.yearlyTarget > 0).map(b => {
+                            const monthlyOver = b.monthlyTarget > 0 && b.monthlyProgress > 100;
+                            const yearlyOver = b.yearlyProgress > 100;
+                            const isRed = monthlyOver || yearlyOver;
+                            const isAmber = !isRed && (b.monthlyProgress > 80 || b.yearlyProgress > 80);
+                            const colorCls = isRed ? 'bg-red-500/10 text-red-400 border-red-500/20' : isAmber ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20';
+                            let label;
+                            if (monthlyOver && yearlyOver) label = `Monthly +${formatCurrency(b.monthlySpent - b.monthlyTarget)} · Yearly +${formatCurrency(b.yearlySpent - b.yearlyTarget)}`;
+                            else if (monthlyOver) label = `Monthly over by ${formatCurrency(b.monthlySpent - b.monthlyTarget)}`;
+                            else if (yearlyOver) label = `Yearly over by ${formatCurrency(b.yearlySpent - b.yearlyTarget)}`;
+                            else if (b.monthlyProgress > 80) label = `Monthly: ${(100 - b.monthlyProgress).toFixed(0)}% left`;
+                            else if (b.yearlyProgress > 80) label = `Yearly: ${(100 - b.yearlyProgress).toFixed(0)}% left`;
+                            else label = 'On Track ✓';
+                            return (
+                                <div key={b.name} className={`flex items-center justify-between p-3 rounded-xl text-xs font-bold border ${colorCls}`}>
+                                    <span>{b.name}</span>
+                                    <span>{label}</span>
+                                </div>
+                            );
+                        })}
                         {bucketStats.every(b => b.yearlyTarget === 0) && (
                             <p className="text-gray-600 text-xs col-span-4">Set yearly targets in Planning to see budget alerts here.</p>
                         )}
