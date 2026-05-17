@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus, Loader } from "lucide-react";
+import { ArrowLeft, Plus, Loader, HandCoins } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { useAccountStore } from "@/store/useAccountStore";
 import { useCategoryStore } from "@/store/useCategoryStore";
-
+import { useIouStore } from "@/store/useIouStore";
+import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import QuickCreateModal from "@/components/QuickCreateModal";
 
@@ -15,6 +16,7 @@ const AddTransactionContent = () => {
     const { addTransaction, loading: transLoading } = useTransactionStore();
     const { accounts, fetchAccounts, loading: accLoading } = useAccountStore();
     const { categories, loadCategories, loading: catLoading } = useCategoryStore();
+    const { addIou } = useIouStore();
 
     const [formData, setFormData] = useState({
         amount: "",
@@ -25,9 +27,12 @@ const AddTransactionContent = () => {
         account: "",
     });
 
+    const [iouEnabled, setIouEnabled] = useState(false);
+    const [iouFriend, setIouFriend] = useState("");
+
     const [modalState, setModalState] = useState({
         isOpen: false,
-        type: 'account', // 'account' or 'category'
+        type: 'account',
     });
 
     useEffect(() => {
@@ -64,13 +69,28 @@ const AddTransactionContent = () => {
             toast.error("Please fill in all required fields");
             return;
         }
+        if (iouEnabled && !iouFriend.trim()) {
+            toast.error("Please enter your friend's name");
+            return;
+        }
 
         const result = await addTransaction({
-                ...formData,
-                amount: parseFloat(formData.amount),
-                date: new Date(formData.date),
-            });
+            ...formData,
+            amount: parseFloat(formData.amount),
+            date: new Date(formData.date),
+        });
+
         if (result) {
+            // If user marked this as paid-for-friend, create IOU
+            if (iouEnabled && iouFriend.trim()) {
+                await addIou({
+                    friendName: iouFriend.trim(),
+                    amount: parseFloat(formData.amount),
+                    description: formData.description || `Paid for ${iouFriend.trim()}`,
+                    date: new Date(formData.date),
+                    linkedTransactionId: result._id,
+                });
+            }
             router.push("/transactions");
         }
     };
@@ -155,6 +175,40 @@ const AddTransactionContent = () => {
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Description</label>
                             <textarea id="DescriptionInput" name="description" value={formData.description} onChange={handleInputChange} rows="3" className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white resize-none" />
                         </div>
+
+                        {/* IOU Toggle — only show for expense */}
+                        {formData.type === 'expense' && (
+                            <div className={`rounded-2xl border p-4 transition-all duration-300 ${iouEnabled ? 'border-yellow-500/40 bg-yellow-500/5' : 'border-gray-700 bg-gray-800/40'}`}>
+                                <label id="IouToggleLabel" className="flex items-center gap-3 cursor-pointer select-none">
+                                    <div
+                                        id="IouToggle"
+                                        onClick={() => setIouEnabled(v => !v)}
+                                        className={`w-11 h-6 rounded-full relative transition-colors duration-300 flex-shrink-0 ${iouEnabled ? 'bg-yellow-500' : 'bg-gray-700'}`}
+                                    >
+                                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${iouEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <HandCoins size={16} className={iouEnabled ? 'text-yellow-400' : 'text-gray-500'} />
+                                        <span className={`text-sm font-semibold ${iouEnabled ? 'text-yellow-300' : 'text-gray-400'}`}>
+                                            Paid for a friend?
+                                        </span>
+                                    </div>
+                                </label>
+                                {iouEnabled && (
+                                    <div className="mt-3 animate-in slide-in-from-top-1 duration-200">
+                                        <p className="text-xs text-yellow-600 mb-2">An IOU will be created — they owe you this amount.</p>
+                                        <input
+                                            id="IouFriendName"
+                                            type="text"
+                                            value={iouFriend}
+                                            onChange={e => setIouFriend(e.target.value)}
+                                            placeholder="Friend's name (e.g. Priya)"
+                                            className="w-full px-4 py-2.5 bg-gray-900 border border-yellow-500/40 rounded-lg focus:outline-none focus:border-yellow-400 text-white text-sm placeholder-gray-600"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         <div className="flex gap-4">
                             <button id="CancelBtn" type="button" onClick={() => router.back()} className="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700">Cancel</button>

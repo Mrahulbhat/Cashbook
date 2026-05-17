@@ -82,17 +82,18 @@ const TransactionsContent = () => {
                             <table data-testid="resultsTable" className="w-full">
                                 <thead className="text-gray-400 text-sm text-left">
                                     <tr>
+                                        <th className="px-8 py-4">Date</th>
                                         <th className="px-8 py-4">Type</th>
                                         <th className="px-8 py-4">Amount</th>
                                         <th className="px-8 py-4">Category</th>
                                         <th className="px-8 py-4">Account</th>
-                                        <th className="px-8 py-4">Date</th>
                                         <th className="px-8 py-4">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-gray-300">
                                     {filteredTransactions.map((t, index) => (
                                         <tr key={t._id} id={`transactionRow-${index}`} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
+                                            <td className="px-8 py-4">{new Date(t.date).toLocaleDateString()}</td>
                                             <td className="px-8 py-4 flex items-center gap-2">
                                                 {t.type === 'income' ? <ArrowDownLeft className="text-green-400" size={16} /> : 
                                                  t.type === 'investment' ? <Repeat className="text-blue-400" size={16} /> :
@@ -102,7 +103,6 @@ const TransactionsContent = () => {
                                             <td className={`px-8 py-4 font-bold ${t.type === 'income' ? 'text-green-400' : t.type === 'investment' ? 'text-blue-400' : 'text-red-400'}`}>{formatCurrency(t.amount)}</td>
                                             <td className="px-8 py-4">{t.category?.name || 'N/A'}</td>
                                             <td className="px-8 py-4">{t.account?.name || 'N/A'}</td>
-                                            <td className="px-8 py-4">{new Date(t.date).toLocaleDateString()}</td>
                                             <td className="px-8 py-4">
                                                 <div className="flex gap-2">
                                                     <button id="EditBtn" onClick={() => router.push(`/edit-transaction/${t._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg"><Edit2 size={16} className="text-blue-400" /></button>

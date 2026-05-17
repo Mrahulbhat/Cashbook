@@ -73,7 +73,7 @@ export class TransactionPage extends BasePage {
 
     }
 
-    
+
 
     async deleteAllTransactions(page: Page) {
         const initialTxnCountText = await this.recordCountOnTable.innerText();

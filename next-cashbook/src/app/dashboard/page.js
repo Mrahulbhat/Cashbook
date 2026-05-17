@@ -184,24 +184,24 @@ const DashboardContent = () => {
                             <table id="recentTransactionsTable" data-testid="resultsTable" className="w-full">
                                 <thead>
                                     <tr className="border-b border-gray-700/50 text-gray-400 text-sm">
+                                        <th className="px-8 py-4 text-left">Date</th>
                                         <th className="px-8 py-4 text-left">Type</th>
                                         <th className="px-8 py-4 text-left">Amount</th>
                                         <th className="px-8 py-4 text-left">Category</th>
                                         <th className="px-8 py-4 text-left">Account</th>
-                                        <th className="px-8 py-4 text-left">Date</th>
                                         <th className="px-8 py-4 text-left">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="text-gray-300">
                                     {lastTransactions.map((transaction, index) => (
                                         <tr key={transaction._id} id={`transactionRow-${index}`} className="border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors">
+                                            <td className="px-8 py-4">{formatDate(transaction.date)}</td>
                                             <td className="px-8 py-4 capitalize">{transaction.type}</td>
                                             <td className={`px-8 py-4 font-bold ${transaction.type === 'income' ? 'text-green-400' : transaction.type === 'investment' ? 'text-blue-400' : 'text-red-400'}`}>
                                                 {formatCurrency(transaction.amount)}
                                             </td>
                                             <td className="px-8 py-4">{transaction.category?.name || 'N/A'}</td>
                                             <td className="px-8 py-4">{transaction.account?.name || 'N/A'}</td>
-                                            <td className="px-8 py-4">{formatDate(transaction.date)}</td>
                                             <td className="px-8 py-4">
                                                 <div className="flex gap-2">
                                                     <button id="EditBtn" onClick={() => router.push(`/edit-transaction/${transaction._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
