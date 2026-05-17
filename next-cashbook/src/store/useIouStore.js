@@ -35,7 +35,7 @@ export const useIouStore = create((set) => ({
     settleIou: async (id, settleData) => {
         set({ loading: true });
         try {
-            const res = await axiosInstance.put(`/iou/${id}/settle`, settleData);
+            const res = await axiosInstance.put(`/iou/${id}`, settleData);
             set((state) => ({
                 ious: state.ious.map((iou) => (iou._id === id ? res.data : iou)),
             }));

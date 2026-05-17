@@ -155,7 +155,7 @@ function AddIouModal({ onClose, onAdd, loading }) {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-gray-400 mb-2">Amount *</label>
+                        <label className="block text-sm font-semibold text-gray-400 mb-2">Amount I have to get back *</label>
                         <input
                             id="IouAmount"
                             type="number"

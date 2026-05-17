@@ -12,7 +12,7 @@ export async function PUT(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
 
-        const { id } = params;
+        const { id } = await params;
         const { amountReceived, accountId } = await req.json();
 
         if (!amountReceived || !accountId) {
@@ -30,29 +30,29 @@ export async function PUT(req, { params }) {
         const remaining = iou.amount - iou.paidBack;
         const actual = Math.min(Number(amountReceived), remaining);
 
-        // Settlement is always income — friend is paying you back
-        const tx = new Transaction({
-            userId: user.userId,
-            amount: actual,
-            type: "income",
-            description: `IOU repayment from ${iou.friendName}`,
-            category: iou.linkedTransactionId
-                ? (await Transaction.findById(iou.linkedTransactionId))?.category || null
-                : null,
-            date: new Date(),
-            account: accountId,
-        });
+        // When friend pays back, reduce the original linked expense transaction
+        // so the user's net expense goes down by that amount.
+        if (iou.linkedTransactionId) {
+            const linkedTx = await Transaction.findOne({ _id: iou.linkedTransactionId, userId: user.userId });
+            if (linkedTx && linkedTx.type === "expense") {
+                const newAmount = Math.max(0, linkedTx.amount - actual);
+                const diff = linkedTx.amount - newAmount; // actual reduction applied
 
-        // If we still don't have a category, we skip creating the transaction
-        // but still update the IOU (manual mode)
-        let settlementTxId = null;
-        if (tx.category) {
-            await tx.save();
-            // Update account balance
-            account.balance += actual;
-            await account.save();
-            settlementTxId = tx._id;
+                // Restore that amount to the original transaction's account
+                const originalAccount = await Account.findOne({ _id: linkedTx.account, userId: user.userId });
+                if (originalAccount) {
+                    originalAccount.balance += diff;
+                    await originalAccount.save();
+                }
+
+                linkedTx.amount = newAmount;
+                await linkedTx.save();
+            }
         }
+
+        // Also add the received cash to the selected (receiving) account
+        account.balance += actual;
+        await account.save();
 
         // Update IOU
         iou.paidBack += actual;
@@ -61,7 +61,6 @@ export async function PUT(req, { params }) {
         } else {
             iou.status = "partially_paid";
         }
-        if (settlementTxId) iou.settlementTransactionIds.push(settlementTxId);
         await iou.save();
 
         return NextResponse.json(iou, { status: 200 });
@@ -77,7 +76,8 @@ export async function DELETE(req, { params }) {
         if (!user) return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
 
         await dbConnect();
-        const iou = await Iou.findOneAndDelete({ _id: params.id, userId: user.userId });
+        const { id } = await params;
+        const iou = await Iou.findOneAndDelete({ _id: id, userId: user.userId });
         if (!iou) return NextResponse.json({ message: "IOU not found" }, { status: 404 });
 
         return NextResponse.json({ message: "IOU deleted" }, { status: 200 });

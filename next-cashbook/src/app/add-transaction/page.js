@@ -29,6 +29,7 @@ const AddTransactionContent = () => {
 
     const [iouEnabled, setIouEnabled] = useState(false);
     const [iouFriend, setIouFriend] = useState("");
+    const [iouAmountToGetBack, setIouAmountToGetBack] = useState("");
 
     const [modalState, setModalState] = useState({
         isOpen: false,
@@ -69,9 +70,15 @@ const AddTransactionContent = () => {
             toast.error("Please fill in all required fields");
             return;
         }
-        if (iouEnabled && !iouFriend.trim()) {
-            toast.error("Please enter your friend's name");
-            return;
+        if (iouEnabled) {
+            if (!iouFriend.trim()) {
+                toast.error("Please enter your friend's name");
+                return;
+            }
+            if (!iouAmountToGetBack || parseFloat(iouAmountToGetBack) <= 0) {
+                toast.error("Please enter a valid amount to get back");
+                return;
+            }
         }
 
         const result = await addTransaction({
@@ -85,7 +92,7 @@ const AddTransactionContent = () => {
             if (iouEnabled && iouFriend.trim()) {
                 await addIou({
                     friendName: iouFriend.trim(),
-                    amount: parseFloat(formData.amount),
+                    amount: parseFloat(iouAmountToGetBack),
                     description: formData.description || `Paid for ${iouFriend.trim()}`,
                     date: new Date(formData.date),
                     linkedTransactionId: result._id,
@@ -197,14 +204,24 @@ const AddTransactionContent = () => {
                                 {iouEnabled && (
                                     <div className="mt-3 animate-in slide-in-from-top-1 duration-200">
                                         <p className="text-xs text-yellow-600 mb-2">An IOU will be created — they owe you this amount.</p>
-                                        <input
-                                            id="IouFriendName"
-                                            type="text"
-                                            value={iouFriend}
-                                            onChange={e => setIouFriend(e.target.value)}
-                                            placeholder="Friend's name (e.g. Priya)"
-                                            className="w-full px-4 py-2.5 bg-gray-900 border border-yellow-500/40 rounded-lg focus:outline-none focus:border-yellow-400 text-white text-sm placeholder-gray-600"
-                                        />
+                                        <div className="space-y-2">
+                                            <input
+                                                id="IouFriendName"
+                                                type="text"
+                                                value={iouFriend}
+                                                onChange={e => setIouFriend(e.target.value)}
+                                                placeholder="Friend's name (e.g. Priya)"
+                                                className="w-full px-4 py-2.5 bg-gray-900 border border-yellow-500/40 rounded-lg focus:outline-none focus:border-yellow-400 text-white text-sm placeholder-gray-600"
+                                            />
+                                            <input
+                                                id="IouAmountToGetBack"
+                                                type="number"
+                                                value={iouAmountToGetBack}
+                                                onChange={e => setIouAmountToGetBack(e.target.value)}
+                                                placeholder="Amount I have to get back"
+                                                className="w-full px-4 py-2.5 bg-gray-900 border border-yellow-500/40 rounded-lg focus:outline-none focus:border-yellow-400 text-white text-sm placeholder-gray-600"
+                                            />
+                                        </div>
                                     </div>
                                 )}
                             </div>
