@@ -337,10 +337,19 @@ const StatisticsContent = () => {
         const withTargets = bStats.filter(b => b.yearlyTarget > 0);
         const health = withTargets.length === 0 ? null : Math.max(0, Math.round(
             100 - withTargets.reduce((s, b) => {
-                // Penalize monthly overage (weight 0.6) + yearly overage (weight 0.4)
-                const monthlyPenalty = b.monthlyTarget > 0 ? Math.max(0, b.monthlyProgress - 100) * 0.6 : 0;
-                const yearlyPenalty = Math.max(0, b.yearlyProgress - 100) * 0.4;
-                return s + monthlyPenalty + yearlyPenalty;
+                let penalty = 0;
+                if (['Needs', 'Wants'].includes(b.name)) {
+                    // Spending: penalty if OVER 100%
+                    const monthlyPenalty = b.monthlyTarget > 0 ? Math.max(0, b.monthlyProgress - 100) * 0.6 : 0;
+                    const yearlyPenalty = Math.max(0, b.yearlyProgress - 100) * 0.4;
+                    penalty = monthlyPenalty + yearlyPenalty;
+                } else {
+                    // Savings: penalty if UNDER 100%
+                    const monthlyPenalty = b.monthlyTarget > 0 ? Math.max(0, 100 - b.monthlyProgress) * 0.6 : 0;
+                    const yearlyPenalty = Math.max(0, 100 - b.yearlyProgress) * 0.4;
+                    penalty = monthlyPenalty + yearlyPenalty;
+                }
+                return s + penalty;
             }, 0) / withTargets.length
         ));
 
@@ -585,63 +594,146 @@ const StatisticsContent = () => {
                             </div>
                         )}
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                        {bucketStats.map(b => (
-                            <div key={b.name} className="p-5 rounded-2xl border" style={{ backgroundColor: b.bg, borderColor: b.border }}>
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: b.text }}>{b.name}</span>
-                                    {b.yearlyTarget > 0 && (
-                                        <span className="text-xs font-bold" style={{ color: b.text }}>{b.yearlyProgress.toFixed(0)}%</span>
+                    {/* Spending Guardrails */}
+                    <div className="mb-6">
+                        <h3 className="text-gray-400 text-sm font-semibold mb-3 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                            Spending Guardrails (Target: Stay Under)
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {bucketStats.filter(b => ['Needs', 'Wants'].includes(b.name)).map(b => (
+                                <div key={b.name} className="p-5 rounded-2xl border" style={{ backgroundColor: b.bg, borderColor: b.border }}>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <span className="text-xs font-black uppercase tracking-widest" style={{ color: b.text }}>{b.name}</span>
+                                        {b.yearlyTarget > 0 && (
+                                            <span className="text-xs font-bold" style={{ color: b.text }}>{b.yearlyProgress.toFixed(0)}%</span>
+                                        )}
+                                    </div>
+                                    {b.yearlyTarget > 0 ? (
+                                        <>
+                                            <div className="mb-3">
+                                                <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
+                                                    <span>Monthly</span>
+                                                    <span className={b.monthlyProgress > 100 ? 'text-red-400' : 'text-gray-400'}>{formatCurrency(b.monthlySpent)} / {formatCurrency(b.monthlyTarget)}</span>
+                                                </div>
+                                                <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(b.monthlyProgress, 100)}%`, backgroundColor: b.monthlyProgress > 100 ? '#ef4444' : b.hex }} />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
+                                                    <span>Yearly</span>
+                                                    <span className={b.yearlyProgress > 100 ? 'text-red-400' : 'text-gray-400'}>{formatCurrency(b.yearlySpent)} / {formatCurrency(b.yearlyTarget)}</span>
+                                                </div>
+                                                <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(b.yearlyProgress, 100)}%`, backgroundColor: b.yearlyProgress > 100 ? '#ef4444' : b.hex, opacity: 0.55 }} />
+                                                </div>
+                                            </div>
+                                            <div className="mt-3 pt-3 border-t border-gray-800/50 flex justify-between items-center">
+                                                <span className="text-[10px] text-gray-600 font-bold uppercase">Yearly Left</span>
+                                                <span className={`text-sm font-bold ${b.yearlySpent > b.yearlyTarget ? 'text-red-400' : 'text-gray-300'}`}>
+                                                    {b.yearlySpent > b.yearlyTarget ? '-' : ''}{formatCurrency(Math.abs(b.yearlyTarget - b.yearlySpent))}
+                                                </span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <p className="text-gray-600 text-xs mt-2">No target set</p>
                                     )}
                                 </div>
-                                {b.yearlyTarget > 0 ? (
-                                    <>
-                                        <div className="mb-3">
-                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
-                                                <span>Monthly</span>
-                                                <span className={b.monthlyProgress > 100 ? 'text-red-400' : 'text-gray-400'}>{formatCurrency(b.monthlySpent)} / {formatCurrency(b.monthlyTarget)}</span>
-                                            </div>
-                                            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                                                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(b.monthlyProgress, 100)}%`, backgroundColor: b.monthlyProgress > 100 ? '#ef4444' : b.hex }} />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
-                                                <span>Yearly</span>
-                                                <span className={b.yearlyProgress > 100 ? 'text-red-400' : 'text-gray-400'}>{formatCurrency(b.yearlySpent)} / {formatCurrency(b.yearlyTarget)}</span>
-                                            </div>
-                                            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                                                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(b.yearlyProgress, 100)}%`, backgroundColor: b.yearlyProgress > 100 ? '#ef4444' : b.hex, opacity: 0.55 }} />
-                                            </div>
-                                        </div>
-                                        <div className="mt-3 pt-3 border-t border-gray-800/50 flex justify-between items-center">
-                                            <span className="text-[10px] text-gray-600 font-bold uppercase">Yearly Left</span>
-                                            <span className={`text-sm font-bold ${b.yearlySpent > b.yearlyTarget ? 'text-red-400' : 'text-gray-300'}`}>
-                                                {b.yearlySpent > b.yearlyTarget ? '-' : ''}{formatCurrency(Math.abs(b.yearlyTarget - b.yearlySpent))}
-                                            </span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <p className="text-gray-600 text-xs mt-2">No target set</p>
-                                )}
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
+
+                    {/* Savings Goals */}
+                    <div className="mb-6">
+                        <h3 className="text-gray-400 text-sm font-semibold mb-3 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                            Savings Goals (Target: Meet or Exceed)
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {bucketStats.filter(b => ['Short Term', 'Long Term'].includes(b.name)).map(b => (
+                                <div key={b.name} className="p-5 rounded-2xl border" style={{ backgroundColor: b.bg, borderColor: b.border }}>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <span className="text-xs font-black uppercase tracking-widest" style={{ color: b.text }}>{b.name}</span>
+                                        {b.yearlyTarget > 0 && (
+                                            <span className="text-xs font-bold" style={{ color: b.text }}>{b.yearlyProgress.toFixed(0)}%</span>
+                                        )}
+                                    </div>
+                                    {b.yearlyTarget > 0 ? (
+                                        <>
+                                            <div className="mb-3">
+                                                <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
+                                                    <span>Monthly</span>
+                                                    <span className={b.monthlyProgress >= 100 ? 'text-green-400' : 'text-gray-400'}>{formatCurrency(b.monthlySpent)} / {formatCurrency(b.monthlyTarget)}</span>
+                                                </div>
+                                                <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(b.monthlyProgress, 100)}%`, backgroundColor: b.monthlyProgress >= 100 ? '#10b981' : b.hex }} />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase mb-1">
+                                                    <span>Yearly</span>
+                                                    <span className={b.yearlyProgress >= 100 ? 'text-green-400' : 'text-gray-400'}>{formatCurrency(b.yearlySpent)} / {formatCurrency(b.yearlyTarget)}</span>
+                                                </div>
+                                                <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                                                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(b.yearlyProgress, 100)}%`, backgroundColor: b.yearlyProgress >= 100 ? '#10b981' : b.hex, opacity: 0.55 }} />
+                                                </div>
+                                            </div>
+                                            <div className="mt-3 pt-3 border-t border-gray-800/50 flex justify-between items-center">
+                                                <span className="text-[10px] text-gray-600 font-bold uppercase">Remaining to Save</span>
+                                                <span className={`text-sm font-bold ${b.yearlySpent >= b.yearlyTarget ? 'text-green-400' : 'text-gray-300'}`}>
+                                                    {b.yearlySpent >= b.yearlyTarget ? 'Goal Met ✓' : formatCurrency(b.yearlyTarget - b.yearlySpent)}
+                                                </span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <p className="text-gray-600 text-xs mt-2">No target set</p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Budget Alerts row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         {bucketStats.filter(b => b.yearlyTarget > 0).map(b => {
+                            const isSpending = ['Needs', 'Wants'].includes(b.name);
                             const monthlyOver = b.monthlyTarget > 0 && b.monthlyProgress > 100;
                             const yearlyOver = b.yearlyProgress > 100;
-                            const isRed = monthlyOver || yearlyOver;
-                            const isAmber = !isRed && (b.monthlyProgress > 80 || b.yearlyProgress > 80);
+
+                            let isRed = false;
+                            let isAmber = false;
+                            let label = '';
+
+                            if (isSpending) {
+                                isRed = monthlyOver || yearlyOver;
+                                isAmber = !isRed && (b.monthlyProgress > 80 || b.yearlyProgress > 80);
+
+                                if (monthlyOver && yearlyOver) label = `Monthly +${formatCurrency(b.monthlySpent - b.monthlyTarget)} · Yearly +${formatCurrency(b.yearlySpent - b.yearlyTarget)}`;
+                                else if (monthlyOver) label = `Monthly over by ${formatCurrency(b.monthlySpent - b.monthlyTarget)}`;
+                                else if (yearlyOver) label = `Yearly over by ${formatCurrency(b.yearlySpent - b.yearlyTarget)}`;
+                                else if (b.monthlyProgress > 80) label = `Monthly: ${(100 - b.monthlyProgress).toFixed(0)}% left`;
+                                else if (b.yearlyProgress > 80) label = `Yearly: ${(100 - b.yearlyProgress).toFixed(0)}% left`;
+                                else label = 'On Track ✓';
+                            } else {
+                                // Savings
+                                const yearlyMet = b.yearlyProgress >= 100;
+                                const monthlyMet = b.monthlyTarget > 0 && b.monthlyProgress >= 100;
+                                
+                                isRed = !yearlyMet && (b.yearlyProgress < 50); // Severe undersaving
+                                isAmber = !yearlyMet && !isRed;
+
+                                if (yearlyMet) {
+                                    label = 'Goal Achieved! 🎉';
+                                } else {
+                                    const monthlyLabel = monthlyMet ? 'Monthly Met ✓' : `${formatCurrency(b.monthlyTarget - b.monthlySpent)} more this month`;
+                                    const yearlyLabel = `${formatCurrency(b.yearlyTarget - b.yearlySpent)} more yearly`;
+                                    label = `${monthlyLabel} · ${yearlyLabel}`;
+                                }
+                            }
+
                             const colorCls = isRed ? 'bg-red-500/10 text-red-400 border-red-500/20' : isAmber ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-green-500/10 text-green-400 border-green-500/20';
-                            let label;
-                            if (monthlyOver && yearlyOver) label = `Monthly +${formatCurrency(b.monthlySpent - b.monthlyTarget)} · Yearly +${formatCurrency(b.yearlySpent - b.yearlyTarget)}`;
-                            else if (monthlyOver) label = `Monthly over by ${formatCurrency(b.monthlySpent - b.monthlyTarget)}`;
-                            else if (yearlyOver) label = `Yearly over by ${formatCurrency(b.yearlySpent - b.yearlyTarget)}`;
-                            else if (b.monthlyProgress > 80) label = `Monthly: ${(100 - b.monthlyProgress).toFixed(0)}% left`;
-                            else if (b.yearlyProgress > 80) label = `Yearly: ${(100 - b.yearlyProgress).toFixed(0)}% left`;
-                            else label = 'On Track ✓';
+
                             return (
                                 <div key={b.name} className={`flex items-center justify-between p-3 rounded-xl text-xs font-bold border ${colorCls}`}>
                                     <span>{b.name}</span>
