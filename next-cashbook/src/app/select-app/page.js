@@ -19,6 +19,18 @@ const APPS = [
         tag: "Finance",
     },
     {
+        id: "servicecare",
+        name: "Service Care",
+        description: "Manage service requests & maintenance",
+        icon: ListTodo,
+        route: "/servicecare",
+        iconColor: "text-purple-400",
+        iconRing: "ring-purple-500/20",
+        iconBg: "bg-purple-500/10",
+        accent: "group-hover:text-purple-400",
+        tag: "Maintenance",
+    },
+    {
         id: "habits",
         name: "Habit Tracker",
         description: "Build streaks & daily routines",
@@ -111,20 +123,6 @@ const AppSelectionPage = () => {
                             </div>
                         );
                     })}
-
-                    {/* Coming soon */}
-                    <div className="flex items-center gap-4 p-4 rounded-xl border border-white/[0.04] opacity-40 cursor-not-allowed">
-                        <div className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
-                            <Plus className="w-5 h-5 text-gray-600" />
-                        </div>
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                                <h2 className="text-sm font-semibold text-gray-500">Coming Soon</h2>
-                                <span className="text-[10px] text-gray-700 font-medium">New</span>
-                            </div>
-                            <p className="text-xs text-gray-600 mt-0.5">Another app is on the way</p>
-                        </div>
-                    </div>
                 </div>
             </main>
 

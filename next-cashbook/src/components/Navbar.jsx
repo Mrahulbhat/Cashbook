@@ -20,6 +20,18 @@ const APPS = [
         matchPaths: ["/dashboard", "/transactions", "/accounts", "/categories", "/stats", "/planning", "/transfer", "/settings", "/add-transaction", "/edit-transaction", "/iou"],
     },
     {
+        id: "servicecare",
+        label: "Service Care",
+        description: "Maintenance & service management",
+        detail: "Manage service requests, track maintenance, and keep everything running smoothly.",
+        route: "/servicecare",
+        icon: ListTodo,
+        gradient: "from-purple-500 to-indigo-600",
+        glow: "shadow-purple-500/25",
+        border: "hover:border-purple-500/40",
+        matchPaths: ["/servicecare", "/servicecare/requests", "/servicecare/history", "/servicecare/settings"],
+    },
+    {
         id: "habits",
         label: "Habit Tracker",
         description: "Build better routines",
@@ -42,19 +54,6 @@ const APPS = [
         glow: "shadow-orange-500/25",
         border: "hover:border-orange-500/40",
         matchPaths: ["/gym"],
-    },
-    {
-        id: "new",
-        label: "Coming Soon",
-        description: "New project — stay tuned",
-        detail: "Something new is being built. Stay tuned for future updates.",
-        route: null,
-        icon: Plus,
-        gradient: "from-gray-600 to-gray-700",
-        glow: "",
-        border: "",
-        matchPaths: [],
-        disabled: true,
     },
 ];
 

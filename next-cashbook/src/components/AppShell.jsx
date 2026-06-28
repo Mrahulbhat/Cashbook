@@ -27,10 +27,11 @@ export default function AppShell({ children }) {
         return <>{children}</>;
     }
 
-    // Habit Tracker — Navbar but no Cashbook sidebar
+    // Habit Tracker and ServiceCare — Navbar but no Cashbook sidebar
     const isHabits = pathname?.startsWith("/habits");
+    const isServiceCare = pathname?.startsWith("/servicecare");
 
-    if (isHabits) {
+    if (isHabits || isServiceCare) {
         return (
             <div className="h-screen flex flex-col">
                 <Navbar />
