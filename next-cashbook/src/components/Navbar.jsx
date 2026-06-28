@@ -189,7 +189,7 @@ const Navbar = () => {
                 />
             )}
 
-            <nav className="w-full bg-white/90 h-[10vh] grid grid-cols-3 px-4 sm:px-6 text-[#15110c] items-center relative border-b border-[#eadfce] backdrop-blur-sm flex-shrink-0 z-50 shadow-sm shadow-orange-950/5">
+            <nav className="w-full bg-[#fffaf3]/95 h-[10vh] grid grid-cols-3 px-4 sm:px-6 text-[#15110c] items-center relative border-b border-[#eadfce] backdrop-blur-sm flex-shrink-0 z-50 shadow-sm shadow-orange-950/5">
 
                 {/* ── LEFT: App Switcher toggle ── */}
                 <div className="relative z-10 flex items-center">
