@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, LayoutDashboard, History, Wrench, Bike } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { axiosInstance } from '@/lib/axios';
 
@@ -19,6 +19,7 @@ const mapServiceType = (type) => ({ ...type, id: type._id });
 
 
 const ServiceCarePage = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [vehicles, setVehicles] = useState([]);
   const [services, setServices] = useState([]);
   const [serviceTypes, setServiceTypes] = useState([]);
@@ -366,233 +367,252 @@ const ServiceCarePage = () => {
   const formatDate = (date) => new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 sm:p-10 font-sans">
-      <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-[280px_1fr]">
-        <aside className="space-y-6 rounded-3xl border border-slate-800 bg-slate-950 p-6 shadow-lg">
-          <div className="space-y-4">
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Service Care</p>
-            <h1 className="text-3xl font-black text-white">Bike Service Dashboard</h1>
-            <p className="text-sm text-slate-400">Manage records, bikes, and service types from a clean sidebar.</p>
+    <div className="min-h-screen text-[#15110c] p-3 sm:p-5 font-sans">
+      <div className="max-w-6xl mx-auto grid gap-4 lg:grid-cols-[250px_1fr]">
+        <aside className="space-y-4 rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm h-fit">
+          <div className="space-y-2 pb-2 border-b border-[#eadfce]">
+            <p className="text-xs uppercase tracking-[0.14em] text-slate-500">Service Care</p>
+            <h1 className="text-lg font-bold text-[#15110c]">Dashboard</h1>
+            <p className="text-xs text-slate-500">Manage records, bikes, and service types.</p>
           </div>
 
-          <div className="space-y-3">
-            <button
-              type="button"
-              onClick={() => openServiceModal()}
-              className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-500"
-            >
-              Add service
-            </button>
-            <button
-              type="button"
-              onClick={() => openVehicleModal()}
-              className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-800"
-            >
-              Add vehicle
-            </button>
-            <button
-              type="button"
-              onClick={() => openServiceTypeModal()}
-              className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm font-semibold text-slate-100 transition hover:bg-slate-800"
-            >
-              Manage service types
-            </button>
-          </div>
+          <nav className="space-y-1">
+            {[
+              { id: 'dashboard', name: 'Overview', icon: LayoutDashboard },
+              { id: 'history', name: 'Service History', icon: History },
+              { id: 'types', name: 'Categories & Tasks', icon: Wrench },
+              { id: 'vehicles', name: 'My Vehicles', icon: Bike }
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                    isActive
+                      ? 'bg-orange-600 text-white shadow-sm shadow-orange-600/10'
+                      : 'text-[#15110c]/70 hover:bg-orange-50/80 hover:text-[#15110c]'
+                  }`}
+                >
+                  <Icon size={18} className={isActive ? 'text-white' : 'text-slate-500'} />
+                  <span>{tab.name}</span>
+                </button>
+              );
+            })}
+          </nav>
 
-          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Snapshot</p>
-            <div className="mt-4 space-y-3 text-sm text-slate-300">
+          <div className="rounded-xl border border-[#eadfce] bg-orange-50/80 p-4">
+            <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Snapshot</p>
+            <div className="mt-3 space-y-3 text-sm text-slate-600">
               <div className="flex items-center justify-between">
                 <span>Bikes</span>
-                <span className="font-semibold text-white">{vehicles.length}</span>
+                <span className="font-medium text-[#15110c]">{vehicles.length}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Types</span>
-                <span className="font-semibold text-white">{serviceTypes.length}</span>
+                <span className="font-medium text-[#15110c]">{serviceTypes.length}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Records</span>
-                <span className="font-semibold text-white">{filteredServices.length}</span>
+                <span className="font-medium text-[#15110c]">{filteredServices.length}</span>
               </div>
             </div>
           </div>
         </aside>
 
-        <main className="space-y-8">
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-lg">
-              <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Total spent</p>
-              <p className="mt-4 text-3xl font-black text-white">{formatCurrency(totalSpent)}</p>
-              <p className="mt-2 text-sm text-slate-400">Across all vehicle services</p>
-            </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-lg">
-              <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Last oil change</p>
-              <p className="mt-4 text-2xl font-black text-white">{lastOilChange ? formatDate(lastOilChange) : 'No record'}</p>
-            </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-lg">
-              <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Last showroom service</p>
-              <p className="mt-4 text-2xl font-black text-white">{lastShowroomService ? formatDate(lastShowroomService) : 'No record'}</p>
-            </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-lg">
-              <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Service records</p>
-              <p className="mt-4 text-3xl font-black text-white">{filteredServices.length}</p>
-              <p className="mt-2 text-sm text-slate-400">{selectedVehicle ? 'Showing service history for the selected bike' : 'Select a bike to filter service records'}</p>
-            </div>
-          </section>
-
-          <section className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
-            <div className="rounded-3xl border border-slate-800 bg-slate-950 p-6 shadow-lg">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Service types</p>
-                  <h2 className="mt-3 text-3xl font-black text-white">Defined categories</h2>
+        <main className="space-y-5">
+          {activeTab === 'dashboard' && (
+            <>
+              {/* Stats KPI Section */}
+              <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm">
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Total spent</p>
+                  <p className="mt-3 text-base font-medium text-[#15110c]">{formatCurrency(totalSpent)}</p>
+                  <p className="mt-2 text-sm text-slate-500">Across all vehicle services</p>
                 </div>
-                <button
-                  onClick={() => openServiceTypeModal()}
-                  className="rounded-3xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
-                >
-                  Add type
-                </button>
-              </div>
+                <div className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm">
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Last oil change</p>
+                  <p className="mt-3 text-base font-medium text-[#15110c]">{lastOilChange ? formatDate(lastOilChange) : 'No record'}</p>
+                </div>
+                <div className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm">
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Last showroom service</p>
+                  <p className="mt-3 text-base font-medium text-[#15110c]">{lastShowroomService ? formatDate(lastShowroomService) : 'No record'}</p>
+                </div>
+                <div className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm">
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Service records</p>
+                  <p className="mt-3 text-base font-medium text-[#15110c]">{filteredServices.length}</p>
+                  <p className="mt-2 text-sm text-slate-500">{selectedVehicle ? 'Showing service history for the selected bike' : 'Select a bike to filter service records'}</p>
+                </div>
+              </section>
 
-              <div className="mt-6 space-y-4">
-                {serviceTypes.length ? (
-                  serviceTypes.map((type) => (
-                    <div key={type.id} className="rounded-3xl border border-slate-800 bg-slate-900 p-5 shadow-lg">
-                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="text-sm uppercase tracking-[0.2em] text-slate-400">{type.name}</p>
-                          <p className="mt-2 text-sm text-slate-400">{type.tasks.length} task{type.tasks.length === 1 ? '' : 's'}</p>
+              <section className="grid gap-3 xl:grid-cols-[1.5fr_1fr]">
+                {/* Selected vehicle main details */}
+                <div className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <h2 className="text-base font-medium text-[#15110c]">Active Vehicle</h2>
+                    {selectedVehicle ? (
+                      <div className="mt-4 space-y-4">
+                        <div className="flex items-center justify-between border-b border-[#eadfce] pb-3">
+                          <div>
+                            <p className="text-lg font-semibold text-[#15110c]">{selectedVehicle.name}</p>
+                            <p className="text-sm text-slate-500">{selectedVehicle.model} ({selectedVehicle.year})</p>
+                          </div>
+                          <span className="rounded-full bg-orange-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-orange-700 border border-orange-100">
+                            {selectedVehicle.registration}
+                          </span>
                         </div>
-                        <div className="flex flex-wrap gap-3">
-                          <button
-                            type="button"
-                            onClick={() => openServiceTypeModal(type)}
-                            className="rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm uppercase tracking-[0.18em] text-blue-300 hover:bg-slate-800"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteServiceType(type)}
-                            className="rounded-2xl border border-red-600 bg-slate-900 px-4 py-3 text-sm uppercase tracking-[0.18em] text-red-400 hover:bg-slate-800"
-                          >
-                            Delete
-                          </button>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="rounded-xl bg-orange-50/80 p-3">
+                            <p className="text-xs text-slate-500">Total Spent</p>
+                            <p className="mt-1 text-base font-semibold text-[#15110c]">{formatCurrency(totalSpent)}</p>
+                          </div>
+                          <div className="rounded-xl bg-orange-50/80 p-3">
+                            <p className="text-xs text-slate-500">Service Records</p>
+                            <p className="mt-1 text-base font-semibold text-[#15110c]">{selectedVehicleServices.length}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="rounded-3xl border border-dashed border-slate-700 bg-slate-950 p-8 text-center text-slate-400">
-                    <p className="text-lg font-bold text-slate-100">No service categories found.</p>
-                    <p className="mt-2 text-sm text-slate-400">Create a service type to start adding services.</p>
+                    ) : (
+                      <div className="mt-4 rounded-xl border border-dashed border-orange-200 bg-orange-50/80 p-6 text-center text-slate-500">
+                        <p className="text-sm font-medium text-[#15110c]">No bikes available</p>
+                        <p className="mt-1 text-xs">Add a bike using the 'My Vehicles' tab or quick add button.</p>
+                        <button
+                          type="button"
+                          onClick={() => openVehicleModal()}
+                          className="mt-3 rounded-xl bg-orange-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-orange-700"
+                        >
+                          Add bike
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-slate-800 bg-slate-950 p-6 shadow-lg">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Bike filter</p>
-                  <h2 className="mt-3 text-3xl font-black text-white">
-                    {selectedVehicle ? selectedVehicle.name : 'No bikes available'}
-                  </h2>
-                  <p className="mt-2 text-sm text-slate-400">
-                    {selectedVehicle
-                      ? `${selectedVehicle.model} • ${selectedVehicle.year}`
-                      : 'Add a bike to start tracking service.'}
-                  </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => openVehicleModal()}
-                  className="rounded-3xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-500"
-                >
-                  Add bike
-                </button>
-              </div>
 
-              {vehicles.length ? (
-                <div className="mt-6 rounded-3xl border border-slate-800 bg-slate-900 p-4">
-                  <label className="block text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
-                    Select bike
-                  </label>
-                  <select
-                    value={selectedVehicleId ?? ''}
-                    onChange={(event) => setSelectedVehicleId(event.target.value)}
-                    className="mt-3 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                  >
-                    {vehicles.map((vehicle) => (
-                      <option key={vehicle.id} value={vehicle.id} className="bg-slate-950 text-slate-100">
-                        {vehicle.name} • {vehicle.model}
-                      </option>
-                    ))}
-                  </select>
+                {/* Quick actions & stats */}
+                <div className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <h2 className="text-base font-medium text-[#15110c]">Quick Filters</h2>
+                    <p className="mt-1 text-xs text-slate-500">Change currently selected bike</p>
+                    {vehicles.length ? (
+                      <select
+                        value={selectedVehicleId ?? ''}
+                        onChange={(event) => setSelectedVehicleId(event.target.value)}
+                        className="mt-4 w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-sm"
+                      >
+                        {vehicles.map((vehicle) => (
+                          <option key={vehicle.id} value={vehicle.id}>
+                            {vehicle.name} • {vehicle.model}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <p className="mt-4 text-sm text-slate-500">No vehicles available to select.</p>
+                    )}
+                  </div>
 
-                  {selectedVehicle && (
-                    <div className="mt-4 grid gap-3 text-sm text-slate-300">
-                      <div className="rounded-3xl border border-slate-700 bg-slate-900 p-4">
-                        <p className="text-slate-400">Registration</p>
-                        <p className="mt-1 text-white">{selectedVehicle.registration}</p>
-                      </div>
-                      <div className="rounded-3xl border border-slate-700 bg-slate-900 p-4">
-                        <p className="text-slate-400">Service records</p>
-                        <p className="mt-1 text-white">{selectedVehicleServices.length}</p>
-                      </div>
+                  <div className="mt-4 pt-4 border-t border-[#eadfce]">
+                    <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Quick Actions</p>
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openServiceModal()}
+                        className="rounded-xl bg-orange-600 py-2.5 text-xs font-medium text-white transition hover:bg-orange-700 text-center"
+                      >
+                        Add Service
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openVehicleModal()}
+                        className="rounded-xl border border-orange-200 bg-orange-50/80 py-2.5 text-xs font-medium text-[#15110c] transition hover:bg-orange-100 text-center"
+                      >
+                        Add Bike
+                      </button>
                     </div>
-                  )}
+                  </div>
                 </div>
-              ) : null}
-            </div>
-          </section>
+              </section>
 
-          <section className="rounded-3xl border border-slate-800 bg-slate-950 p-6 shadow-lg">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Service overview</p>
-                <h2 className="mt-3 text-3xl font-black text-white">History and records</h2>
-              </div>
-              <div className="rounded-3xl bg-slate-900 px-5 py-3 text-sm font-bold uppercase tracking-[0.2em] text-slate-300">
-                {selectedVehicle ? `Viewing ${selectedVehicle.name}` : 'Select a bike'}
-              </div>
-            </div>
+              {/* Recent activity snippet */}
+              <section className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-base font-medium text-[#15110c]">Recent Service Records</h2>
+                    <p className="text-xs text-slate-500">Latest service activity for this vehicle</p>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('history')}
+                    className="text-xs font-semibold text-orange-600 hover:text-orange-700 uppercase tracking-wider"
+                  >
+                    View All
+                  </button>
+                </div>
+                {filteredServices.length ? (
+                  <div className="space-y-3">
+                    {filteredServices.slice(0, 3).map((service) => {
+                      const vehicle = vehicles.find((item) => item.id === service.vehicleId);
+                      return (
+                        <div key={service.id} className="flex items-center justify-between rounded-xl border border-[#eadfce] bg-orange-50/40 p-3">
+                          <div>
+                            <p className="text-xs uppercase font-semibold text-slate-500">{service.type}</p>
+                            <p className="text-sm font-medium text-[#15110c]">{vehicle?.name || 'Unknown Bike'}</p>
+                            <p className="text-xs text-slate-400">{formatDate(service.date)}</p>
+                          </div>
+                          <span className="rounded-xl bg-white px-3 py-1.5 text-sm font-medium text-[#15110c] border border-orange-200/50">
+                            {formatCurrency(service.amount)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500 text-center py-4">No recent service records.</p>
+                )}
+              </section>
+            </>
+          )}
 
-            <div className="mt-6 rounded-3xl border border-slate-800 bg-slate-950 p-6 shadow-lg">
-              <div className="flex items-center justify-between gap-4 mb-6">
+          {activeTab === 'history' && (
+            <section className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm">
+              <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Service records</p>
-                  <h2 className="mt-3 text-3xl font-black text-white">Service history</h2>
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Service records</p>
+                  <h2 className="mt-2 text-base font-medium text-[#15110c]">Service history</h2>
                 </div>
-                <button
-                  onClick={() => openServiceModal()}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
-                >
-                  <Plus size={18} /> Add record
-                </button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-xl bg-orange-50/80 px-3 py-2 text-xs font-medium uppercase tracking-[0.08em] text-slate-600 border border-orange-100">
+                    {selectedVehicle ? selectedVehicle.name : 'Select a bike'}
+                  </span>
+                  <button
+                    onClick={() => openServiceModal()}
+                    className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-3 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700"
+                  >
+                    <Plus size={16} /> Add record
+                  </button>
+                </div>
               </div>
 
               {filteredServices.length ? (
-                <div className="space-y-4">
+                <div className="space-y-4 mt-4">
                   {filteredServices.map((service) => {
                     const vehicle = vehicles.find((item) => item.id === service.vehicleId);
                     return (
-                      <div key={service.id} className="rounded-3xl border border-slate-800 bg-slate-950 p-5 shadow-lg">
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div key={service.id} className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <div>
-                            <p className="text-sm uppercase tracking-[0.2em] text-slate-400">{service.type}</p>
-                            <h3 className="mt-2 text-xl font-black text-white">{vehicle?.name || 'Unknown bike'}</h3>
-                            <p className="mt-1 text-sm text-slate-400">{formatDate(service.date)} • {vehicle?.registration || 'No registration'}</p>
+                            <p className="text-xs uppercase tracking-[0.1em] text-slate-500">{service.type}</p>
+                            <h3 className="mt-2 text-base font-medium text-[#15110c]">{vehicle?.name || 'Unknown bike'}</h3>
+                            <p className="mt-1 text-sm text-slate-500">{formatDate(service.date)} • {vehicle?.registration || 'No registration'}</p>
                           </div>
                           <div className="flex items-center gap-2 text-sm">
-                            <span className="rounded-2xl bg-slate-900/80 px-3 py-2 text-slate-100">{formatCurrency(service.amount)}</span>
-                            {service.showroom && <span className="rounded-2xl bg-emerald-900/70 px-3 py-2 text-emerald-300">Showroom</span>}
+                            <span className="rounded-xl bg-orange-50 px-3 py-2 text-[#15110c]">{formatCurrency(service.amount)}</span>
+                            {service.showroom && <span className="rounded-xl bg-orange-100 px-3 py-2 text-orange-700">Showroom</span>}
                           </div>
                         </div>
                         {service.tasks?.length ? (
-                          <div className="mt-4 rounded-3xl border border-slate-800 bg-slate-900 p-4 text-sm text-slate-400">
-                            <p className="font-semibold text-slate-100">Tasks completed</p>
+                          <div className="mt-3 rounded-xl border border-[#eadfce] bg-orange-50/80 p-4 text-sm text-slate-500">
+                            <p className="font-medium text-[#15110c]">Tasks completed</p>
                             <ul className="mt-2 list-inside list-disc space-y-1">
                               {service.tasks.map((task) => (
                                 <li key={task}>{task}</li>
@@ -600,19 +620,19 @@ const ServiceCarePage = () => {
                             </ul>
                           </div>
                         ) : null}
-                        {service.details && <p className="mt-4 text-slate-400">{service.details}</p>}
-                        <div className="mt-5 flex flex-wrap gap-3">
+                        {service.details && <p className="mt-3 text-slate-500">{service.details}</p>}
+                        <div className="mt-3 flex flex-wrap gap-3">
                           <button
                             type="button"
                             onClick={() => openServiceModal(service)}
-                            className="rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm uppercase tracking-[0.18em] text-blue-300 hover:bg-slate-800"
+                            className="rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-xs uppercase tracking-[0.08em] text-orange-700 hover:bg-orange-100"
                           >
                             Edit
                           </button>
                           <button
                             type="button"
                             onClick={() => openDeleteModal(service, 'service')}
-                            className="rounded-2xl border border-red-600 bg-slate-900 px-4 py-3 text-sm uppercase tracking-[0.18em] text-red-400 hover:bg-slate-800"
+                            className="rounded-xl border border-red-600 bg-orange-50/80 px-3 py-2.5 text-xs uppercase tracking-[0.08em] text-red-400 hover:bg-orange-100"
                           >
                             Delete
                           </button>
@@ -622,65 +642,182 @@ const ServiceCarePage = () => {
                   })}
                 </div>
               ) : (
-                <div className="rounded-3xl border border-dashed border-slate-700 bg-slate-900 p-8 text-center text-slate-400">
-                  <p className="text-lg font-bold text-slate-100">No service records found.</p>
-                  <p className="mt-2 text-sm text-slate-400">Add your first service record to keep a history of maintenance and expenses.</p>
+                <div className="rounded-xl border border-dashed border-orange-200 bg-orange-50/80 p-4 text-center text-slate-500">
+                  <p className="text-base font-medium text-[#15110c]">No service records found.</p>
+                  <p className="mt-2 text-sm text-slate-500">Add your first service record to keep a history of maintenance and expenses.</p>
                 </div>
               )}
+            </section>
+          )}
+
+          {activeTab === 'types' && (
+            <div className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Service types</p>
+                  <h2 className="mt-3 text-base font-medium text-[#15110c]">Defined categories</h2>
+                </div>
+                <button
+                  onClick={() => openServiceTypeModal()}
+                  className="rounded-xl bg-orange-600 px-3 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700"
+                >
+                  Add type
+                </button>
+              </div>
+
+              <div className="mt-4 space-y-4">
+                {serviceTypes.length ? (
+                  serviceTypes.map((type) => (
+                    <div key={type.id} className="rounded-xl border border-[#eadfce] bg-orange-50/80 p-4 shadow-sm">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-xs uppercase tracking-[0.1em] text-slate-500">{type.name}</p>
+                          <p className="mt-2 text-sm text-slate-500">{type.tasks.length} task{type.tasks.length === 1 ? '' : 's'}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-3">
+                          <button
+                            type="button"
+                            onClick={() => openServiceTypeModal(type)}
+                            className="rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-xs uppercase tracking-[0.08em] text-orange-700 hover:bg-orange-100"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteServiceType(type)}
+                            className="rounded-xl border border-red-600 bg-orange-50/80 px-3 py-2.5 text-xs uppercase tracking-[0.08em] text-red-400 hover:bg-orange-100"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-xl border border-dashed border-orange-200 bg-white/90 p-4 text-center text-slate-500">
+                    <p className="text-base font-medium text-[#15110c]">No service categories found.</p>
+                    <p className="mt-2 text-sm text-slate-500">Create a service type to start adding services.</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </section>
+          )}
+
+          {activeTab === 'vehicles' && (
+            <div className="rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Vehicle Management</p>
+                  <h2 className="mt-3 text-base font-medium text-[#15110c]">My Bikes</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => openVehicleModal()}
+                  className="rounded-xl bg-orange-600 px-3 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700"
+                >
+                  Add bike
+                </button>
+              </div>
+
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {vehicles.length ? (
+                  vehicles.map((vehicle) => {
+                    const recordCount = services.filter((s) => String(s.vehicleId) === String(vehicle.id)).length;
+                    return (
+                      <div key={vehicle.id} className="rounded-xl border border-[#eadfce] bg-orange-50/80 p-4 shadow-sm flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-lg text-[#15110c]">{vehicle.name}</h3>
+                            <span className="text-xs uppercase bg-white px-2 py-1 rounded-lg border border-orange-200 text-slate-600 font-mono">
+                              {vehicle.registration || 'N/A'}
+                            </span>
+                          </div>
+                          <p className="text-sm text-slate-500 mt-1">{vehicle.model} • {vehicle.year}</p>
+                          <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+                            <span className="font-semibold">{recordCount}</span> service records
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-[#eadfce] flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => openVehicleModal(vehicle)}
+                            className="flex-1 rounded-xl border border-orange-200 bg-white px-3 py-2 text-xs font-medium text-orange-700 hover:bg-orange-50"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => openDeleteModal(vehicle, 'vehicle')}
+                            className="flex-1 rounded-xl border border-red-600 bg-white px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="col-span-2 rounded-xl border border-dashed border-orange-200 bg-white/90 p-6 text-center text-slate-500">
+                    <p className="text-base font-medium text-[#15110c]">No bikes added yet.</p>
+                    <p className="mt-2 text-sm text-slate-500">Add a vehicle to start logging maintenance data.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </main>
       </div>
 
       {isVehicleModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80">
-          <div className="w-full max-w-lg rounded-3xl border border-slate-800 bg-slate-950 p-8 shadow-xl">
-            <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#15110c]/45 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-lg">
+            <div className="mb-3 flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Vehicle</p>
-                <h2 className="mt-2 text-3xl font-black text-white">{editingVehicleId ? 'Edit vehicle' : 'Add new bike'}</h2>
+                <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Vehicle</p>
+                <h2 className="mt-2 text-base font-medium text-[#15110c]">{editingVehicleId ? 'Edit vehicle' : 'Add new bike'}</h2>
               </div>
             </div>
 
             <form onSubmit={handleVehicleSubmit} className="space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="space-y-2 text-sm text-slate-300">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Name</span>
                   <input
                     value={vehicleForm.name}
                     onChange={(event) => setVehicleForm((prev) => ({ ...prev, name: event.target.value }))}
                     placeholder="Royal Enfield"
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   />
                 </label>
-                <label className="space-y-2 text-sm text-slate-300">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Model</span>
                   <input
                     value={vehicleForm.model}
                     onChange={(event) => setVehicleForm((prev) => ({ ...prev, model: event.target.value }))}
                     placeholder="Classic 350"
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   />
                 </label>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="space-y-2 text-sm text-slate-300">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Year</span>
                   <input
                     value={vehicleForm.year}
                     onChange={(event) => setVehicleForm((prev) => ({ ...prev, year: event.target.value }))}
                     placeholder="2022"
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   />
                 </label>
-                <label className="space-y-2 text-sm text-slate-300">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Registration</span>
                   <input
                     value={vehicleForm.registration}
                     onChange={(event) => setVehicleForm((prev) => ({ ...prev, registration: event.target.value }))}
                     placeholder="KA05AB1234"
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   />
                 </label>
               </div>
@@ -689,13 +826,13 @@ const ServiceCarePage = () => {
                 <button
                   type="button"
                   onClick={() => setIsVehicleModalOpen(false)}
-                  className="rounded-3xl border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-bold text-slate-100 transition hover:bg-slate-800"
+                  className="rounded-xl border border-orange-200 bg-orange-50/80 px-4 py-2.5 text-sm font-medium text-[#15110c] transition hover:bg-orange-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-3xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
+                  className="rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700"
                 >
                   {editingVehicleId ? 'Save Vehicle' : 'Add Vehicle'}
                 </button>
@@ -706,21 +843,21 @@ const ServiceCarePage = () => {
       )}
 
       {isServiceModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 overflow-auto">
-          <div className="w-full max-w-xl rounded-3xl border border-slate-800 bg-slate-950 p-8 shadow-xl max-h-[calc(100vh-3rem)] overflow-y-auto">
-            <div className="mb-6">
-              <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Service record</p>
-              <h2 className="mt-2 text-3xl font-black text-white">{editingServiceId ? 'Edit service' : 'Add new service'}</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#15110c]/45 backdrop-blur-sm overflow-auto">
+          <div className="w-full max-w-2xl rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-lg max-h-[calc(100vh-3rem)] overflow-y-auto">
+            <div className="mb-3">
+              <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Service record</p>
+              <h2 className="mt-2 text-base font-medium text-[#15110c]">{editingServiceId ? 'Edit service' : 'Add new service'}</h2>
             </div>
 
             <form onSubmit={handleServiceSubmit} className="space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="space-y-2 text-sm text-slate-300">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Bike</span>
                   <select
                     value={serviceForm.vehicleId}
                     onChange={(event) => setServiceForm((prev) => ({ ...prev, vehicleId: event.target.value }))}
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   >
                     <option value="">Select bike</option>
                     {vehicles.map((vehicle) => (
@@ -728,13 +865,13 @@ const ServiceCarePage = () => {
                     ))}
                   </select>
                 </label>
-                <label className="space-y-2 text-sm text-slate-300">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Service type</span>
                   <select
                     value={serviceForm.type}
                     onChange={(event) => setServiceForm((prev) => ({ ...prev, type: event.target.value, tasks: [] }))}
                     disabled={!serviceTypes.length}
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <option value="" disabled>Select service type</option>
                     {serviceTypes.map((type) => (
@@ -745,17 +882,17 @@ const ServiceCarePage = () => {
                 </label>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
-                <label className="space-y-2 text-sm text-slate-300">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Date</span>
                   <input
                     type="date"
                     value={serviceForm.date}
                     onChange={(event) => setServiceForm((prev) => ({ ...prev, date: event.target.value }))}
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   />
                 </label>
-                <label className="space-y-2 text-sm text-slate-300">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Amount</span>
                   <input
                     type="number"
@@ -763,39 +900,39 @@ const ServiceCarePage = () => {
                     value={serviceForm.amount}
                     onChange={(event) => setServiceForm((prev) => ({ ...prev, amount: event.target.value }))}
                     placeholder="1200"
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   />
                 </label>
-                <label className="space-y-2 text-sm text-slate-300">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Showroom</span>
-                  <div className="flex items-center gap-3 rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3">
+                  <div className="flex items-center gap-3 rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5">
                     <input
                       type="checkbox"
                       checked={serviceForm.showroom}
                       onChange={(event) => setServiceForm((prev) => ({ ...prev, showroom: event.target.checked }))}
-                      className="h-4 w-4 accent-blue-500"
+                      className="h-4 w-4 accent-orange-600"
                     />
-                    <span className="text-sm text-slate-200">Yes</span>
+                    <span className="text-sm text-slate-600">Yes</span>
                   </div>
                 </label>
               </div>
 
-              <div className="rounded-3xl border border-slate-700 bg-slate-900 p-4">
+              <div className="rounded-xl border border-orange-200 bg-orange-50/80 p-4">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">Tasks for {serviceForm.type}</p>
+                  <p className="text-sm font-medium uppercase tracking-[0.1em] text-slate-600">Tasks for {serviceForm.type}</p>
                   <button
                     type="button"
                     onClick={() => openServiceTypeModal(serviceTypes.find((type) => type.name === serviceForm.type))}
                     disabled={!serviceForm.type}
-                    className={`text-xs uppercase tracking-[0.2em] ${serviceForm.type ? 'text-blue-600 hover:text-blue-500' : 'text-slate-400 cursor-not-allowed'}`}
+                    className={`text-xs uppercase tracking-[0.1em] ${serviceForm.type ? 'text-orange-700 hover:text-orange-600' : 'text-slate-500 cursor-not-allowed'}`}
                   >
                     Edit type
                   </button>
                 </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   {currentServiceTypeTasks.length ? (
                     currentServiceTypeTasks.map((task) => (
-                      <label key={task} className="flex items-center gap-3 rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 transition hover:border-blue-500">
+                      <label key={task} className="flex items-center gap-3 rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-sm text-[#15110c] transition hover:border-orange-400">
                         <input
                           type="checkbox"
                           checked={serviceForm.tasks.includes(task)}
@@ -806,7 +943,7 @@ const ServiceCarePage = () => {
                               tasks: checked ? [...prev.tasks, task] : prev.tasks.filter((item) => item !== task)
                             }));
                           }}
-                          className="h-4 w-4 accent-blue-500"
+                          className="h-4 w-4 accent-orange-600"
                         />
                         <span>{task}</span>
                       </label>
@@ -821,14 +958,14 @@ const ServiceCarePage = () => {
                 </div>
               </div>
 
-              <label className="space-y-2 text-sm text-slate-300">
+              <label className="space-y-2 text-sm text-slate-600">
                 <span>Notes</span>
                 <textarea
                   value={serviceForm.details}
                   onChange={(event) => setServiceForm((prev) => ({ ...prev, details: event.target.value }))}
                   rows="4"
                   placeholder="Add any maintenance notes"
-                  className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                 />
               </label>
 
@@ -836,13 +973,13 @@ const ServiceCarePage = () => {
                 <button
                   type="button"
                   onClick={() => setIsServiceModalOpen(false)}
-                  className="rounded-3xl border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-bold text-slate-100 transition hover:bg-slate-800"
+                  className="rounded-xl border border-orange-200 bg-orange-50/80 px-4 py-2.5 text-sm font-medium text-[#15110c] transition hover:bg-orange-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-3xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
+                  className="rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700"
                 >
                   {editingServiceId ? 'Save service' : 'Add service'}
                 </button>
@@ -853,65 +990,65 @@ const ServiceCarePage = () => {
       )}
 
       {isServiceTypeModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 overflow-auto">
-          <div className="w-full max-w-xl rounded-3xl border border-slate-800 bg-slate-950 p-8 shadow-xl max-h-[calc(100vh-3rem)] overflow-y-auto">
-            <div className="mb-6">
-              <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Service type</p>
-              <h2 className="mt-2 text-3xl font-black text-white">{editingServiceTypeId ? 'Edit service type' : 'Add new service type'}</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#15110c]/45 backdrop-blur-sm overflow-auto">
+          <div className="w-full max-w-2xl rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-lg max-h-[calc(100vh-3rem)] overflow-y-auto">
+            <div className="mb-3">
+              <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Service type</p>
+              <h2 className="mt-2 text-base font-medium text-[#15110c]">{editingServiceTypeId ? 'Edit service type' : 'Add new service type'}</h2>
             </div>
 
-            <div className="mb-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-              <div className="rounded-3xl border border-slate-700 bg-slate-900 p-4 text-slate-300">
-                <div className="mb-4 flex items-center justify-between gap-4">
-                  <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Existing service types</p>
-                  <span className="rounded-full bg-slate-800 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-300">{serviceTypes.length}</span>
+            <div className="mb-3 grid gap-3 lg:grid-cols-[1.4fr_1fr]">
+              <div className="rounded-xl border border-orange-200 bg-orange-50/80 p-4 text-slate-600">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <p className="text-xs uppercase tracking-[0.1em] text-slate-500">Existing service types</p>
+                  <span className="rounded-full bg-orange-100 px-3 py-1 text-xs uppercase tracking-[0.1em] text-slate-600">{serviceTypes.length}</span>
                 </div>
                 <div className="space-y-3">
                   {serviceTypes.length ? (
                     serviceTypes.map((type) => (
-                      <div key={type.id} className="flex flex-col gap-3 rounded-3xl border border-slate-800 bg-slate-950 p-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div key={type.id} className="flex flex-col gap-3 rounded-xl border border-[#eadfce] bg-white/90 p-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                          <p className="font-semibold text-white">{type.name}</p>
-                          <p className="text-sm text-slate-400">{type.tasks.length} task{type.tasks.length === 1 ? '' : 's'}</p>
+                          <p className="font-medium text-[#15110c]">{type.name}</p>
+                          <p className="text-sm text-slate-500">{type.tasks.length} task{type.tasks.length === 1 ? '' : 's'}</p>
                         </div>
                         <button
                           type="button"
                           onClick={() => openServiceTypeModal(type)}
-                          className="rounded-3xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-blue-300 transition hover:bg-slate-800"
+                          className="rounded-xl border border-orange-200 bg-orange-50/80 px-4 py-2 text-sm font-medium text-orange-700 transition hover:bg-orange-100"
                         >
                           Edit
                         </button>
                       </div>
                     ))
                   ) : (
-                    <div className="rounded-3xl border border-dashed border-slate-700 bg-slate-950 p-5 text-center text-slate-400">
-                      <p className="text-sm font-semibold text-slate-100">No service types yet</p>
+                    <div className="rounded-xl border border-dashed border-orange-200 bg-white/90 p-4 text-center text-slate-500">
+                      <p className="text-sm font-medium text-[#15110c]">No service types yet</p>
                       <p className="mt-1 text-sm">Add a type to start using service templates.</p>
                     </div>
                   )}
                 </div>
               </div>
 
-              <form onSubmit={handleServiceTypeSubmit} className="space-y-5 rounded-3xl border border-slate-700 bg-slate-950 p-5">
-                <label className="space-y-2 text-sm text-slate-300">
+              <form onSubmit={handleServiceTypeSubmit} className="space-y-5 rounded-xl border border-orange-200 bg-white/90 p-4">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Type name</span>
                   <input
                     value={serviceTypeForm.name}
                     onChange={(event) => setServiceTypeForm((prev) => ({ ...prev, name: event.target.value }))}
                     placeholder="General Service"
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                   />
                 </label>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="space-y-2 text-sm text-slate-300">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-2 text-sm text-slate-600">
                   <span>Add task</span>
                   <div className="flex gap-2">
                     <input
                       value={serviceTypeForm.taskInput}
                       onChange={(event) => setServiceTypeForm((prev) => ({ ...prev, taskInput: event.target.value }))}
                       placeholder="Enter task and press Add"
-                      className="w-full rounded-3xl border border-slate-700 bg-slate-900 px-4 py-3 text-slate-100 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      className="w-full rounded-xl border border-orange-200 bg-orange-50/80 px-3 py-2.5 text-[#15110c] outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                     />
                     <button
                       type="button"
@@ -922,23 +1059,23 @@ const ServiceCarePage = () => {
                           setServiceTypeForm((prev) => ({ ...prev, tasks: [...prev.tasks, task], taskInput: '' }));
                         }
                       }}
-                      className="rounded-3xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
+                      className="rounded-xl bg-orange-600 px-3 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700"
                     >
                       Add
                     </button>
                   </div>
                 </label>
-                <div className="rounded-3xl border border-slate-700 bg-slate-900 p-4 text-sm text-slate-300">
-                  <p className="font-semibold uppercase tracking-[0.2em] text-slate-400">Defined tasks</p>
+                <div className="rounded-xl border border-orange-200 bg-orange-50/80 p-4 text-sm text-slate-600">
+                  <p className="font-medium uppercase tracking-[0.1em] text-slate-500">Defined tasks</p>
                   <div className="mt-3 space-y-2">
                     {serviceTypeForm.tasks.length ? (
                       serviceTypeForm.tasks.map((task) => (
-                        <div key={task} className="flex items-center justify-between rounded-3xl border border-slate-700 bg-slate-900 px-4 py-2">
+                        <div key={task} className="flex items-center justify-between rounded-xl border border-orange-200 bg-orange-50/80 px-4 py-2">
                           <span>{task}</span>
                           <button
                             type="button"
                             onClick={() => setServiceTypeForm((prev) => ({ ...prev, tasks: prev.tasks.filter((item) => item !== task) }))}
-                            className="text-xs uppercase tracking-[0.2em] text-red-600 hover:text-red-500"
+                            className="text-xs uppercase tracking-[0.1em] text-red-600 hover:text-red-500"
                           >
                             Remove
                           </button>
@@ -955,13 +1092,13 @@ const ServiceCarePage = () => {
                 <button
                   type="button"
                   onClick={() => setIsServiceTypeModalOpen(false)}
-                  className="rounded-3xl border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-bold text-slate-100 transition hover:bg-slate-800"
+                  className="rounded-xl border border-orange-200 bg-orange-50/80 px-4 py-2.5 text-sm font-medium text-[#15110c] transition hover:bg-orange-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-3xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-500"
+                  className="rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700"
                 >
                   {editingServiceTypeId ? 'Save type' : 'Add type'}
                 </button>
@@ -973,14 +1110,14 @@ const ServiceCarePage = () => {
       )}
 
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80">
-          <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-950 p-8 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#15110c]/45 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-xl border border-[#eadfce] bg-white/90 p-4 shadow-lg">
             <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-900/50 text-red-400">
-                <Trash2 size={28} />
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-400">
+                <Trash2 size={22} />
               </div>
-              <h2 className="text-2xl font-black text-white">Confirm deletion</h2>
-              <p className="mt-3 text-slate-400">Are you sure you want to delete this {deleteType === 'vehicle' ? 'vehicle and its service records' : 'service record'}?</p>
+              <h2 className="text-base font-medium text-[#15110c]">Confirm deletion</h2>
+              <p className="mt-3 text-slate-500">Are you sure you want to delete this {deleteType === 'vehicle' ? 'vehicle and its service records' : 'service record'}?</p>
             </div>
             <div className="mt-8 flex gap-3">
               <button
@@ -990,14 +1127,14 @@ const ServiceCarePage = () => {
                   setDeleteTarget(null);
                   setDeleteType(null);
                 }}
-                className="flex-1 rounded-3xl border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-bold text-slate-100 transition hover:bg-slate-800"
+                className="flex-1 rounded-xl border border-orange-200 bg-orange-50/80 px-4 py-2.5 text-sm font-medium text-[#15110c] transition hover:bg-orange-100"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="flex-1 rounded-3xl bg-red-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-red-500"
+                className="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-500"
               >
                 Delete
               </button>
