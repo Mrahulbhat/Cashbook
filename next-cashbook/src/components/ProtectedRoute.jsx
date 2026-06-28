@@ -17,8 +17,8 @@ export default function ProtectedRoute({ children }) {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-screen bg-black">
-                <Loader className="size-10 animate-spin text-green-500" />
+            <div className="flex items-center justify-center h-screen bank-page">
+                <Loader className="size-10 animate-spin text-orange-500" />
             </div>
         );
     }

@@ -42,9 +42,10 @@ const Sidebar = () => {
     ];
 
     const tabs = isGym ? gymTabs : cashbookTabs;
-    const activeGradient = isGym ? "from-orange-600 to-red-600" : "from-green-600 to-emerald-600";
-    const activeGlow = isGym ? "shadow-orange-500/25" : "shadow-green-500/25";
-    const toggleBg = isGym ? "from-orange-600 to-red-600" : "from-green-600 to-emerald-600";
+    
+    // Clean banking theme colors
+    const activeBg = "bg-orange-50 text-orange-700 font-bold border-r-4 border-orange-500";
+    const inactiveClass = "text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium";
 
     const handleNavigation = (path) => {
         router.push(path);
@@ -82,9 +83,6 @@ const Sidebar = () => {
 
     const isActive = (path) => pathname === path;
 
-    // Sidebar is only mounted under Cashbook routes — AppShell never renders
-    // it on /habits, /login, /signup, /select-app, or /admin.
-    // This guard is just a safety net.
     if (pathname === "/login" || pathname === "/signup" || pathname === "/select-app") {
         return null;
     }
@@ -94,18 +92,18 @@ const Sidebar = () => {
             <button
                 id="sidebarMenuToggle"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`fixed top-20 left-4 z-50 p-2 bg-gradient-to-r ${toggleBg} text-white rounded-lg md:hidden`}
+                className="fixed top-20 left-4 z-50 p-2 bg-white text-slate-800 border border-slate-200 shadow-sm rounded-lg md:hidden"
             >
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
 
             <div id="sidebar"
                 style={{ width: `${sidebarWidth}px`, minWidth: `${sidebarWidth}px` }}
-                className={`fixed left-0 top-[10vh] h-[90vh] bg-gradient-to-b from-gray-900 via-gray-900 to-black border-r border-gray-700/50 backdrop-blur-sm z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
-                    } md:translate-x-0 md:relative md:top-0 md:h-[90vh] md:z-30`}
+                className={`fixed left-0 top-[10vh] h-[90vh] bg-white border-r border-slate-200 shadow-sm z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+                    } md:translate-x-0 md:relative md:top-0 md:h-[90vh] md:z-30 overflow-y-auto scrollbar-hide`}
             >
                 <div className="p-6 space-y-2">
-                    <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-6">
+                    <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">
                         Navigation
                     </h3>
 
@@ -120,13 +118,10 @@ const Sidebar = () => {
                                 id={tab.id}
                                 key={tab.id}
                                 onClick={() => handleNavigation(isGym ? `${tab.path}?tab=${tab.tab}` : tab.path)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 transform ${active
-                                    ? `bg-gradient-to-r ${activeGradient} text-white shadow-lg ${activeGlow} scale-105`
-                                    : "text-gray-400 hover:text-white hover:bg-gray-800/50 hover:translate-x-1"
-                                    }`}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${active ? activeBg : inactiveClass}`}
                             >
-                                <Icon className="w-5 h-5 flex-shrink-0" />
-                                <span className="font-semibold text-sm">{tab.name}</span>
+                                <Icon className={`w-5 h-5 flex-shrink-0 ${active ? "text-orange-600" : "text-slate-400"}`} />
+                                <span className="text-sm">{tab.name}</span>
                             </button>
                         );
                     })}
@@ -139,14 +134,13 @@ const Sidebar = () => {
                         event.preventDefault();
                         setIsResizing(true);
                     }}
-                    className={`hidden md:block absolute top-0 right-0 h-full w-2 translate-x-1 cursor-col-resize transition-colors ${isResizing ? "bg-green-500/40" : "bg-transparent hover:bg-green-500/25"}`}
+                    className={`hidden md:block absolute top-0 right-0 h-full w-2 translate-x-1 cursor-col-resize transition-colors ${isResizing ? "bg-orange-200" : "bg-transparent hover:bg-orange-50"}`}
                 />
             </div>
 
-
             {isOpen && (
                 <div
-                    className="fixed inset-0 top-[10vh] bg-black/50 z-30 md:hidden"
+                    className="fixed inset-0 top-[10vh] bg-slate-900/20 backdrop-blur-sm z-30 md:hidden"
                     onClick={() => setIsOpen(false)}
                 ></div>
             )}

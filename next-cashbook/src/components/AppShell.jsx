@@ -33,9 +33,9 @@ export default function AppShell({ children }) {
 
     if (isHabits || isServiceCare) {
         return (
-            <div className="h-screen flex flex-col">
+            <div className="h-screen flex flex-col bg-[#f7f3ed] text-[#15110c]">
                 <Navbar />
-                <main className="flex-1 overflow-auto bg-[#050505]">
+                <main className="flex-1 overflow-auto bank-page">
                     {children}
                 </main>
             </div>
@@ -44,13 +44,13 @@ export default function AppShell({ children }) {
 
     // Cashbook — Navbar + Sidebar
     return (
-        <div className="h-screen flex flex-col">
+        <div className="h-screen flex flex-col bg-[#f7f3ed] text-[#15110c]">
             <Navbar />
-            <div className="flex flex-1 bg-black overflow-hidden">
-                <Suspense fallback={<div className="w-64 bg-gray-900 animate-pulse" />}>
+            <div className="flex flex-1 bg-[#f7f3ed] overflow-hidden">
+                <Suspense fallback={<div className="w-64 bg-orange-50 animate-pulse" />}>
                     <Sidebar />
                 </Suspense>
-                <main className="flex-1 overflow-auto">
+                <main className="flex-1 overflow-auto bank-page">
                     {children}
                 </main>
             </div>

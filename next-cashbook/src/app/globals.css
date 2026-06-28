@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f3ed;
+  --foreground: #15110c;
+  --bank-surface: #ffffff;
+  --bank-surface-soft: #fff8ef;
+  --bank-border: #eadfce;
+  --bank-muted: #6d6256;
+  --bank-primary: #f97316;
+  --bank-primary-dark: #c2410c;
+  --bank-ink: #15110c;
 }
 
 @theme inline {
@@ -12,20 +19,225 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html {
+  color-scheme: light;
+}
+
+* {
+  scrollbar-color: #f59e0b #f7f3ed;
+}
+
+::selection {
+  background: #fed7aa;
+  color: #15110c;
+}
+
 @layer utilities {
+  .bank-page {
+    min-height: 100%;
+    background:
+      radial-gradient(circle at top left, rgba(249, 115, 22, 0.12), transparent 34rem),
+      linear-gradient(135deg, #fffaf3 0%, #f7f3ed 48%, #fff7ed 100%);
+    color: var(--bank-ink);
+  }
+
+  .bank-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--bank-border);
+    box-shadow: 0 18px 45px rgba(90, 65, 34, 0.08);
+  }
+
+  .bank-primary {
+    background: linear-gradient(135deg, #f97316, #111827);
+    color: #ffffff;
+  }
+
+  .bank-primary-soft {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fed7aa;
+  }
+
+  .bg-black,
+  .bg-\[\#050505\],
+  .bg-\[\#0a0a0a\],
+  .bg-gray-950,
+  .bg-gray-900,
+  .bg-gray-900\/30,
+  .bg-gray-900\/40,
+  .bg-gray-900\/50,
+  .bg-gray-900\/60,
+  .bg-gray-900\/80,
+  .bg-gray-800,
+  .bg-gray-800\/30,
+  .bg-gray-800\/40,
+  .bg-gray-800\/50 {
+    background-color: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  .bg-black\/40,
+  .bg-black\/80,
+  .bg-black\/90,
+  .bg-white\/\[0\.02\],
+  .bg-white\/\[0\.03\],
+  .bg-white\/\[0\.05\],
+  .bg-white\/\[0\.06\],
+  .bg-white\/5,
+  .bg-white\/10 {
+    background-color: rgba(255, 247, 237, 0.88) !important;
+  }
+
+  .from-black,
+  .from-gray-900,
+  .from-gray-800\/50 {
+    --tw-gradient-from: #fffaf3 var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgba(255, 250, 243, 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+  }
+
+  .via-gray-900 {
+    --tw-gradient-via: #f7f3ed var(--tw-gradient-via-position) !important;
+  }
+
+  .to-black,
+  .to-gray-900\/50,
+  .to-gray-700 {
+    --tw-gradient-to: #fff7ed var(--tw-gradient-to-position) !important;
+  }
+
+  .bg-green-600,
+  .bg-green-500,
+  .bg-blue-600,
+  .bg-blue-500,
+  .bg-purple-600,
+  .bg-purple-500,
+  .bg-indigo-600,
+  .bg-orange-600 {
+    background-color: var(--bank-primary) !important;
+  }
+
+  .hover\:bg-green-500:hover,
+  .hover\:bg-blue-500:hover,
+  .hover\:bg-blue-700:hover,
+  .hover\:bg-purple-500:hover,
+  .hover\:bg-orange-500:hover,
+  .hover\:from-green-500:hover,
+  .hover\:from-blue-500:hover,
+  .hover\:from-purple-500:hover,
+  .hover\:from-orange-500:hover {
+    background-color: var(--bank-primary-dark) !important;
+  }
+
+  .from-green-600,
+  .from-green-500,
+  .from-blue-600,
+  .from-blue-500,
+  .from-purple-600,
+  .from-purple-500,
+  .from-orange-600,
+  .from-orange-500 {
+    --tw-gradient-from: #f97316 var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgba(249, 115, 22, 0) var(--tw-gradient-to-position) !important;
+  }
+
+  .to-emerald-600,
+  .to-emerald-500,
+  .to-indigo-600,
+  .to-blue-600,
+  .to-red-600,
+  .to-red-500 {
+    --tw-gradient-to: #111827 var(--tw-gradient-to-position) !important;
+  }
+
+  .text-white,
+  .text-gray-100,
+  .text-gray-200,
+  .text-gray-300 {
+    color: #15110c !important;
+  }
+
+  .text-gray-400,
+  .text-gray-500,
+  .text-gray-600,
+  .text-slate-500,
+  .text-slate-600 {
+    color: var(--bank-muted) !important;
+  }
+
+  .text-green-300,
+  .text-green-400,
+  .text-green-500,
+  .text-blue-300,
+  .text-blue-400,
+  .text-blue-500,
+  .text-blue-600,
+  .text-purple-300,
+  .text-purple-400,
+  .text-purple-500,
+  .text-orange-300,
+  .text-orange-400,
+  .text-orange-500,
+  .text-emerald-400 {
+    color: var(--bank-primary-dark) !important;
+  }
+
+  .border-gray-700,
+  .border-gray-700\/30,
+  .border-gray-700\/50,
+  .border-gray-800,
+  .border-gray-800\/50,
+  .border-gray-800\/60,
+  .border-white\/5,
+  .border-white\/10,
+  .border-white\/20,
+  .border-white\/\[0\.06\],
+  .border-white\/\[0\.07\] {
+    border-color: var(--bank-border) !important;
+  }
+
+  .focus\:border-green-500:focus,
+  .focus\:border-green-500\/50:focus,
+  .focus\:border-blue-500:focus,
+  .focus\:border-purple-500:focus,
+  .focus\:border-orange-500\/50:focus {
+    border-color: var(--bank-primary) !important;
+  }
+
+  .focus\:ring-green-500\/30:focus,
+  .focus\:ring-blue-500:focus {
+    --tw-ring-color: rgba(249, 115, 22, 0.28) !important;
+  }
+
+  button[class*="bg-green-"].text-white,
+  button[class*="bg-blue-"].text-white,
+  button[class*="bg-purple-"].text-white,
+  button[class*="bg-orange-"].text-white,
+  button[class*="from-green-"].text-white,
+  button[class*="from-blue-"].text-white,
+  button[class*="from-purple-"].text-white,
+  button[class*="from-orange-"].text-white,
+  button[class*="bg-green-"] .text-white,
+  button[class*="bg-blue-"] .text-white,
+  button[class*="bg-purple-"] .text-white,
+  button[class*="bg-orange-"] .text-white,
+  button[class*="from-green-"] .text-white,
+  button[class*="from-blue-"] .text-white,
+  button[class*="from-purple-"] .text-white,
+  button[class*="from-orange-"] .text-white,
+  .bg-gradient-to-br .text-white,
+  .bg-gradient-to-r .text-white,
+  .bank-primary.text-white,
+  .bg-red-600.text-white,
+  .bg-red-500.text-white {
+    color: #ffffff !important;
+  }
+
   .animate-in {
     animation-duration: 0.2s;
     animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -47,4 +259,3 @@ body {
     }
   }
 }
-

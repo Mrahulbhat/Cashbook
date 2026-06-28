@@ -77,26 +77,21 @@ const SignupPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black relative overflow-y-auto flex flex-col items-center justify-start p-4 scrollbar-hide">
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-20 left-10 w-72 h-72 bg-green-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            </div>
-
+        <div className="min-h-screen bank-page relative overflow-y-auto flex flex-col items-center justify-start p-4 scrollbar-hide">
             <div className="relative z-10 w-full max-w-md my-auto pt-10">
-                <div className="bg-gradient-to-b from-gray-800/50 to-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-2xl p-8 shadow-2xl">
+                <div className="bg-white/95 backdrop-blur-xl border border-[#eadfce] rounded-2xl p-8 shadow-2xl shadow-orange-950/10">
                     <div className="mb-8 text-center">
-                        <h1 id="signupPageTitle" className="text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 via-emerald-400 to-green-400 bg-clip-text text-transparent">
+                        <h1 id="signupPageTitle" className="text-3xl font-bold mb-2 text-[#15110c]">
                             Cashbook
                         </h1>
-                        <p className="text-gray-400 text-sm">Create your account</p>
+                        <p className="text-slate-500 text-sm">Create your account</p>
                     </div>
 
                     <form onSubmit={handleSignup} className="space-y-4 mb-6">
                         <div>
-                            <label className="block text-gray-300 text-sm font-medium mb-2">Full Name</label>
+                            <label className="block text-slate-700 text-sm font-medium mb-2">Full Name</label>
                             <div className="relative">
-                                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+                                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                                 <input
                                     id="NameInput"
                                     type="text"
@@ -104,14 +99,14 @@ const SignupPage = () => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder="John Doe"
-                                    className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/30 transition-all duration-300"
+                                    className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all duration-300"
                                     disabled={isLoading}
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-gray-300 text-sm font-medium mb-2">Phone Number</label>
+                            <label className="block text-slate-700 text-sm font-medium mb-2">Phone Number</label>
                             <div className="relative">
                                 <input
                                     id="PhoneInput"
@@ -120,16 +115,16 @@ const SignupPage = () => {
                                     value={formData.phone}
                                     onChange={handleChange}
                                     placeholder="Your phone number"
-                                    className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/30 transition-all duration-300"
+                                    className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all duration-300"
                                     disabled={isLoading}
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-gray-300 text-sm font-medium mb-2">Password</label>
+                            <label className="block text-slate-700 text-sm font-medium mb-2">Password</label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+                                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                                 <input
                                     id="PasswordInput"
                                     type={showPassword ? "text" : "password"}
@@ -137,13 +132,13 @@ const SignupPage = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg pl-10 pr-10 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/30 transition-all duration-300"
+                                    className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-10 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all duration-300"
                                     disabled={isLoading}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-orange-700"
                                     disabled={isLoading}
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -152,9 +147,9 @@ const SignupPage = () => {
                         </div>
 
                         <div>
-                            <label className="block text-gray-300 text-sm font-medium mb-2">Confirm Password</label>
+                            <label className="block text-slate-700 text-sm font-medium mb-2">Confirm Password</label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+                                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                                 <input
                                     id="ConfirmPasswordInput"
                                     type="password"
@@ -162,7 +157,7 @@ const SignupPage = () => {
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/30 transition-all duration-300"
+                                    className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all duration-300"
                                     disabled={isLoading}
                                 />
                             </div>
@@ -172,7 +167,7 @@ const SignupPage = () => {
                             id="SignupBtn"
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 flex items-center justify-center gap-2 mt-4"
+                            className="w-full bg-gradient-to-r from-orange-600 to-slate-950 hover:from-orange-500 hover:to-slate-800 disabled:from-slate-300 disabled:to-slate-400 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-orange-500/20 flex items-center justify-center gap-2 mt-4"
                         >
                             {isLoading ? <Loader className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
                             {isLoading ? "Creating Account..." : "Create Account"}
@@ -180,9 +175,9 @@ const SignupPage = () => {
                     </form>
 
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="flex-1 h-px bg-gradient-to-r from-gray-700/0 to-gray-700"></div>
-                        <span className="text-gray-500 text-sm">or</span>
-                        <div className="flex-1 h-px bg-gradient-to-r from-gray-700 to-gray-700/0"></div>
+                        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#eadfce]"></div>
+                        <span className="text-slate-500 text-sm">or</span>
+                        <div className="flex-1 h-px bg-gradient-to-r from-[#eadfce] to-transparent"></div>
                     </div>
 
                     <button
@@ -212,21 +207,21 @@ const SignupPage = () => {
                         Sign up with Google
                     </button>
 
-                    <p className="text-center text-gray-400 text-sm mt-6">
+                    <p className="text-center text-slate-500 text-sm mt-6">
                         Already have an account?{" "}
-                        <a id="LoginLink" href="/login" className="text-green-400 hover:text-green-300 font-semibold transition-colors">Login here</a>
+                        <a id="LoginLink" href="/login" className="text-orange-700 hover:text-orange-800 font-semibold transition-colors">Login here</a>
                     </p>
                 </div>
                 <div className="py-12 text-center">
-                    <p className="text-gray-500 text-sm mb-4">Developed by <span className="text-green-400 font-semibold tracking-wide">M Rahul Bhat</span></p>
+                    <p className="text-slate-500 text-sm mb-4">Developed by <span className="text-orange-700 font-semibold tracking-wide">M Rahul Bhat</span></p>
                     <div className="flex justify-center gap-6">
-                        <a href="#" className="p-2.5 bg-gray-800/40 hover:bg-gray-800/80 border border-gray-700/50 hover:border-green-500/30 rounded-xl text-gray-400 hover:text-green-400 transition-all duration-300 transform hover:-translate-y-1 group">
+                        <a href="#" className="p-2.5 bg-white hover:bg-orange-50 border border-[#eadfce] hover:border-orange-300 rounded-xl text-slate-500 hover:text-orange-700 transition-all duration-300 transform hover:-translate-y-1 group">
                             <Globe size={18} className="group-hover:animate-pulse" />
                         </a>
-                        <a href="#" className="p-2.5 bg-gray-800/40 hover:bg-gray-800/80 border border-gray-700/50 hover:border-green-500/30 rounded-xl text-gray-400 hover:text-green-400 transition-all duration-300 transform hover:-translate-y-1 group">
+                        <a href="#" className="p-2.5 bg-white hover:bg-orange-50 border border-[#eadfce] hover:border-orange-300 rounded-xl text-slate-500 hover:text-orange-700 transition-all duration-300 transform hover:-translate-y-1 group">
                             <Github size={18} />
                         </a>
-                        <a href="#" className="p-2.5 bg-gray-800/40 hover:bg-gray-800/80 border border-gray-700/50 hover:border-green-500/30 rounded-xl text-gray-400 hover:text-green-400 transition-all duration-300 transform hover:-translate-y-1 group">
+                        <a href="#" className="p-2.5 bg-white hover:bg-orange-50 border border-[#eadfce] hover:border-orange-300 rounded-xl text-slate-500 hover:text-orange-700 transition-all duration-300 transform hover:-translate-y-1 group">
                             <Linkedin size={18} />
                         </a>
                     </div>

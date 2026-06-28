@@ -20,8 +20,8 @@ export default function HomePage() {
   }, [user, isLoading, router]);
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <Loader className="w-12 h-12 animate-spin text-green-400" />
+    <div className="min-h-screen bank-page flex items-center justify-center">
+      <Loader className="w-12 h-12 animate-spin text-orange-500" />
     </div>
   );
 }
