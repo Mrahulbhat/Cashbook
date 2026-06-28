@@ -2,21 +2,17 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Loader, ArrowUpRight, ArrowDownLeft, Trash2, Edit2 } from "lucide-react";
+import { Plus, Loader, ArrowUpRight, ArrowDownLeft, Wallet, Tag } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { useAccountStore } from "@/store/useAccountStore";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Modal from "@/components/Modal";
 
 const DashboardContent = () => {
     const router = useRouter();
-    const { transactions, fetchTransactions, deleteTransaction, loading } = useTransactionStore();
-    const { accounts, fetchAccounts } = useAccountStore();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+    const { transactions, fetchTransactions, loading } = useTransactionStore();
+    const { fetchAccounts } = useAccountStore();
 
-    const [lastTransactions, setLastTransactions] = useState([]);
     const [filter, setFilter] = useState("monthly");
     const [pageLoading, setPageLoading] = useState(true);
 
@@ -61,13 +57,6 @@ const DashboardContent = () => {
             return true;
         });
 
-        const sorted = [...transactions].sort((a, b) => {
-            const dateCompare = new Date(b.date) - new Date(a.date);
-            if (dateCompare !== 0) return dateCompare;
-            return new Date(b.createdAt) - new Date(a.createdAt);
-        });
-        setLastTransactions(sorted.slice(0, 5));
-
         let totalIncome = 0;
         let totalExpense = 0;
 
@@ -87,26 +76,6 @@ const DashboardContent = () => {
             balance: totalIncome - totalExpense,
         });
     }, [transactions, filter]);
-
-    const handleDelete = (id) => {
-        setSelectedTransactionId(id);
-        setIsModalOpen(true);
-    };
-
-    const handleConfirmDelete = async () => {
-        if (selectedTransactionId) {
-            await deleteTransaction(selectedTransactionId);
-            await loadData();
-            setSelectedTransactionId(null);
-        }
-    };
-
-    const formatDate = (dateString) =>
-        new Date(dateString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        });
 
     const formatCurrency = (amount) =>
         new Intl.NumberFormat("en-IN", {
@@ -145,97 +114,61 @@ const DashboardContent = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div id="totalIncomeCard" className="bg-gradient-to-br from-green-900/40 to-green-800/20 border border-green-500/30 rounded-2xl p-6 backdrop-blur-sm">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-green-400 font-semibold text-sm">Total Income</h3>
-                            <div className="p-2 bg-green-500/20 rounded-lg">
-                                <ArrowDownLeft className="w-5 h-5 text-green-400" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div id="totalIncomeCard" className="bg-gradient-to-br from-green-900/40 to-green-800/20 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-green-400 font-semibold text-xs">Total Income</h3>
+                            <div className="p-1.5 bg-green-500/20 rounded-md">
+                                <ArrowDownLeft className="w-4 h-4 text-green-400" />
                             </div>
                         </div>
-                        <p id="totalIncome" className="text-2xl font-bold text-white">{formatCurrency(stats.totalIncome)}</p>
+                        <p id="totalIncome" className="text-xl font-bold text-white">{formatCurrency(stats.totalIncome)}</p>
                     </div>
 
-                    <div id="totalExpenseCard" className="bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/30 rounded-2xl p-6 backdrop-blur-sm">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-red-400 font-semibold text-sm">Total Expense</h3>
-                            <div className="p-2 bg-red-500/20 rounded-lg">
-                                <ArrowUpRight className="w-5 h-5 text-red-400" />
+                    <div id="totalExpenseCard" className="bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-red-400 font-semibold text-xs">Total Expense</h3>
+                            <div className="p-1.5 bg-red-500/20 rounded-md">
+                                <ArrowUpRight className="w-4 h-4 text-red-400" />
                             </div>
                         </div>
-                        <p id="totalExpense" className="text-2xl font-bold text-white">{formatCurrency(stats.totalExpense)}</p>
+                        <p id="totalExpense" className="text-xl font-bold text-white">{formatCurrency(stats.totalExpense)}</p>
                     </div>
 
-                    <div id="balanceCard" className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-2xl p-6 backdrop-blur-sm">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-blue-400 font-semibold text-sm">Balance</h3>
+                    <div id="balanceCard" className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-blue-400 font-semibold text-xs">Balance</h3>
                         </div>
-                        <p id="totalBalance" className="text-2xl font-bold text-white">{formatCurrency(stats.balance)}</p>
+                        <p id="totalBalance" className="text-xl font-bold text-white">{formatCurrency(stats.balance)}</p>
                     </div>
                 </div>
 
-                <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700/30 rounded-3xl overflow-hidden">
-                    <div className="bg-gray-800/50 px-8 py-6">
-                        <h2 className="text-white text-2xl font-bold">Recent Transactions</h2>
-                    </div>
-
-                    {lastTransactions.length > 0 ? (
-                        <div className="overflow-x-auto">
-                            <table id="recentTransactionsTable" data-testid="resultsTable" className="w-full">
-                                <thead>
-                                    <tr className="border-b border-gray-700/50 text-gray-400 text-sm">
-                                        <th className="px-8 py-4 text-left">Date</th>
-                                        <th className="px-8 py-4 text-left">Type</th>
-                                        <th className="px-8 py-4 text-left">Amount</th>
-                                        <th className="px-8 py-4 text-left">Category</th>
-                                        <th className="px-8 py-4 text-left">Account</th>
-                                        <th className="px-8 py-4 text-left">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="text-gray-300">
-                                    {lastTransactions.map((transaction, index) => (
-                                        <tr key={transaction._id} id={`transactionRow-${index}`} className="border-b border-gray-700/30 hover:bg-gray-800/30 transition-colors">
-                                            <td className="px-8 py-4">{formatDate(transaction.date)}</td>
-                                            <td className="px-8 py-4 capitalize">{transaction.type}</td>
-                                            <td className={`px-8 py-4 font-bold ${transaction.type === 'income' ? 'text-green-400' : transaction.type === 'investment' ? 'text-blue-400' : 'text-red-400'}`}>
-                                                {formatCurrency(transaction.amount)}
-                                            </td>
-                                            <td className="px-8 py-4">{transaction.category?.name || 'N/A'}</td>
-                                            <td className="px-8 py-4">{transaction.account?.name || 'N/A'}</td>
-                                            <td className="px-8 py-4">
-                                                <div className="flex gap-2">
-                                                    <button id="EditBtn" onClick={() => router.push(`/edit-transaction/${transaction._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
-                                                        <Edit2 className="w-4 h-4 text-blue-400" />
-                                                    </button>
-                                                    <button id="DeleteBtn" onClick={() => handleDelete(transaction._id)} className="p-2 hover:bg-red-500/20 rounded-lg">
-                                                        <Trash2 className="w-4 h-4 text-red-400" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <div className="px-8 py-16 text-center text-gray-400">
-                            <p>No transactions yet</p>
-                            <button id="AddBtn" onClick={() => router.push("/add-transaction")} className="mt-4 bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg inline-flex items-center gap-2">
-                                <Plus size={18} /> Add First Transaction
-                            </button>
-                        </div>
-                    )}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <button
+                        id="AddTransactionBtn"
+                        onClick={() => router.push("/add-transaction")}
+                        className="flex items-center justify-center gap-3 rounded-xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-sm font-semibold text-green-100 transition-all duration-200 hover:border-green-400/60 hover:bg-green-500/20"
+                    >
+                        <Plus className="w-5 h-5 text-green-400" />
+                        Add New Transaction
+                    </button>
+                    <button
+                        id="AddAccountBtn"
+                        onClick={() => router.push("/accounts/add")}
+                        className="flex items-center justify-center gap-3 rounded-xl border border-blue-500/30 bg-blue-500/10 px-5 py-4 text-sm font-semibold text-blue-100 transition-all duration-200 hover:border-blue-400/60 hover:bg-blue-500/20"
+                    >
+                        <Wallet className="w-5 h-5 text-blue-400" />
+                        Add Account
+                    </button>
+                    <button
+                        id="AddCategoryBtn"
+                        onClick={() => router.push("/categories/add")}
+                        className="flex items-center justify-center gap-3 rounded-xl border border-purple-500/30 bg-purple-500/10 px-5 py-4 text-sm font-semibold text-purple-100 transition-all duration-200 hover:border-purple-400/60 hover:bg-purple-500/20"
+                    >
+                        <Tag className="w-5 h-5 text-purple-400" />
+                        Add Category
+                    </button>
                 </div>
-
-                <Modal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onConfirm={handleConfirmDelete}
-                    title="Delete Transaction"
-                    message="Are you sure you want to delete this transaction? This action cannot be undone."
-                    confirmText="Delete"
-                    type="danger"
-                />
             </div>
         </div>
     );

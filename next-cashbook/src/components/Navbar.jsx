@@ -12,7 +12,7 @@ const APPS = [
         label: "Cashbook",
         description: "Finance & budget tracker",
         detail: "Track expenses, manage budgets, and take control of your money.",
-        route: "/dashboard",
+        route: "/transactions",
         icon: Wallet,
         gradient: "from-green-500 to-emerald-600",
         glow: "shadow-green-500/25",

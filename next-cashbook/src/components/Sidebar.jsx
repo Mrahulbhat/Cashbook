@@ -1,32 +1,36 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat, Target, Dumbbell, History, List, HandCoins } from "lucide-react";
 
+const MIN_SIDEBAR_WIDTH = 208;
+const MAX_SIDEBAR_WIDTH = 360;
+const DEFAULT_SIDEBAR_WIDTH = 256;
+
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isResizing, setIsResizing] = useState(false);
+    const [sidebarWidth, setSidebarWidth] = useState(() => {
+        if (typeof window === "undefined") return DEFAULT_SIDEBAR_WIDTH;
+        const savedWidth = Number(window.localStorage.getItem("cashbookSidebarWidth"));
+        if (!savedWidth) return DEFAULT_SIDEBAR_WIDTH;
+        return Math.min(MAX_SIDEBAR_WIDTH, Math.max(MIN_SIDEBAR_WIDTH, savedWidth));
+    });
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const currentTab = searchParams.get('tab');
 
-    // Sidebar is only mounted under Cashbook routes — AppShell never renders
-    // it on /habits, /login, /signup, /select-app, or /admin.
-    // This guard is just a safety net.
-    if (pathname === "/login" || pathname === "/signup" || pathname === "/select-app") {
-        return null;
-    }
-
     const isGym = pathname?.startsWith("/gym");
 
     const cashbookTabs = [
-        { name: "Dashboard", icon: Home, path: "/dashboard", id: "dashboard" },
-        { name: "Planning", icon: Target, path: "/planning", id: "planning" },
         { name: "Transactions", icon: TrendingUp, path: "/transactions", id: "transactions" },
         { name: "Accounts", icon: Wallet, path: "/accounts", id: "accounts" },
-        { name: "Transfer", icon: Repeat, path: "/transfer", id: "transfer" },
         { name: "Categories", icon: Tag, path: "/categories", id: "categories" },
+        { name: "Dashboard", icon: Home, path: "/dashboard", id: "dashboard" },
+        { name: "Planning", icon: Target, path: "/planning", id: "planning" },
+        { name: "Transfer", icon: Repeat, path: "/transfer", id: "transfer" },
         { name: "IOU Tracker", icon: HandCoins, path: "/iou", id: "iou" },
         { name: "Statistics", icon: TrendingUp, path: "/stats", id: "statistics" },
     ];
@@ -47,7 +51,43 @@ const Sidebar = () => {
         setIsOpen(false);
     };
 
+    useEffect(() => {
+        if (!isResizing) return;
+
+        const handlePointerMove = (event) => {
+            const nextWidth = Math.min(MAX_SIDEBAR_WIDTH, Math.max(MIN_SIDEBAR_WIDTH, event.clientX));
+            setSidebarWidth(nextWidth);
+        };
+
+        const handlePointerUp = () => {
+            setIsResizing(false);
+        };
+
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+        window.addEventListener("pointermove", handlePointerMove);
+        window.addEventListener("pointerup", handlePointerUp);
+
+        return () => {
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+            window.removeEventListener("pointermove", handlePointerMove);
+            window.removeEventListener("pointerup", handlePointerUp);
+        };
+    }, [isResizing]);
+
+    useEffect(() => {
+        window.localStorage.setItem("cashbookSidebarWidth", String(sidebarWidth));
+    }, [sidebarWidth]);
+
     const isActive = (path) => pathname === path;
+
+    // Sidebar is only mounted under Cashbook routes — AppShell never renders
+    // it on /habits, /login, /signup, /select-app, or /admin.
+    // This guard is just a safety net.
+    if (pathname === "/login" || pathname === "/signup" || pathname === "/select-app") {
+        return null;
+    }
 
     return (
         <>
@@ -60,8 +100,9 @@ const Sidebar = () => {
             </button>
 
             <div id="sidebar"
-                className={`fixed left-0 top-[10vh] h-[90vh] w-64 bg-gradient-to-b from-gray-900 via-gray-900 to-black border-r border-gray-700/50 backdrop-blur-sm z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
-                    } md:translate-x-0 md:relative md:top-0 md:h-[90vh] md:w-64 md:z-30`}
+                style={{ width: `${sidebarWidth}px`, minWidth: `${sidebarWidth}px` }}
+                className={`fixed left-0 top-[10vh] h-[90vh] bg-gradient-to-b from-gray-900 via-gray-900 to-black border-r border-gray-700/50 backdrop-blur-sm z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+                    } md:translate-x-0 md:relative md:top-0 md:h-[90vh] md:z-30`}
             >
                 <div className="p-6 space-y-2">
                     <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-6">
@@ -90,6 +131,16 @@ const Sidebar = () => {
                         );
                     })}
                 </div>
+
+                <button
+                    type="button"
+                    aria-label="Resize sidebar"
+                    onPointerDown={(event) => {
+                        event.preventDefault();
+                        setIsResizing(true);
+                    }}
+                    className={`hidden md:block absolute top-0 right-0 h-full w-2 translate-x-1 cursor-col-resize transition-colors ${isResizing ? "bg-green-500/40" : "bg-transparent hover:bg-green-500/25"}`}
+                />
             </div>
 
 

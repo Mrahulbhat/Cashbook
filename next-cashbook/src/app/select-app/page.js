@@ -11,7 +11,7 @@ const APPS = [
         name: "Cashbook",
         description: "Track expenses & manage budgets",
         icon: Wallet,
-        route: "/dashboard",
+        route: "/transactions",
         iconColor: "text-emerald-400",
         iconRing: "ring-emerald-500/20",
         iconBg: "bg-emerald-500/10",
