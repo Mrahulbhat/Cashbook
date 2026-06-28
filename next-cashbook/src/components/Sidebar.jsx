@@ -30,7 +30,8 @@ const Sidebar = () => {
         { name: "Categories", icon: Tag, path: "/categories", id: "categories" },
         { name: "Dashboard", icon: Home, path: "/dashboard", id: "dashboard" },
         { name: "Planning", icon: Target, path: "/planning", id: "planning" },
-        { name: "Transfer", icon: Repeat, path: "/transfer", id: "transfer" },
+        // Temporarily removed as there is a bug
+        // { name: "Transfer", icon: Repeat, path: "/transfer", id: "transfer" },
         { name: "IOU Tracker", icon: HandCoins, path: "/iou", id: "iou" },
         { name: "Statistics", icon: TrendingUp, path: "/stats", id: "statistics" },
     ];
