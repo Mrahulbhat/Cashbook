@@ -195,15 +195,11 @@ const Navbar = () => {
                 <div className="relative z-10 flex items-center">
                     <button
                         id="app-switcher-toggle"
-                        onClick={() => setSwitcherOpen(v => !v)}
-                        title="Switch application"
-                        className={`p-2 rounded-xl border transition-all duration-200 group
-                            ${switcherOpen
-                                ? 'bg-orange-50 border-orange-300 text-orange-700'
-                                : 'bg-white border-[#eadfce] text-slate-600 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700'
-                            }`}
+                        onClick={() => router.push("/select-app")}
+                        title="Go to app selector"
+                        className="p-2 rounded-xl border transition-all duration-200 bg-white border-[#eadfce] text-slate-600 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700"
                     >
-                        <LayoutGrid size={20} className="transition-transform duration-200 group-hover:scale-110" />
+                        <LayoutGrid size={20} className="transition-transform duration-200 hover:scale-110" />
                     </button>
                 </div>
 
