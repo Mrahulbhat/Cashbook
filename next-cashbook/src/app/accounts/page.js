@@ -90,10 +90,10 @@ const AccountsContent = () => {
 
                 {accounts.length > 0 && (
                     <div id="balanceContainer" className="mb-8 bg-white/5 border border-orange-400/20 rounded-2xl p-4 backdrop-blur-sm">
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="text-orange-400 text-sm">
+                        <div className="flex items-center justify-between gap-5">
+                            <div className="text-orange-400 text-sm flex items-center gap-2">
                                 <span className="font-semibold">Total Balance</span>
-                                <span className="ml-3 text-white font-bold">{formatCurrency(getTotalBalance())}</span>
+                                <span className="text-white font-bold">{formatCurrency(getTotalBalance())}</span>
                             </div>
                             <div className="text-orange-400 text-sm">
                                 <span className="text-white font-semibold">{accounts.length}</span>
