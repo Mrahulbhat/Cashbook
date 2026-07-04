@@ -73,31 +73,22 @@ const CategoriesContent = () => {
             </div>
 
             <div className="relative z-10 max-w-6xl mx-auto pb-20">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
                     <div>
-                        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Categories</h1>
-                        <p className="text-gray-400">Organize your income and expenses</p>
+                        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-0">Categories</h1>
                     </div>
-                    <button
-                        id="AddBtn"
-                        onClick={() => router.push("/categories/add")}
-                        className="mt-4 sm:mt-0 bg-purple-600 hover:bg-purple-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-transform transform hover:scale-105"
-                    >
-                        <Plus size={18} /> Add Category
-                    </button>
-                </div>
-
-                <div className="mb-8 flex gap-3">
-                    {['all', 'income', 'expense'].map(f => (
-                        <button
-                            id={`FilterBtn-${f}`}
-                            key={f}
-                            onClick={() => setFilter(f)}
-                            className={`px-6 py-2 rounded-lg capitalize transition-colors ${filter === f ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
-                        >
-                            {f}
-                        </button>
-                    ))}
+                    <div className="flex gap-3 justify-end w-full sm:w-auto">
+                        {['all', 'income', 'expense'].map(f => (
+                            <button
+                                id={`FilterBtn-${f}`}
+                                key={f}
+                                onClick={() => setFilter(f)}
+                                className={`px-6 py-2 rounded-lg capitalize transition-colors ${filter === f ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
+                            >
+                                {f}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="mb-6 flex items-center justify-start gap-3">
