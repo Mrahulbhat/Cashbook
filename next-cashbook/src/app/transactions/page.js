@@ -95,14 +95,19 @@ const TransactionsContent = () => {
                                         <tr key={t._id} id={`transactionRow-${index}`} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
                                             <td className="px-8 py-4">{new Date(t.date).toLocaleDateString()}</td>
                                             <td className="px-8 py-4 flex items-center gap-2">
-                                                {t.type === 'income' ? <ArrowDownLeft className="text-green-400" size={16} /> : 
-                                                 t.type === 'investment' ? <Repeat className="text-blue-400" size={16} /> :
-                                                 <ArrowUpRight className="text-red-400" size={16} />}
+                                                {t.type === 'income' ? <ArrowDownLeft className="text-green-400" size={16} /> :
+                                                    t.type === 'investment' ? <Repeat className="text-blue-400" size={16} /> :
+                                                        <ArrowUpRight className="text-red-400" size={16} />}
                                                 <span className="capitalize">{t.type}</span>
                                             </td>
                                             <td className={`px-8 py-4 font-bold ${t.type === 'income' ? 'text-green-400' : t.type === 'investment' ? 'text-blue-400' : 'text-red-400'}`}>{formatCurrency(t.amount)}</td>
                                             <td className="px-8 py-4">{t.category?.name || 'N/A'}</td>
                                             <td className="px-8 py-4">{t.account?.name || 'N/A'}</td>
+                                            <td className="px-8 py-4">
+                                                {t.type === "investment"
+                                                    ? `${t.account?.name} → ${t.toAccount?.name || "N/A"}`
+                                                    : t.account?.name}
+                                            </td>
                                             <td className="px-8 py-4">
                                                 <div className="flex gap-2">
                                                     <button id="EditBtn" onClick={() => router.push(`/edit-transaction/${t._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg"><Edit2 size={16} className="text-blue-400" /></button>

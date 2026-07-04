@@ -14,11 +14,21 @@ export async function GET(req, { params }) {
 
         const { id } = await params;
         await dbConnect();
-        const transaction = await Transaction.findOne({ _id: id, userId: user.userId })
-            .populate('account')
-            .populate('category');
 
-        if (!transaction) return NextResponse.json({ message: 'Transaction not found' }, { status: 404 });
+        const transaction = await Transaction.findOne({
+            _id: id,
+            userId: user.userId
+        })
+            .populate("account")
+            .populate("toAccount")
+            .populate("category");
+
+        if (!transaction) {
+            return NextResponse.json(
+                { message: "Transaction not found" },
+                { status: 404 }
+            );
+        }
 
         return NextResponse.json(transaction, { status: 200 });
     } catch (error) {
@@ -104,7 +114,7 @@ export async function DELETE(req, { params }) {
             }
             await account.save();
         }
-        
+
         await Transaction.findByIdAndDelete(id);
 
         // If this transaction had a linked IOU, delete it too

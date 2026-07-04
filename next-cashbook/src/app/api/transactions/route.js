@@ -4,7 +4,6 @@ export const dynamic = 'force-dynamic';
 import dbConnect from '@/lib/dbConnect';
 import Transaction from '@/models/Transaction';
 import Account from '@/models/Account';
-import Category from '@/models/Category';
 import { getAuthUser } from '@/lib/getAuthUser';
 
 export async function GET(req) {
@@ -17,6 +16,7 @@ export async function GET(req) {
         await dbConnect();
         const transactions = await Transaction.find({ userId: user.userId })
             .populate('account')
+            .populate('toAccount')
             .populate('category')
             .sort({ date: -1, createdAt: -1 });
 
@@ -33,35 +33,94 @@ export async function POST(req) {
             return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
         }
 
-        const { amount, type, description, category, date, account } = await req.json();
+        const {
+            amount,
+            type,
+            description,
+            category,
+            date,
+            account,
+            toAccount
+        } = await req.json();
 
-        if (!amount || !type || !category || !date || !account) {
-            return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+        if (!amount || !type || !date || !account) {
+            return NextResponse.json(
+                { message: "Missing required fields" },
+                { status: 400 }
+            );
+        }
+
+        if (type !== "investment" && !category) {
+            return NextResponse.json(
+                { message: "Category is required" },
+                { status: 400 }
+            );
+        }
+
+        if (type === "investment" && !toAccount) {
+            return NextResponse.json(
+                { message: "Destination account required" },
+                { status: 400 }
+            );
         }
 
         await dbConnect();
-        const accountExists = await Account.findOne({ _id: account, userId: user.userId });
+
+        const accountExists = await Account.findOne({
+            _id: account,
+            userId: user.userId
+        });
+
         if (!accountExists) {
-            return NextResponse.json({ message: 'Account not found' }, { status: 404 });
+            return NextResponse.json(
+                { message: "Account not found" },
+                { status: 404 }
+            );
         }
+
+        let destinationAccount = null;
+
+        if (type === "investment") {
+            destinationAccount = await Account.findOne({
+                _id: toAccount,
+                userId: user.userId
+            });
+
+            if (!destinationAccount) {
+                return NextResponse.json(
+                    { message: "Destination account not found" },
+                    { status: 404 }
+                );
+            }
+        }
+
 
         const transaction = new Transaction({
             userId: user.userId,
             amount,
             type: type.toLowerCase(),
             description,
-            category,
+            category: type === "investment" ? undefined : category,
             date,
             account,
+            toAccount
         });
 
         await transaction.save();
 
         const numAmount = Number(amount);
-        if (transaction.type === 'income') {
+
+        if (transaction.type === "income") {
             accountExists.balance += numAmount;
-        } else {
+        }
+        else if (transaction.type === "expense") {
             accountExists.balance -= numAmount;
+        }
+        else if (transaction.type === "investment") {
+            accountExists.balance -= numAmount;
+            destinationAccount.balance += numAmount;
+
+            await destinationAccount.save();
         }
 
         await accountExists.save();

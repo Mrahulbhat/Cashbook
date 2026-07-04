@@ -13,6 +13,7 @@ const transactionSchema = new mongoose.Schema(
         },
         type: {
             type: String,
+            enum: ["income", "expense", "investment"],
             required: true
         },
         description: {
@@ -21,7 +22,9 @@ const transactionSchema = new mongoose.Schema(
         category: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Category",
-            required: true
+            required: function () {
+                return this.type !== "investment";
+            }
         },
         date: {
             type: Date,
@@ -31,7 +34,12 @@ const transactionSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Account",
             required: true
-        }
+        },
+        toAccount: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Account"
+        },
+
     },
     { timestamps: true }
 );

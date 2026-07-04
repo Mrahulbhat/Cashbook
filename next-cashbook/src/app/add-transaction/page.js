@@ -25,11 +25,13 @@ const AddTransactionContent = () => {
         category: "",
         date: new Date().toISOString().split("T")[0],
         account: "",
+        toAccount: "",
     });
 
     const [iouEnabled, setIouEnabled] = useState(false);
     const [iouFriend, setIouFriend] = useState("");
     const [iouAmountToGetBack, setIouAmountToGetBack] = useState("");
+    const [pendingAccountField, setPendingAccountField] = useState("account");
 
     const [modalState, setModalState] = useState({
         isOpen: false,
@@ -45,6 +47,7 @@ const AddTransactionContent = () => {
         const { name, value } = e.target;
         
         if (value === "ADD_NEW_ACCOUNT") {
+            setPendingAccountField(name);
             setModalState({ isOpen: true, type: 'account' });
             return;
         }
@@ -58,7 +61,7 @@ const AddTransactionContent = () => {
 
     const handleQuickCreateSuccess = (id, type) => {
         if (type === 'account') {
-            setFormData(prev => ({ ...prev, account: id }));
+            setFormData(prev => ({ ...prev, [pendingAccountField]: id }));
         } else if (type === 'category') {
             setFormData(prev => ({ ...prev, category: id }));
         }
@@ -69,14 +72,24 @@ const AddTransactionContent = () => {
         const defaultAccount = accounts.find(acc => acc.isDefault);
         const accountToUse = formData.account || (defaultAccount ? defaultAccount._id : "");
         
+        const isInvestment = formData.type === "investment";
         const defaultCategory = categories.find(cat => cat.isDefault && cat.type === formData.type);
-        const categoryToUse = formData.category || (defaultCategory ? defaultCategory._id : "");
+        const categoryToUse = isInvestment ? "" : (formData.category || (defaultCategory ? defaultCategory._id : ""));
 
-        if (!formData.amount || !categoryToUse || !accountToUse) {
+        if (!formData.amount || !accountToUse || (!isInvestment && !categoryToUse)) {
             toast.error("Please fill in all required fields");
             return null;
         }
-        if (iouEnabled) {
+        if (isInvestment && !formData.toAccount) {
+            toast.error("Please select the account money will be transferred to");
+            return null;
+        }
+        if (isInvestment && accountToUse === formData.toAccount) {
+            toast.error("From account and to account cannot be the same");
+            return null;
+        }
+        const shouldCreateIou = formData.type === "expense" && iouEnabled;
+        if (shouldCreateIou) {
             if (!iouFriend.trim()) {
                 toast.error("Please enter your friend's name");
                 return null;
@@ -90,14 +103,15 @@ const AddTransactionContent = () => {
         const result = await addTransaction({
             ...formData,
             account: accountToUse,
-            category: categoryToUse,
+            category: isInvestment ? undefined : categoryToUse,
+            toAccount: isInvestment ? formData.toAccount : undefined,
             amount: parseFloat(formData.amount),
             date: new Date(formData.date),
         });
 
         if (result) {
             // If user marked this as paid-for-friend, create IOU
-            if (iouEnabled && iouFriend.trim()) {
+            if (shouldCreateIou && iouFriend.trim()) {
                 await addIou({
                     friendName: iouFriend.trim(),
                     amount: parseFloat(iouAmountToGetBack),
@@ -131,6 +145,7 @@ const AddTransactionContent = () => {
                 category: "",
                 date: prev.date, // KEEP DATE
                 account: prev.account, // Keep account for convenience
+                toAccount: prev.toAccount,
             }));
             // Also reset IOU state
             setIouFriend("");
@@ -139,13 +154,14 @@ const AddTransactionContent = () => {
         }
     };
 
+    const isInvestment = formData.type === "investment";
     const filteredCategories = categories.filter(cat => cat.type === formData.type);
 
     const defaultAccount = accounts.find(acc => acc.isDefault);
     const accountToUse = formData.account || (defaultAccount ? defaultAccount._id : "");
 
     const defaultCategory = categories.find(cat => cat.isDefault && cat.type === formData.type);
-    const categoryToUse = formData.category || (defaultCategory ? defaultCategory._id : "");
+    const categoryToUse = isInvestment ? "" : (formData.category || (defaultCategory ? defaultCategory._id : ""));
 
     const isLoading = accLoading || catLoading || transLoading;
 
@@ -192,7 +208,7 @@ const AddTransactionContent = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-400 mb-2">
-                                    Account * {defaultAccount && <span className="text-xs text-green-400 font-normal">(Auto-selected default: {defaultAccount.name})</span>}
+                                    From Account * {defaultAccount && <span className="text-xs text-green-400 font-normal">(Auto-selected default: {defaultAccount.name})</span>}
                                 </label>
                                 <select id="AccountDropdown" name="account" value={accountToUse} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
                                     <option value="">Select Account</option>
@@ -206,10 +222,10 @@ const AddTransactionContent = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-400 mb-2">
-                                    Category * {defaultCategory && <span className="text-xs text-green-400 font-normal">(Auto-selected default: {defaultCategory.name})</span>}
+                                    Category {!isInvestment && "*"} {!isInvestment && defaultCategory && <span className="text-xs text-green-400 font-normal">(Auto-selected default: {defaultCategory.name})</span>}
                                 </label>
-                                <select id="CategoryDropdown" name="category" value={categoryToUse} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
-                                    <option value="">Select Category</option>
+                                <select id="CategoryDropdown" name="category" value={categoryToUse} onChange={handleInputChange} disabled={isInvestment} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white disabled:cursor-not-allowed disabled:opacity-60" required={!isInvestment}>
+                                    <option value="">{isInvestment ? "Not needed for investment" : "Select Category"}</option>
                                     <optgroup label="Actions">
                                         <option value="ADD_NEW_CATEGORY">+ Add New Category</option>
                                     </optgroup>
@@ -219,6 +235,21 @@ const AddTransactionContent = () => {
                                 </select>
                             </div>
                         </div>
+
+                        {isInvestment && (
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-400 mb-2">To Account *</label>
+                                <select id="ToAccountDropdown" name="toAccount" value={formData.toAccount} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white" required>
+                                    <option value="">Select destination account</option>
+                                    <optgroup label="Actions">
+                                        <option value="ADD_NEW_ACCOUNT">+ Add New Account</option>
+                                    </optgroup>
+                                    <optgroup label="Existing Accounts">
+                                        {accounts.map(acc => <option key={acc._id} value={acc._id}>{acc.name}</option>)}
+                                    </optgroup>
+                                </select>
+                            </div>
+                        )}
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Date *</label>
