@@ -13,6 +13,8 @@ const TransactionsContent = () => {
     const [filter, setFilter] = useState("monthly");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
     useEffect(() => {
         fetchTransactions();
@@ -42,6 +44,14 @@ const TransactionsContent = () => {
         }
     };
 
+    const handleConfirmBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+        for (const id of selectedIds) {
+            await deleteTransaction(id);
+        }
+        setSelectedIds([]);
+    };
+
     const formatCurrency = (amount) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(amount);
 
     return (
@@ -51,22 +61,40 @@ const TransactionsContent = () => {
             </div>
 
             <div className="relative z-10 max-w-6xl mx-auto pb-20">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-white mb-2">Transactions</h1>
-                        <p className="text-gray-400">View and manage your history</p>
+                        <h1 className="text-3xl font-bold text-white mb-0">Transactions</h1>
                     </div>
-                    <button id="AddBtn" onClick={() => router.push("/add-transaction")} className="mt-4 sm:mt-0 bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-transform transform hover:scale-105">
-                        <Plus size={18} /> Add Transaction
-                    </button>
+                    <div className="flex gap-3 justify-end w-full sm:w-auto">
+                        {['monthly', 'yearly', 'lifetime'].map(f => (
+                            <button key={f} id={`FilterBtn-${f}`} onClick={() => setFilter(f)} className={`px-6 py-2 rounded-lg capitalize ${filter === f ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}`}>
+                                {f}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="flex gap-3 mb-8">
-                    {['monthly', 'yearly', 'lifetime'].map(f => (
-                        <button key={f} id={`FilterBtn-${f}`} onClick={() => setFilter(f)} className={`px-6 py-2 rounded-lg capitalize ${filter === f ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}`}>
-                            {f}
+                <div className="mb-6 flex items-center justify-start gap-3">
+                    <div className="flex items-center gap-3">
+                        <button
+                            id="AddBtnSmall"
+                            onClick={() => router.push("/add-transaction")}
+                            className="bg-white text-orange-700 border border-orange-500 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold hover:bg-orange-100"
+                        >
+                            <Plus size={16} className="text-orange-600" />
+                            <span className="text-orange-700">Add</span>
                         </button>
-                    ))}
+
+                        <button
+                            id="BulkDeleteBtn"
+                            onClick={() => setIsBulkModalOpen(true)}
+                            disabled={selectedIds.length === 0}
+                            className={`bg-white text-orange-700 border border-orange-500 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                            <Trash2 size={16} className="text-orange-600" />
+                            <span className="text-orange-700">Delete</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="bg-gray-900/50 border border-gray-800 rounded-3xl overflow-hidden backdrop-blur-xl">
@@ -78,42 +106,63 @@ const TransactionsContent = () => {
                     {loading ? (
                         <div className="p-20 flex justify-center"><Loader className="animate-spin text-green-500" /></div>
                     ) : filteredTransactions.length > 0 ? (
-                        <div className="overflow-x-auto">
-                            <table data-testid="resultsTable" className="w-full">
-                                <thead className="text-gray-400 text-sm text-left">
-                                    <tr>
-                                        <th className="px-8 py-4">Date</th>
-                                        <th className="px-8 py-4">Type</th>
-                                        <th className="px-8 py-4">Amount</th>
-                                        <th className="px-8 py-4">Category</th>
-                                        <th className="px-8 py-4">Account</th>
-                                        <th className="px-8 py-4">Actions</th>
+                        <div className="overflow-x-auto bg-gray-900/30 border border-gray-800 rounded-2xl p-4">
+                            <table data-testid="resultsTable" className="w-full table-auto text-center border-collapse border border-gray-800">
+                                <thead>
+                                    <tr className="text-gray-400 text-sm">
+                                        <th className="w-10 py-1 px-2 border border-gray-800">
+                                            <input
+                                                type="checkbox"
+                                                onChange={() => {
+                                                    if (selectedIds.length === filteredTransactions.length) setSelectedIds([]);
+                                                    else setSelectedIds(filteredTransactions.map(t => t._id));
+                                                }}
+                                                checked={filteredTransactions.length > 0 && selectedIds.length === filteredTransactions.length}
+                                                aria-label="Select all transactions"
+                                            />
+                                        </th>
+                                        <th className="w-10 py-1 px-2 border border-gray-800">Actions</th>
+                                        <th className="py-3 border border-gray-800">Date</th>
+                                        <th className="py-3 border border-gray-800">Type</th>
+                                        <th className="py-3 border border-gray-800">Amount</th>
+                                        <th className="py-3 border border-gray-800">Category</th>
+                                        <th className="py-3 border border-gray-800">Account</th>
                                     </tr>
                                 </thead>
-                                <tbody className="text-gray-300">
-                                    {filteredTransactions.map((t, index) => (
-                                        <tr key={t._id} id={`transactionRow-${index}`} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
-                                            <td className="px-8 py-4">{new Date(t.date).toLocaleDateString()}</td>
-                                            <td className="px-8 py-4 flex items-center gap-2">
-                                                {t.type === 'income' ? <ArrowDownLeft className="text-green-400" size={16} /> :
-                                                    t.type === 'investment' ? <Repeat className="text-blue-400" size={16} /> :
-                                                        <ArrowUpRight className="text-red-400" size={16} />}
-                                                <span className="capitalize">{t.type}</span>
+                                <tbody>
+                                    {filteredTransactions.map((t) => (
+                                        <tr key={t._id} className="hover:bg-gray-800/20">
+                                            <td className="w-10 py-1 px-2 border border-gray-800">
+                                                <input
+                                                    type="checkbox"
+                                                    className="accent-orange-600 border-orange-500"
+                                                    checked={selectedIds.includes(t._id)}
+                                                    onChange={() => setSelectedIds(prev => prev.includes(t._id) ? prev.filter(x => x !== t._id) : [...prev, t._id])}
+                                                    aria-label={`Select ${t._id}`}
+                                                />
                                             </td>
-                                            <td className={`px-8 py-4 font-bold ${t.type === 'income' ? 'text-green-400' : t.type === 'investment' ? 'text-blue-400' : 'text-red-400'}`}>{formatCurrency(t.amount)}</td>
-                                            <td className="px-8 py-4">{t.category?.name || 'N/A'}</td>
-                                            <td className="px-8 py-4">{t.account?.name || 'N/A'}</td>
-                                            <td className="px-8 py-4">
-                                                {t.type === "investment"
-                                                    ? `${t.account?.name} → ${t.toAccount?.name || "N/A"}`
-                                                    : t.account?.name}
-                                            </td>
-                                            <td className="px-8 py-4">
-                                                <div className="flex gap-2">
-                                                    <button id="EditBtn" onClick={() => router.push(`/edit-transaction/${t._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg"><Edit2 size={16} className="text-blue-400" /></button>
-                                                    <button id="DeleteBtn" onClick={() => handleDelete(t._id)} className="p-2 hover:bg-red-500/20 rounded-lg"><Trash2 size={16} className="text-red-400" /></button>
+                                            <td className="w-10 py-1 px-2 border border-gray-800">
+                                                <div className="flex items-center gap-1 justify-center">
+                                                    <button id="EditBtn" onClick={() => router.push(`/edit-transaction/${t._id}`)} className="p-1 hover:bg-blue-500/20 rounded-md">
+                                                        <Edit2 className="w-4 h-4 text-blue-400" />
+                                                    </button>
+                                                    <button id="DeleteBtn" onClick={() => handleDelete(t._id)} className="p-1 hover:bg-red-500/20 rounded-md">
+                                                        <Trash2 className="w-4 h-4 text-red-400" />
+                                                    </button>
                                                 </div>
                                             </td>
+                                            <td className="py-4 border border-gray-800">{new Date(t.date).toLocaleDateString()}</td>
+                                            <td className="py-4 border border-gray-800">
+                                                <div className="flex items-center gap-2 justify-center">
+                                                    {t.type === 'income' ? <ArrowDownLeft className="text-green-400" size={16} /> :
+                                                        t.type === 'investment' ? <Repeat className="text-blue-400" size={16} /> :
+                                                            <ArrowUpRight className="text-red-400" size={16} />}
+                                                    <span className="capitalize">{t.type}</span>
+                                                </div>
+                                            </td>
+                                            <td className={`py-4 border border-gray-800 font-bold ${t.type === 'income' ? 'text-green-400' : t.type === 'investment' ? 'text-blue-400' : 'text-red-400'}`}>{formatCurrency(t.amount)}</td>
+                                            <td className="py-4 border border-gray-800">{t.category?.name || 'N/A'}</td>
+                                            <td className="py-4 border border-gray-800">{t.type === "investment" ? `${t.account?.name} → ${t.toAccount?.name || "N/A"}` : t.account?.name || 'N/A'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -130,6 +179,16 @@ const TransactionsContent = () => {
                     onConfirm={handleConfirmDelete}
                     title="Delete Transaction"
                     message="Are you sure you want to delete this transaction? This action cannot be undone."
+                    confirmText="Delete"
+                    type="danger"
+                />
+
+                <Modal
+                    isOpen={isBulkModalOpen}
+                    onClose={() => setIsBulkModalOpen(false)}
+                    onConfirm={handleConfirmBulkDelete}
+                    title="Delete Selected Transactions"
+                    message={`Are you sure you want to delete ${selectedIds.length} selected transaction(s)? This will be permanent.`}
                     confirmText="Delete"
                     type="danger"
                 />

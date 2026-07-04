@@ -83,19 +83,17 @@ const AccountsContent = () => {
             <div className="relative z-10 max-w-6xl mx-auto pb-20">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Accounts</h1>
-                        <p className="text-gray-400">Manage your financial accounts</p>
-                    </div>
+                        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Accounts</h1>                    </div>
                 </div>
 
                 {accounts.length > 0 && (
-                    <div id="balanceContainer" className="mb-8 bg-white/5 border border-orange-400/20 rounded-2xl p-4 backdrop-blur-sm">
+                    <div id="balanceContainer" className="mb-8 bg-white/5 border border-orange-500/20 rounded-2xl p-4 backdrop-blur-sm">
                         <div className="flex items-center justify-between gap-5">
-                            <div className="text-orange-400 text-sm flex items-center gap-2">
+                            <div className="text-orange-600 text-sm flex items-center gap-2">
                                 <span className="font-semibold">Total Balance</span>
                                 <span className="text-white font-bold">{formatCurrency(getTotalBalance())}</span>
                             </div>
-                            <div className="text-orange-400 text-sm">
+                            <div className="text-orange-600 text-sm">
                                 <span className="text-white font-semibold">{accounts.length}</span>
                                 <span className="ml-2">account(s)</span>
                             </div>
@@ -108,20 +106,20 @@ const AccountsContent = () => {
                         <button
                             id="AddBtnSmall"
                             onClick={() => router.push("/accounts/add")}
-                            className="bg-white text-orange-600 border border-orange-400 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold hover:bg-orange-50"
+                            className="bg-white text-orange-700 border border-orange-500 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold hover:bg-orange-100"
                         >
-                            <Plus size={16} className="text-orange-500" />
-                            <span className="text-orange-600">Add</span>
+                            <Plus size={16} className="text-orange-600" />
+                            <span className="text-orange-700">Add</span>
                         </button>
 
                         <button
                             id="BulkDeleteBtn"
                             onClick={() => setIsBulkModalOpen(true)}
                             disabled={selectedIds.length === 0}
-                            className={`bg-white text-orange-600 border border-orange-400 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                            className={`bg-white text-orange-700 border border-orange-500 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
-                            <Trash2 size={16} className="text-orange-500" />
-                            <span className="text-orange-600">Delete</span>
+                            <Trash2 size={16} className="text-orange-600" />
+                            <span className="text-orange-700">Delete</span>
                         </button>
                     </div>
                 </div>
@@ -149,7 +147,7 @@ const AccountsContent = () => {
                                     <td className="w-10 py-1 px-2 border border-gray-800">
                                             <input
                                                 type="checkbox"
-                                                className="accent-orange-500 border-orange-400"
+                                                className="accent-orange-600 border-orange-500"
                                                 checked={selectedIds.includes(account._id)}
                                                 onChange={() => toggleSelect(account._id)}
                                                 aria-label={`Select ${account.name}`}
@@ -158,7 +156,7 @@ const AccountsContent = () => {
                                     <td className="w-10 py-1 px-2 border border-gray-800">
                                         <div className="flex items-center gap-1 justify-center">
                                             <button id="EditBtn" onClick={() => router.push(`/accounts/edit/${account._id}`)} className="p-1 hover:bg-blue-500/20 rounded-md">
-                                                <Folder className="w-4 h-4 text-orange-500" />
+                                                <Folder className="w-4 h-4 text-orange-600" />
                                             </button>
                                         </div>
                                     </td>

@@ -105,20 +105,20 @@ const CategoriesContent = () => {
                         <button
                             id="AddBtnSmall"
                             onClick={() => router.push("/categories/add")}
-                            className="bg-white text-orange-600 border border-orange-400 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold hover:bg-orange-50"
+                            className="bg-white text-orange-700 border border-orange-500 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold hover:bg-orange-100"
                         >
-                            <Plus size={16} className="text-orange-500" />
-                            <span className="text-orange-600">Add</span>
+                            <Plus size={16} className="text-orange-600" />
+                            <span className="text-orange-700">Add</span>
                         </button>
 
                         <button
                             id="BulkDeleteBtn"
                             onClick={() => setIsBulkModalOpen(true)}
                             disabled={selectedIds.length === 0}
-                            className={`bg-white text-orange-600 border border-orange-400 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                            className={`bg-white text-orange-700 border border-orange-500 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
-                            <Trash2 size={16} className="text-orange-500" />
-                            <span className="text-orange-600">Delete</span>
+                            <Trash2 size={16} className="text-orange-600" />
+                            <span className="text-orange-700">Delete</span>
                         </button>
                     </div>
                 </div>
@@ -146,7 +146,7 @@ const CategoriesContent = () => {
                                     <td className="w-10 py-1 px-2 border border-gray-800">
                                                 <input
                                                     type="checkbox"
-                                                    className="accent-orange-500 border-orange-400"
+                                                    className="accent-orange-600 border-orange-500"
                                                     checked={selectedIds.includes(category._id)}
                                                     onChange={() => toggleSelect(category._id)}
                                                     aria-label={`Select ${category.name}`}
@@ -154,8 +154,8 @@ const CategoriesContent = () => {
                                     </td>
                                     <td className="w-10 py-1 px-2 border border-gray-800">
                                         <div className="flex items-center gap-1 justify-center">
-                                            <button id="EditBtn" onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-1 hover:bg-orange-50 rounded-md">
-                                                <Folder className="w-4 h-4 text-orange-500" />
+                                                <button id="EditBtn" onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-1 hover:bg-orange-100 rounded-md">
+                                                <Folder className="w-4 h-4 text-orange-600" />
                                             </button>
                                         </div>
                                     </td>
