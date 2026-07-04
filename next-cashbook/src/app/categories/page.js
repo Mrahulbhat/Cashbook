@@ -166,10 +166,7 @@ const CategoriesContent = () => {
 
                 {filteredCategories.length === 0 && (
                     <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-16 text-center">
-                        <p className="text-gray-400 text-lg mb-6">No categories found</p>
-                        <button id="AddBtn" onClick={() => router.push("/categories/add")} className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-4 rounded-xl inline-flex items-center gap-2">
-                            <Plus size={18} /> Create Category
-                        </button>
+                        <p className="text-gray-400 text-lg">No categories found</p>
                     </div>
                 )}
 

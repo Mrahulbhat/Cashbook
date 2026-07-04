@@ -174,10 +174,7 @@ const AccountsContent = () => {
 
                 {accounts.length === 0 && (
                     <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-16 text-center">
-                        <p className="text-gray-400 text-lg mb-6">No accounts yet</p>
-                        <button id="AddBtn" onClick={() => router.push("/accounts/add")} className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl inline-flex items-center gap-2">
-                            <Plus size={18} /> Create Your First Account
-                        </button>
+                        <p className="text-gray-400 text-lg">No accounts found</p>
                     </div>
                 )}
 
