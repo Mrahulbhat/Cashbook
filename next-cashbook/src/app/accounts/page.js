@@ -89,14 +89,21 @@ const AccountsContent = () => {
                 </div>
 
                 {accounts.length > 0 && (
-                    <div id="balanceContainer" className="mb-8 bg-emerald-900/40 border border-emerald-500/30 rounded-2xl p-8 backdrop-blur-sm">
-                        <h3 className="text-emerald-400 font-semibold text-sm mb-2">Total Balance</h3>
-                        <p className="text-4xl font-bold text-white">{formatCurrency(getTotalBalance())}</p>
-                        <p className="text-emerald-400 text-sm mt-2">Across {accounts.length} account(s)</p>
+                    <div id="balanceContainer" className="mb-8 bg-white/5 border border-orange-400/20 rounded-2xl p-4 backdrop-blur-sm">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="text-orange-400 text-sm">
+                                <span className="font-semibold">Total Balance</span>
+                                <span className="ml-3 text-white font-bold">{formatCurrency(getTotalBalance())}</span>
+                            </div>
+                            <div className="text-orange-400 text-sm">
+                                <span className="text-white font-semibold">{accounts.length}</span>
+                                <span className="ml-2">account(s)</span>
+                            </div>
+                        </div>
                     </div>
                 )}
 
-                <div className="mb-6 flex items-center justify-between gap-4">
+                <div className="mb-6 flex items-center justify-start gap-3">
                     <div className="flex items-center gap-3">
                         <button
                             id="AddBtnSmall"
@@ -106,8 +113,7 @@ const AccountsContent = () => {
                             <Plus size={16} className="text-orange-500" />
                             <span className="text-orange-600">Add</span>
                         </button>
-                    </div>
-                    <div className="flex items-center gap-3">
+
                         <button
                             id="BulkDeleteBtn"
                             onClick={() => setIsBulkModalOpen(true)}
@@ -141,17 +147,18 @@ const AccountsContent = () => {
                             {accounts.map((account) => (
                                 <tr key={account._id} className="hover:bg-gray-800/20">
                                     <td className="w-10 py-1 px-2 border border-gray-800">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedIds.includes(account._id)}
-                                            onChange={() => toggleSelect(account._id)}
-                                            aria-label={`Select ${account.name}`}
-                                        />
+                                            <input
+                                                type="checkbox"
+                                                className="accent-orange-500 border-orange-400"
+                                                checked={selectedIds.includes(account._id)}
+                                                onChange={() => toggleSelect(account._id)}
+                                                aria-label={`Select ${account.name}`}
+                                            />
                                     </td>
                                     <td className="w-10 py-1 px-2 border border-gray-800">
                                         <div className="flex items-center gap-1 justify-center">
                                             <button id="EditBtn" onClick={() => router.push(`/accounts/edit/${account._id}`)} className="p-1 hover:bg-blue-500/20 rounded-md">
-                                                <Folder className="w-4 h-4 text-blue-400" />
+                                                <Folder className="w-4 h-4 text-orange-500" />
                                             </button>
                                         </div>
                                     </td>

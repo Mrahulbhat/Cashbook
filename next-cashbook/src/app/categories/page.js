@@ -100,7 +100,7 @@ const CategoriesContent = () => {
                     ))}
                 </div>
 
-                <div className="mb-6 flex items-center justify-between gap-4">
+                <div className="mb-6 flex items-center justify-start gap-3">
                     <div className="flex items-center gap-3">
                         <button
                             id="AddBtnSmall"
@@ -110,8 +110,7 @@ const CategoriesContent = () => {
                             <Plus size={16} className="text-orange-500" />
                             <span className="text-orange-600">Add</span>
                         </button>
-                    </div>
-                    <div className="flex items-center gap-3">
+
                         <button
                             id="BulkDeleteBtn"
                             onClick={() => setIsBulkModalOpen(true)}
@@ -145,17 +144,18 @@ const CategoriesContent = () => {
                             {filteredCategories.map((category) => (
                                 <tr key={category._id} className="hover:bg-gray-800/20">
                                     <td className="w-10 py-1 px-2 border border-gray-800">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedIds.includes(category._id)}
-                                            onChange={() => toggleSelect(category._id)}
-                                            aria-label={`Select ${category.name}`}
-                                        />
+                                                <input
+                                                    type="checkbox"
+                                                    className="accent-orange-500 border-orange-400"
+                                                    checked={selectedIds.includes(category._id)}
+                                                    onChange={() => toggleSelect(category._id)}
+                                                    aria-label={`Select ${category.name}`}
+                                                />
                                     </td>
                                     <td className="w-10 py-1 px-2 border border-gray-800">
                                         <div className="flex items-center gap-1 justify-center">
-                                            <button id="EditBtn" onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-1 hover:bg-blue-500/20 rounded-md">
-                                                <Folder className="w-4 h-4 text-blue-400" />
+                                            <button id="EditBtn" onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-1 hover:bg-orange-50 rounded-md">
+                                                <Folder className="w-4 h-4 text-orange-500" />
                                             </button>
                                         </div>
                                     </td>
