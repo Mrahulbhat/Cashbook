@@ -167,7 +167,7 @@ const SignupPage = () => {
                             id="SignupBtn"
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-gradient-to-r from-orange-600 to-slate-950 hover:from-orange-500 hover:to-slate-800 disabled:from-slate-300 disabled:to-slate-400 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-orange-500/20 flex items-center justify-center gap-2 mt-4"
+                            className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-orange-600 disabled:opacity-70 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-orange-500/20 flex items-center justify-center gap-2 mt-4"
                         >
                             {isLoading ? <Loader className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
                             {isLoading ? "Creating Account..." : "Create Account"}

@@ -3,8 +3,6 @@ import { BasePage } from '../page-objects/basepage';
 import { DashboardPage } from '../page-objects/dashboard';
 import { TransactionPage } from '../page-objects/transaction';
 import { AccountsPage } from '../page-objects/accounts';
-import { CategoryPage } from '../page-objects/category';
-import { TransferPage } from '../page-objects/transfer';
 import { StatisticsPage } from '../page-objects/statistics';
 import { LoginPage } from '../page-objects/login-page';
 import { SettingsPage } from '../page-objects/settings';
@@ -14,8 +12,6 @@ type fixtures = {
     dashboardPage: DashboardPage;
     transactionPage: TransactionPage;
     accountsPage: AccountsPage;
-    categoryPage: CategoryPage;
-    transferPage: TransferPage;
     statisticsPage: StatisticsPage;
     loginPage: LoginPage;
     settingsPage: SettingsPage;
@@ -39,12 +35,6 @@ export const test = base.extend<fixtures>({
     },
     accountsPage: async ({ page }, use) => {
         await use(new AccountsPage(page));
-    },
-    categoryPage: async ({ page }, use) => {
-        await use(new CategoryPage(page));
-    },
-    transferPage: async ({ page }, use) => {
-        await use(new TransferPage(page));
     },
     statisticsPage: async ({ page }, use) => {
         await use(new StatisticsPage(page));
