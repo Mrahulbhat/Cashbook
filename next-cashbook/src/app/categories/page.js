@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Edit2, Loader } from "lucide-react";
+import { Plus, Folder, Trash2, Loader } from "lucide-react";
 import { useCategoryStore } from "@/store/useCategoryStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Modal from "@/components/Modal";
@@ -13,6 +13,8 @@ const CategoriesContent = () => {
     const [filter, setFilter] = useState("all");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
     useEffect(() => {
         loadCategories();
@@ -28,6 +30,28 @@ const CategoriesContent = () => {
             await deleteCategory(selectedCategoryId);
             setSelectedCategoryId(null);
         }
+    };
+
+    const toggleSelect = (id) => {
+        setSelectedIds((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === filteredCategories.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(filteredCategories.map((c) => c._id));
+        }
+    };
+
+    const handleConfirmBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+        for (const id of selectedIds) {
+            await deleteCategory(id);
+        }
+        setSelectedIds([]);
     };
 
     const filteredCategories = filter === "all"
@@ -76,32 +100,77 @@ const CategoriesContent = () => {
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredCategories.map((category) => (
-                        <div id={`categoryCard-${category.name.replace(/\s+/g, '-').toLowerCase()}`} key={category._id} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 backdrop-blur-sm hover:border-purple-500/30 transition-all">
-                            <div className="flex items-start justify-between mb-4 gap-4">
-                                <div className="min-w-0 flex-1">
-                                    <h3 className="text-white font-bold text-lg truncate">{category.name}</h3>
-                                    <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold ${category.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                                        {category.type}
-                                    </span>
-                                    {category.planningBucket && category.planningBucket !== 'None' && (
-                                        <span className="inline-block mt-2 ml-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400">
-                                            {category.planningBucket}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="flex gap-2 flex-shrink-0">
-                                    <button id="EditBtn" onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
-                                        <Edit2 className="w-4 h-4 text-blue-400" />
-                                    </button>
-                                    <button id="DeleteBtn" onClick={() => handleDelete(category._id)} className="p-2 hover:bg-red-500/20 rounded-lg">
-                                        <Trash2 className="w-4 h-4 text-red-400" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                <div className="mb-6 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <button
+                            id="AddBtnSmall"
+                            onClick={() => router.push("/categories/add")}
+                            className="bg-white text-orange-600 border border-orange-400 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold hover:bg-orange-50"
+                        >
+                            <Plus size={16} className="text-orange-500" />
+                            <span className="text-orange-600">Add</span>
+                        </button>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button
+                            id="BulkDeleteBtn"
+                            onClick={() => setIsBulkModalOpen(true)}
+                            disabled={selectedIds.length === 0}
+                            className={`bg-white text-orange-600 border border-orange-400 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                            <Trash2 size={16} className="text-orange-500" />
+                            <span className="text-orange-600">Delete</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto bg-gray-900/30 border border-gray-800 rounded-2xl p-4">
+                    <table className="w-full table-auto text-center border-collapse border border-gray-800">
+                        <thead>
+                            <tr className="text-gray-400 text-sm">
+                                <th className="w-10 py-1 px-2 border border-gray-800">
+                                    <input
+                                        type="checkbox"
+                                        onChange={toggleSelectAll}
+                                        checked={filteredCategories.length > 0 && selectedIds.length === filteredCategories.length}
+                                        aria-label="Select all categories"
+                                    />
+                                </th>
+                                <th className="w-10 py-1 px-2 border border-gray-800">Actions</th>
+                                <th className="py-3 border border-gray-800">Category Name</th>
+                                <th className="py-3 border border-gray-800">Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredCategories.map((category) => (
+                                <tr key={category._id} className="hover:bg-gray-800/20">
+                                    <td className="w-10 py-1 px-2 border border-gray-800">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.includes(category._id)}
+                                            onChange={() => toggleSelect(category._id)}
+                                            aria-label={`Select ${category.name}`}
+                                        />
+                                    </td>
+                                    <td className="w-10 py-1 px-2 border border-gray-800">
+                                        <div className="flex items-center gap-1 justify-center">
+                                            <button id="EditBtn" onClick={() => router.push(`/categories/edit/${category._id}`)} className="p-1 hover:bg-blue-500/20 rounded-md">
+                                                <Folder className="w-4 h-4 text-blue-400" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 border border-gray-800">
+                                        <div className="text-white font-semibold">{category.name}</div>
+                                    </td>
+                                    <td className="py-4 border border-gray-800">
+                                        <div className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${category.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                                            {category.type}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
 
                 {filteredCategories.length === 0 && (
@@ -119,6 +188,15 @@ const CategoriesContent = () => {
                     onConfirm={handleConfirmDelete}
                     title="Delete Category"
                     message="Are you sure you want to delete this category? All transactions in this category will be preserved but uncategorized."
+                    confirmText="Delete"
+                    type="danger"
+                />
+                <Modal
+                    isOpen={isBulkModalOpen}
+                    onClose={() => setIsBulkModalOpen(false)}
+                    onConfirm={handleConfirmBulkDelete}
+                    title="Delete Selected Categories"
+                    message={`Are you sure you want to delete ${selectedIds.length} selected category(s)?`}
                     confirmText="Delete"
                     type="danger"
                 />

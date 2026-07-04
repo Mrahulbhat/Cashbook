@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Edit2, Loader } from "lucide-react";
+import { Plus, Folder, Trash2, Loader } from "lucide-react";
 import { useAccountStore } from "@/store/useAccountStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Modal from "@/components/Modal";
@@ -12,6 +12,8 @@ const AccountsContent = () => {
     const { accounts, fetchAccounts, deleteAccount, loading } = useAccountStore();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAccountId, setSelectedAccountId] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
     useEffect(() => {
         fetchAccounts();
@@ -27,6 +29,28 @@ const AccountsContent = () => {
             await deleteAccount(selectedAccountId);
             setSelectedAccountId(null);
         }
+    };
+
+    const toggleSelect = (id) => {
+        setSelectedIds((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === accounts.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(accounts.map((a) => a._id));
+        }
+    };
+
+    const handleConfirmBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+        for (const id of selectedIds) {
+            await deleteAccount(id);
+        }
+        setSelectedIds([]);
     };
 
     const formatCurrency = (amount) => {
@@ -62,13 +86,6 @@ const AccountsContent = () => {
                         <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Accounts</h1>
                         <p className="text-gray-400">Manage your financial accounts</p>
                     </div>
-                    <button
-                        id="AddBtn"
-                        onClick={() => router.push("/accounts/add")}
-                        className="mt-4 sm:mt-0 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 transition-transform transform hover:scale-105"
-                    >
-                        <Plus size={18} /> Add Account
-                    </button>
                 </div>
 
                 {accounts.length > 0 && (
@@ -79,26 +96,75 @@ const AccountsContent = () => {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {accounts.map((account) => (
-                        <div key={account._id} id={`accountCard-${account.name.replace(/\s+/g, '-').toLowerCase()}`} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 backdrop-blur-sm hover:border-blue-500/30 transition-all">
-                            <div className="flex items-start justify-between mb-4 gap-4">
-                                <h3 className="text-white font-bold text-lg truncate min-w-0">{account.name}</h3>
-                                <div className="flex gap-2 flex-shrink-0">
-                                    <button id="EditBtn" onClick={() => router.push(`/accounts/edit/${account._id}`)} className="p-2 hover:bg-blue-500/20 rounded-lg">
-                                        <Edit2 className="w-4 h-4 text-blue-400" />
-                                    </button>
-                                    <button id="DeleteBtn" onClick={() => handleDeleteClick(account._id)} className="p-2 hover:bg-red-500/20 rounded-lg">
-                                        <Trash2 className="w-4 h-4 text-red-400" />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <p className="text-gray-400 text-xs mb-1">Current Balance</p>
-                                <p className="text-2xl font-bold text-white">{formatCurrency(account.balance)}</p>
-                            </div>
-                        </div>
-                    ))}
+                <div className="mb-6 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <button
+                            id="AddBtnSmall"
+                            onClick={() => router.push("/accounts/add")}
+                            className="bg-white text-orange-600 border border-orange-400 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold hover:bg-orange-50"
+                        >
+                            <Plus size={16} className="text-orange-500" />
+                            <span className="text-orange-600">Add</span>
+                        </button>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button
+                            id="BulkDeleteBtn"
+                            onClick={() => setIsBulkModalOpen(true)}
+                            disabled={selectedIds.length === 0}
+                            className={`bg-white text-orange-600 border border-orange-400 px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                            <Trash2 size={16} className="text-orange-500" />
+                            <span className="text-orange-600">Delete</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto bg-gray-900/30 border border-gray-800 rounded-2xl p-4">
+                    <table className="w-full table-auto text-center border-collapse border border-gray-800">
+                        <thead>
+                            <tr className="text-gray-400 text-sm">
+                                <th className="w-10 py-1 px-2 border border-gray-800">
+                                    <input
+                                        type="checkbox"
+                                        onChange={toggleSelectAll}
+                                        checked={accounts.length > 0 && selectedIds.length === accounts.length}
+                                        aria-label="Select all accounts"
+                                    />
+                                </th>
+                                <th className="w-10 py-1 px-2 border border-gray-800">Actions</th>
+                                <th className="py-3 border border-gray-800">Account Name</th>
+                                <th className="py-3 border border-gray-800">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {accounts.map((account) => (
+                                <tr key={account._id} className="hover:bg-gray-800/20">
+                                    <td className="w-10 py-1 px-2 border border-gray-800">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.includes(account._id)}
+                                            onChange={() => toggleSelect(account._id)}
+                                            aria-label={`Select ${account.name}`}
+                                        />
+                                    </td>
+                                    <td className="w-10 py-1 px-2 border border-gray-800">
+                                        <div className="flex items-center gap-1 justify-center">
+                                            <button id="EditBtn" onClick={() => router.push(`/accounts/edit/${account._id}`)} className="p-1 hover:bg-blue-500/20 rounded-md">
+                                                <Folder className="w-4 h-4 text-blue-400" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 border border-gray-800">
+                                        <div className="text-white font-semibold">{account.name}</div>
+                                    </td>
+                                    <td className="py-4 border border-gray-800">
+                                        <div className="font-bold text-white">{formatCurrency(account.balance)}</div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
 
                 {accounts.length === 0 && (
@@ -116,6 +182,15 @@ const AccountsContent = () => {
                     onConfirm={handleConfirmDelete}
                     title="Delete Account"
                     message="Are you sure you want to delete this account? All associated transactions will be affected."
+                    confirmText="Delete"
+                    type="danger"
+                />
+                <Modal
+                    isOpen={isBulkModalOpen}
+                    onClose={() => setIsBulkModalOpen(false)}
+                    onConfirm={handleConfirmBulkDelete}
+                    title="Delete Selected Accounts"
+                    message={`Are you sure you want to delete ${selectedIds.length} selected account(s)? This will affect associated transactions.`}
                     confirmText="Delete"
                     type="danger"
                 />
