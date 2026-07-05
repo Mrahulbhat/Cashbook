@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Folder, Trash2, Loader, ArrowUpRight, ArrowDownLeft, Repeat } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
@@ -25,27 +25,29 @@ const TransactionsContent = () => {
         fetchTransactions();
     }, [fetchTransactions]);
 
-    const filteredTransactions = transactions.filter(t => {
-        const now = new Date();
-        const d = new Date(t.date);
-        
-        if (filter === 'daily') {
-            return d.getDate() === now.getDate() && 
-                   d.getMonth() === now.getMonth() && 
-                   d.getFullYear() === now.getFullYear();
-        }
-        if (filter === 'monthly') {
-            return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-        }
-        if (filter === 'yearly') {
-            return d.getFullYear() === now.getFullYear();
-        }
-        return true;
-    }).sort((a, b) => {
-        const dateCompare = new Date(b.date) - new Date(a.date);
-        if (dateCompare !== 0) return dateCompare;
-        return new Date(b.createdAt) - new Date(a.createdAt);
-    });
+    const filteredTransactions = useMemo(() => {
+        return transactions.filter(t => {
+            const now = new Date();
+            const d = new Date(t.date);
+            
+            if (filter === 'daily') {
+                return d.getDate() === now.getDate() && 
+                       d.getMonth() === now.getMonth() && 
+                       d.getFullYear() === now.getFullYear();
+            }
+            if (filter === 'monthly') {
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            }
+            if (filter === 'yearly') {
+                return d.getFullYear() === now.getFullYear();
+            }
+            return true;
+        }).sort((a, b) => {
+            const dateCompare = new Date(b.date) - new Date(a.date);
+            if (dateCompare !== 0) return dateCompare;
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+    }, [transactions, filter]);
 
     useEffect(() => {
         let totalIncome = 0;
