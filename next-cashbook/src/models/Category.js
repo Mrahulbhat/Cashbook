@@ -28,8 +28,5 @@ const categorySchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-if (mongoose.models.Category) {
-    delete mongoose.models.Category;
-}
-const Category = mongoose.model("Category", categorySchema);
+const Category = mongoose.models.Category || mongoose.model("Category", categorySchema);
 export default Category;

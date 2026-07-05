@@ -1,9 +1,5 @@
 import mongoose from "mongoose";
 
-if (mongoose.models.TestCase) {
-    delete mongoose.models.TestCase;
-}
-
 const testsSchema = new mongoose.Schema(
     {
         title: {
