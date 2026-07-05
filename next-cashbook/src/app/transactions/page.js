@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Edit2, Trash2, Loader, ArrowUpRight, ArrowDownLeft, Repeat } from "lucide-react";
+import { Plus, Folder, Trash2, Loader, ArrowUpRight, ArrowDownLeft, Repeat } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Modal from "@/components/Modal";
@@ -142,12 +142,9 @@ const TransactionsContent = () => {
                                                 />
                                             </td>
                                             <td className="w-10 py-1 px-2 border border-gray-800">
-                                                <div className="flex items-center gap-1 justify-center">
+                                                <div className="flex items-center justify-center">
                                                     <button id="EditBtn" onClick={() => router.push(`/edit-transaction/${t._id}`)} className="p-1 hover:bg-blue-500/20 rounded-md">
-                                                        <Edit2 className="w-4 h-4 text-blue-400" />
-                                                    </button>
-                                                    <button id="DeleteBtn" onClick={() => handleDelete(t._id)} className="p-1 hover:bg-red-500/20 rounded-md">
-                                                        <Trash2 className="w-4 h-4 text-red-400" />
+                                                        <Folder className="w-4 h-4 text-orange-600" />
                                                     </button>
                                                 </div>
                                             </td>
