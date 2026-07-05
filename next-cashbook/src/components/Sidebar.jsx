@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Menu, X, TrendingUp, Wallet, Tag, Home, Repeat, Target, Dumbbell, History, List, HandCoins } from "lucide-react";
+import { Menu, X, TrendingUp, Wallet, Tag, Repeat, Target, Dumbbell, History, List, HandCoins } from "lucide-react";
 
 const MIN_SIDEBAR_WIDTH = 208;
 const MAX_SIDEBAR_WIDTH = 360;
@@ -28,7 +28,6 @@ const Sidebar = () => {
         { name: "Transactions", icon: TrendingUp, path: "/transactions", id: "transactions" },
         { name: "Accounts", icon: Wallet, path: "/accounts", id: "accounts" },
         { name: "Categories", icon: Tag, path: "/categories", id: "categories" },
-        { name: "Dashboard", icon: Home, path: "/dashboard", id: "dashboard" },
         { name: "Planning", icon: Target, path: "/planning", id: "planning" },
         // Temporarily removed as there is a bug
         // { name: "Transfer", icon: Repeat, path: "/transfer", id: "transfer" },
