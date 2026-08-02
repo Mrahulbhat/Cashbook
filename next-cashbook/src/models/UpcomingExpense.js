@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Category from './Category';
 
 const upcomingExpenseSchema = new mongoose.Schema(
     {

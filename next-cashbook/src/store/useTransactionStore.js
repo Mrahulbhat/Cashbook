@@ -12,8 +12,9 @@ export const useTransactionStore = create((set) => ({
             const response = await axiosInstance.get("/transactions");
             set({ transactions: response.data, loading: false });
         } catch (error) {
-            toast.error("Failed to fetch transactions");
-            set({ loading: false });
+            console.error("fetchTransactions error:", error);
+            toast.error(error.response?.data?.message || "Failed to fetch transactions");
+            set({ loading: false, transactions: [] });
         }
     },
 

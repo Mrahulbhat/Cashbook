@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Category from './Category';
 
 const transactionSchema = new mongoose.Schema(
     {
