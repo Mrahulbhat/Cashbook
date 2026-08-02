@@ -111,7 +111,7 @@ const TransactionsContent = () => {
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
-                                className={`px-6 py-2.5 rounded-xl capitalize text-sm font-semibold transition-all duration-300 ${filter === f ? 'bg-green-600 text-white shadow-lg shadow-green-900/40 transform scale-105' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'}`}
+                                className={`px-6 py-2.5 rounded-xl capitalize text-sm font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${filter === f ? 'bg-green-600 text-white shadow-lg shadow-green-900/40 transform scale-105' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'}`}
                             >
                                 {f}
                             </button>
