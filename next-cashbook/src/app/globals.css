@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f3ed;
-  --foreground: #15110c;
-  --bank-surface: #ffffff;
-  --bank-surface-soft: #fff8ef;
-  --bank-border: #eadfce;
-  --bank-muted: #6d6256;
-  --bank-primary: #d97706; /* darker brand */
-  --bank-primary-dark: #b45309; /* darker brand dark */
-  --brand-orange: #d97706;
-  --bank-ink: #15110c;
+  --background: #fcfaf7;
+  --foreground: #17120c;
+  --bank-surface: #fffdfa;
+  --bank-surface-soft: #fff5e8;
+  --bank-border: #d9c6a8;
+  --bank-muted: #5c5348;
+  --bank-primary: #c46d12;
+  --bank-primary-dark: #9a4c00;
+  --brand-orange: #c46d12;
+  --bank-ink: #17120c;
 }
 
 @theme inline {
@@ -21,7 +21,7 @@
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(180deg, var(--background) 0%, #f7efe4 100%);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -36,26 +36,49 @@ html {
 
 ::selection {
   background: #fed7aa;
-  color: #15110c;
+  color: #17120c;
+}
+
+@layer base {
+  input, textarea, select {
+    background-color: var(--bank-surface);
+    color: var(--bank-ink);
+    border: 1px solid var(--bank-border);
+    transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--bank-muted);
+    opacity: 1;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--bank-primary);
+    box-shadow: 0 0 0 3px rgba(196, 109, 18, 0.16);
+  }
 }
 
 @layer utilities {
   .bank-page {
     min-height: 100%;
     background:
-      radial-gradient(circle at top left, rgba(249, 115, 22, 0.12), transparent 34rem),
-      linear-gradient(135deg, #fffaf3 0%, #f7f3ed 48%, #fff7ed 100%);
+      radial-gradient(circle at top left, rgba(196, 109, 18, 0.13), transparent 34rem),
+      linear-gradient(135deg, #fffdf9 0%, #f8efe4 48%, #fff7ed 100%);
     color: var(--bank-ink);
   }
 
   .bank-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.96);
     border: 1px solid var(--bank-border);
-    box-shadow: 0 18px 45px rgba(90, 65, 34, 0.08);
+    box-shadow: 0 16px 42px rgba(90, 65, 34, 0.10);
   }
 
   .bank-primary {
-    background: linear-gradient(135deg, var(--bank-primary), #111827);
+    background: linear-gradient(135deg, var(--bank-primary), var(--bank-primary-dark));
     color: #ffffff;
   }
 

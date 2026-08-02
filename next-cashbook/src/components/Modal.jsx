@@ -28,31 +28,31 @@ const Modal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#17120c]/70 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
       <div 
         id="ConfirmationModal"
-        className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
+        className="bg-[#fffdfa] border border-[#d9c6a8] rounded-2xl w-full max-w-md overflow-hidden shadow-[0_20px_60px_rgba(94,61,28,0.18)] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
-          <h3 className="text-xl font-bold text-white flex items-center gap-2">
-            {type === 'danger' && <AlertCircle className="text-red-500" size={20} />}
+        <div className="px-6 py-4 border-b border-[#eadfce] flex items-center justify-between">
+          <h3 className="text-xl font-bold text-[#17120c] flex items-center gap-2">
+            {type === 'danger' && <AlertCircle className="text-[#b91c1c]" size={20} />}
             {title}
           </h3>
-          <button onClick={onClose} className="p-1 hover:bg-gray-800 rounded-full transition-colors text-gray-400 hover:text-white">
+          <button onClick={onClose} className="p-1 hover:bg-[#fff4e7] rounded-full transition-colors text-[#6f655a] hover:text-[#17120c]">
             <X size={20} />
           </button>
         </div>
         
-        <div className="px-6 py-6 text-gray-300">
+        <div className="px-6 py-6 text-[#433a31]">
           <p>{message}</p>
         </div>
 
-        <div className="px-6 py-4 bg-gray-900/50 border-t border-gray-800 flex gap-3">
+        <div className="px-6 py-4 bg-[#fff8ef] border-t border-[#eadfce] flex gap-3">
           <button
             id="CancelBtn"
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold"
+            className="flex-1 px-4 py-2 bg-[#f7efe4] text-[#17120c] border border-[#d9c6a8] rounded-lg hover:bg-[#efe1c7] transition-colors font-semibold"
           >
             {cancelText}
           </button>
@@ -63,7 +63,7 @@ const Modal = ({
               onClose();
             }}
             className={`flex-1 px-4 py-2 rounded-lg transition-colors font-semibold ${
-              type === 'danger' ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-blue-600 hover:bg-blue-500 text-white'
+              type === 'danger' ? 'bg-[#b91c1c] hover:bg-[#991b1b] text-white' : 'bg-[#c46d12] hover:bg-[#9a4c00] text-white'
             }`}
           >
             {confirmText}

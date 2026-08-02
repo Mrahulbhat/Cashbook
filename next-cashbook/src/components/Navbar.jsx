@@ -189,7 +189,7 @@ const Navbar = () => {
                 />
             )}
 
-            <nav className="w-full bg-[#fffaf3]/95 h-[10vh] grid grid-cols-3 px-4 sm:px-6 text-[#15110c] items-center relative border-b border-[#eadfce] backdrop-blur-sm flex-shrink-0 z-50 shadow-sm shadow-orange-950/5">
+            <nav className="w-full bg-[#fffdf9]/95 h-[10vh] grid grid-cols-3 px-4 sm:px-6 text-[#17120c] items-center relative border-b border-[#d9c6a8] backdrop-blur-sm flex-shrink-0 z-50 shadow-[0_8px_24px_rgba(79,53,20,0.08)]">
 
                 {/* ── LEFT: App Switcher toggle ── */}
                 <div className="relative z-10 flex items-center">
@@ -197,7 +197,7 @@ const Navbar = () => {
                         id="app-switcher-toggle"
                         onClick={() => router.push("/select-app")}
                         title="Go to app selector"
-                        className="p-2 rounded-xl border transition-all duration-200 bg-white border-[#eadfce] text-slate-600 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700"
+                        className="p-2 rounded-xl border transition-all duration-200 bg-[#fffdfa] border-[#d9c6a8] text-[#433a31] hover:bg-[#fff4e7] hover:border-[#c46d12] hover:text-[#9a4c00]"
                     >
                         <LayoutGrid size={20} className="transition-transform duration-200 hover:scale-110" />
                     </button>
@@ -207,7 +207,7 @@ const Navbar = () => {
                 <div className="relative z-10 flex items-center justify-center">
                     <h1
                         id="Logo"
-                        className="font-extrabold text-lg sm:text-xl text-[#15110c] cursor-pointer hover:text-orange-700 transition-all duration-300 select-none whitespace-nowrap"
+                        className="font-extrabold text-lg sm:text-xl text-[#17120c] cursor-pointer hover:text-[#9a4c00] transition-all duration-300 select-none whitespace-nowrap"
                         onClick={() => router.push("/select-app")}
                     >
                         {activeApp?.label ?? "My Workspace"}
@@ -223,14 +223,14 @@ const Navbar = () => {
                                 id="userAvatar"
                                 title="Profile Settings"
                                 onClick={() => router.push("/settings")}
-                                className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-slate-950 flex items-center justify-center text-white font-bold text-sm select-none flex-shrink-0 shadow-lg shadow-orange-500/20 ring-2 ring-orange-100 cursor-pointer hover:scale-110 hover:ring-orange-200 transition-all duration-200"
+                                className="w-8 h-8 rounded-full bg-gradient-to-br from-[#c46d12] to-[#17120c] flex items-center justify-center text-white font-bold text-sm select-none flex-shrink-0 shadow-lg shadow-orange-500/20 ring-2 ring-[#f7e2c2] cursor-pointer hover:scale-110 hover:ring-[#f2c88e] transition-all duration-200"
                             >
                                 {user.name?.charAt(0).toUpperCase()}
                             </div>
 
                             <button
                                 id="LogoutBtn"
-                                className="group flex gap-2 items-center px-3 py-2 rounded-xl bg-white border border-[#eadfce] text-slate-700 hover:bg-red-50 hover:border-red-200 transition-all duration-200 flex-shrink-0"
+                                className="group flex gap-2 items-center px-3 py-2 rounded-xl bg-[#fffdfa] border border-[#d9c6a8] text-[#433a31] hover:bg-[#fff1ed] hover:border-[#d97706] transition-all duration-200 flex-shrink-0"
                                 onClick={logout}
                             >
                                 <LogOut size={16} className="group-hover:scale-110 group-hover:text-red-300 transition-all duration-200" />
@@ -241,7 +241,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Bottom accent line */}
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-400/50 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#c46d12]/60 to-transparent"></div>
             </nav>
         </>
     );

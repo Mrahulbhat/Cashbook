@@ -44,8 +44,8 @@ const Sidebar = () => {
     const tabs = isGym ? gymTabs : cashbookTabs;
     
     // Clean banking theme colors
-    const activeBg = "bg-orange-50 text-orange-700 font-bold border-r-4 border-orange-500";
-    const inactiveClass = "text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium";
+    const activeBg = "bg-[#fff4e7] text-[#9a4c00] font-semibold border-r-4 border-[#c46d12] shadow-sm";
+    const inactiveClass = "text-[#433a31] hover:text-[#17120c] hover:bg-[#fff8ef] font-medium";
 
     const handleNavigation = (path) => {
         router.push(path);
@@ -92,18 +92,18 @@ const Sidebar = () => {
             <button
                 id="sidebarMenuToggle"
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed top-20 left-4 z-50 p-2 bg-white text-slate-800 border border-slate-200 shadow-sm rounded-lg md:hidden"
+                className="fixed top-20 left-4 z-50 p-2 bg-[#fffdfa] text-[#17120c] border border-[#d9c6a8] shadow-sm rounded-lg md:hidden"
             >
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
 
             <div id="sidebar"
                 style={{ width: `${sidebarWidth}px`, minWidth: `${sidebarWidth}px` }}
-                className={`fixed left-0 top-[10vh] h-[90vh] bg-white border-r border-slate-200 shadow-sm z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed left-0 top-[10vh] h-[90vh] bg-[#fffdfa] border-r border-[#d9c6a8] shadow-[0_10px_35px_rgba(87,56,20,0.08)] z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
                     } md:translate-x-0 md:relative md:top-0 md:h-[90vh] md:z-30 overflow-y-auto scrollbar-hide`}
             >
                 <div className="p-6 space-y-2">
-                    <h3 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">
+                    <h3 className="text-[#8b7d68] text-xs font-bold uppercase tracking-widest mb-6">
                         Navigation
                     </h3>
 
@@ -120,7 +120,7 @@ const Sidebar = () => {
                                 onClick={() => handleNavigation(isGym ? `${tab.path}?tab=${tab.tab}` : tab.path)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${active ? activeBg : inactiveClass}`}
                             >
-                                <Icon className={`w-5 h-5 flex-shrink-0 ${active ? "text-orange-600" : "text-slate-400"}`} />
+                                <Icon className={`w-5 h-5 flex-shrink-0 ${active ? "text-[#c46d12]" : "text-[#6f655a]"}`} />
                                 <span className="text-sm">{tab.name}</span>
                             </button>
                         );
@@ -134,7 +134,7 @@ const Sidebar = () => {
                         event.preventDefault();
                         setIsResizing(true);
                     }}
-                    className={`hidden md:block absolute top-0 right-0 h-full w-2 translate-x-1 cursor-col-resize transition-colors ${isResizing ? "bg-orange-200" : "bg-transparent hover:bg-orange-50"}`}
+                    className={`hidden md:block absolute top-0 right-0 h-full w-2 translate-x-1 cursor-col-resize transition-colors ${isResizing ? "bg-[#f8dcb7]" : "bg-transparent hover:bg-[#fff4e7]"}`}
                 />
             </div>
 
