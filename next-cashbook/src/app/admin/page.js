@@ -6,7 +6,8 @@ import {
     ArrowLeft, Users, Loader, TrendingUp, TrendingDown, Wallet,
     Calendar, Mail, Phone, Activity, Search, X, ChevronRight,
     CreditCard, ArrowUpCircle, ArrowDownCircle, LogOut, ShieldCheck,
-    RefreshCw, DollarSign, Hash, Tag, Clock, PieChart, Landmark, Database, Trash2
+    RefreshCw, DollarSign, Hash, Tag, Clock, PieChart, Landmark, Database, Trash2,
+    ClipboardList, Plus, CheckCircle2
 } from "lucide-react";
 import toast from "react-hot-toast";
 import Modal from "@/components/Modal";
@@ -159,30 +160,44 @@ const AdminDashboard = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
-    const [mainTab, setMainTab] = useState('users'); // 'users' or 'accounts'
+    const [mainTab, setMainTab] = useState('users'); // 'users', 'accounts', or 'tests'
     const [dbStats, setDbStats] = useState(null);
     const [isDeletingUserId, setIsDeletingUserId] = useState(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState({ id: null, name: '' });
+    const [testCases, setTestCases] = useState([]);
+    const [testCaseForm, setTestCaseForm] = useState({
+        id: '',
+        title: '',
+        description: '',
+        status: 'Draft'
+    });
+    const [savingTestCase, setSavingTestCase] = useState(false);
+    const [expandedTestDescriptions, setExpandedTestDescriptions] = useState({});
+    const [editingTestCase, setEditingTestCase] = useState(null);
+    const [isDeletingTestCaseId, setIsDeletingTestCaseId] = useState(null);
+    const [testStatusFilter, setTestStatusFilter] = useState('All');
 
     const fetchAllData = useCallback(async () => {
         setLoading(true);
         try {
-            const [uRes, aRes] = await Promise.all([
+            const [uRes, aRes, tRes] = await Promise.all([
                 fetch('/api/admin/users'),
-                fetch('/api/admin/accounts')
+                fetch('/api/admin/accounts'),
+                fetch('/api/admin/tests')
             ]);
             
-            if (uRes.status === 401) {
+            if (uRes.status === 401 || aRes.status === 401 || tRes.status === 401) {
                 router.replace('/admin/login');
                 return;
             }
 
-            const [uData, aData] = await Promise.all([uRes.json(), aRes.json()]);
+            const [uData, aData, tData] = await Promise.all([uRes.json(), aRes.json(), tRes.json()]);
             if (uData.success) setUsers(uData.data);
             if (aData.success) setAccounts(aData.data);
+            if (tData.success) setTestCases(tData.data);
             
-            if (!uData.success || !aData.success) toast.error("Partial data load failure");
+            if (!uData.success || !aData.success || !tData.success) toast.error("Partial data load failure");
             
             // Also fetch DB stats
             fetch('/api/db-stats').then(r => r.json()).then(res => {
@@ -252,6 +267,101 @@ const AdminDashboard = () => {
         a.user?.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const filteredTestCases = testCases.filter((testCase) => {
+        const matchesSearch =
+            String(testCase.testCaseId || testCase.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            testCase.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            testCase.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            testCase.status?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus = testStatusFilter === 'All' || testCase.status === testStatusFilter;
+        return matchesSearch && matchesStatus;
+    });
+
+    const truncateWords = (text, maxWords = 30) => {
+        if (!text) return '';
+        const words = text.split(/\s+/);
+        if (words.length <= maxWords) return text;
+        return `${words.slice(0, maxWords).join(' ')}...`;
+    };
+
+    const toggleDescription = (id) => {
+        setExpandedTestDescriptions((prev) => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
+
+    const handleTestCaseSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!testCaseForm.id.trim() || !testCaseForm.title.trim() || !testCaseForm.description.trim() || !testCaseForm.status.trim()) {
+            toast.error('Please complete all test case fields');
+            return;
+        }
+
+        setSavingTestCase(true);
+
+        try {
+            const url = editingTestCase ? `/api/admin/tests/${editingTestCase._id}` : '/api/admin/tests';
+            const method = editingTestCase ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(testCaseForm)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.error || 'Failed to save test case');
+            }
+
+            toast.success(editingTestCase ? 'Test case updated successfully' : 'Test case saved successfully');
+            setTestCaseForm({ id: '', title: '', description: '', status: 'Draft' });
+            setEditingTestCase(null);
+            fetchAllData();
+        } catch (error) {
+            toast.error(error.message || 'Failed to save test case');
+        } finally {
+            setSavingTestCase(false);
+        }
+    };
+
+    const handleEditTestCase = (testCase) => {
+        setEditingTestCase(testCase);
+        setTestCaseForm({
+            id: testCase.testCaseId || testCase.id || '',
+            title: testCase.title || '',
+            description: testCase.description || '',
+            status: testCase.status || 'Draft'
+        });
+    };
+
+    const handleDeleteTestCase = async (testCaseId) => {
+        try {
+            setIsDeletingTestCaseId(testCaseId);
+            const res = await fetch(`/api/admin/tests/${testCaseId}`, { method: 'DELETE' });
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.error || 'Failed to delete test case');
+            }
+
+            toast.success('Test case deleted successfully');
+            setTestCases(prev => prev.filter(item => item._id !== testCaseId));
+            if (editingTestCase && editingTestCase._id === testCaseId) {
+                setEditingTestCase(null);
+                setTestCaseForm({ id: '', title: '', description: '', status: 'Draft' });
+            }
+        } catch (error) {
+            toast.error(error.message || 'Failed to delete test case');
+        } finally {
+            setIsDeletingTestCaseId(null);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-black flex flex-col justify-center items-center gap-4">
@@ -275,6 +385,12 @@ const AdminDashboard = () => {
                 <div className="flex items-center gap-4">
                     <button onClick={fetchAllData} className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl transition-all">
                         <RefreshCw size={18} />
+                    </button>
+                    <button
+                        onClick={() => router.push('/admin/bugs')}
+                        className="bg-red-900/20 text-red-400 border border-red-800/30 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-red-900/30 transition-all"
+                    >
+                        Bug Tracker
                     </button>
                     <button onClick={handleLogout} className="bg-red-900/20 text-red-400 border border-red-800/30 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-red-900/30 transition-all">
                         <LogOut size={16} /> Logout
@@ -354,7 +470,7 @@ const AdminDashboard = () => {
                 {/* Content Tabs */}
                 <div className="bg-gray-900/20 border border-gray-800/60 rounded-[2.5rem] overflow-hidden">
                     <div className="p-6 border-b border-gray-800/60 flex flex-col md:flex-row justify-between items-center gap-6">
-                        <div className="flex bg-gray-800/40 p-1 rounded-2xl border border-gray-700/50">
+                        <div className="flex bg-gray-800/40 p-1 rounded-2xl border border-gray-700/50 flex-wrap gap-2">
                             <button 
                                 onClick={() => setMainTab('users')}
                                 className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${mainTab === 'users' ? 'bg-purple-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
@@ -366,6 +482,12 @@ const AdminDashboard = () => {
                                 className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${mainTab === 'accounts' ? 'bg-purple-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
                             >
                                 <Landmark size={16} /> Accounts & Balances
+                            </button>
+                            <button 
+                                onClick={() => setMainTab('tests')}
+                                className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${mainTab === 'tests' ? 'bg-purple-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                            >
+                                <ClipboardList size={16} /> Test Cases
                             </button>
                         </div>
                         
@@ -438,7 +560,7 @@ const AdminDashboard = () => {
                                     ))}
                                 </tbody>
                             </table>
-                        ) : (
+                        ) : mainTab === 'accounts' ? (
                             <table className="w-full">
                                 <thead>
                                     <tr className="border-b border-gray-800/60 text-xs font-bold text-gray-500 uppercase tracking-widest text-left">
@@ -473,9 +595,225 @@ const AdminDashboard = () => {
                                     ))}
                                 </tbody>
                             </table>
+                        ) : (
+                            <div className="p-6 space-y-6">
+                                <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6">
+                                    <div className="bg-black/20 border border-gray-800 rounded-3xl p-5">
+                                        <div className="flex items-center justify-between mb-5">
+                                            <div>
+                                                <p className="text-gray-500 text-xs uppercase tracking-[0.2em] font-bold">Automation coverage</p>
+                                                <h3 className="text-2xl font-bold text-white mt-2">Test case tracker</h3>
+                                            </div>
+                                            <div className="rounded-2xl bg-purple-500/10 border border-purple-500/20 p-3 text-purple-400">
+                                                <ClipboardList size={24} />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                            <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-4">
+                                                <p className="text-xs text-gray-500 uppercase tracking-wider">Total</p>
+                                                <p className="text-2xl font-bold text-white mt-2">{testCases.length}</p>
+                                            </div>
+                                            <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-4">
+                                                <p className="text-xs text-gray-500 uppercase tracking-wider">Automated</p>
+                                                <p className="text-2xl font-bold text-green-400 mt-2">{testCases.filter(tc => tc.status === 'Automated').length}</p>
+                                            </div>
+                                            <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-4">
+                                                <p className="text-xs text-gray-500 uppercase tracking-wider">Draft</p>
+                                                <p className="text-2xl font-bold text-yellow-400 mt-2">{testCases.filter(tc => tc.status === 'Draft').length}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-4 flex items-center justify-between gap-3">
+                                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                                                <span className="uppercase tracking-wider text-xs">Filter</span>
+                                            </div>
+                                            <select
+                                                value={testStatusFilter}
+                                                onChange={(e) => setTestStatusFilter(e.target.value)}
+                                                className="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-purple-500"
+                                            >
+                                                <option value="All">All statuses</option>
+                                                <option value="Draft">Draft</option>
+                                                <option value="Automated">Automated</option>
+                                                <option value="Non Automatable">Non Automatable</option>
+                                                <option value="Blocked">Blocked</option>
+                                                <option value="Deprecated">Deprecated</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="overflow-hidden border border-gray-800 rounded-2xl">
+                                            <table className="w-full text-left">
+                                                <thead className="bg-gray-900/80 border-b border-gray-800">
+                                                    <tr className="text-xs uppercase tracking-wider text-gray-500">
+                                                        <th className="px-4 py-3 font-semibold">ID</th>
+                                                        <th className="px-4 py-3 font-semibold">Title</th>
+                                                        <th className="px-4 py-3 font-semibold">Description</th>
+                                                        <th className="px-4 py-3 font-semibold">Status</th>
+                                                        <th className="px-4 py-3 font-semibold text-right">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {filteredTestCases.length > 0 ? filteredTestCases.map((testCase) => {
+                                                        const displayId = testCase.testCaseId || testCase.id || 'TC 000';
+                                                        const isExpanded = !!expandedTestDescriptions[displayId];
+
+                                                        return (
+                                                            <tr key={testCase._id} className="border-b border-gray-800 last:border-b-0 hover:bg-white/5">
+                                                                <td className="px-4 py-3 align-top">
+                                                                    <span className="inline-flex rounded-full border border-purple-500/20 bg-purple-500/10 px-2 py-1 text-xs font-bold text-purple-300">
+                                                                        {displayId}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-4 py-3 align-top text-sm font-semibold text-white">{testCase.title}</td>
+                                                                <td className="px-4 py-3 align-top text-sm text-gray-400">
+                                                                    <div className="max-w-md leading-6">
+                                                                        {isExpanded ? testCase.description : truncateWords(testCase.description)}
+                                                                        {testCase.description && testCase.description.split(/\s+/).length > 30 && (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => toggleDescription(displayId)}
+                                                                                className="ml-2 text-xs font-semibold text-purple-300 hover:text-purple-200 underline"
+                                                                            >
+                                                                                {isExpanded ? 'Collapse' : 'Expand'}
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-4 py-3 align-top">
+                                                                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                                                        testCase.status === 'Automated' ? 'bg-green-500/15 text-green-400 border border-green-500/20' :
+                                                                        testCase.status === 'Blocked' ? 'bg-red-500/15 text-red-400 border border-red-500/20' :
+                                                                        testCase.status === 'Non Automatable' ? 'bg-orange-500/15 text-orange-300 border border-orange-500/20' :
+                                                                        testCase.status === 'Deprecated' ? 'bg-gray-500/15 text-gray-300 border border-gray-500/20' :
+                                                                        'bg-yellow-500/15 text-yellow-400 border border-yellow-500/20'
+                                                                    }`}>
+                                                                        {testCase.status || 'Draft'}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-4 py-3 align-top">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleEditTestCase(testCase)}
+                                                                            className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-2 py-1 text-xs font-semibold text-blue-300 hover:bg-blue-500/20"
+                                                                        >
+                                                                            Edit
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleDeleteTestCase(testCase._id)}
+                                                                            disabled={isDeletingTestCaseId === testCase._id}
+                                                                            className="rounded-lg border border-red-500/30 bg-red-500/10 px-2 py-1 text-xs font-semibold text-red-300 hover:bg-red-500/20 disabled:opacity-50"
+                                                                        >
+                                                                            {isDeletingTestCaseId === testCase._id ? '...' : 'Delete'}
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    }) : (
+                                                        <tr>
+                                                            <td colSpan={5} className="px-4 py-10 text-center text-gray-500">
+                                                                <div className="flex flex-col items-center justify-center">
+                                                                    <ClipboardList size={36} className="mb-3 opacity-40" />
+                                                                    <p className="text-lg font-bold text-gray-300">No test cases found</p>
+                                                                    <p className="text-sm mt-1">Add your first automation case using the form.</p>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <form onSubmit={handleTestCaseSubmit} className="bg-gray-950/60 border border-gray-800 rounded-3xl p-5">
+                                        <div className="flex items-center gap-3 mb-5">
+                                            <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-400">
+                                                <Plus size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-gray-500 text-xs uppercase tracking-[0.2em] font-bold">{editingTestCase ? 'Edit test case' : 'Add test case'}</p>
+                                                <h3 className="text-xl font-bold text-white">{editingTestCase ? 'Update automation item' : 'New automation item'}</h3>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-xs text-gray-500 uppercase tracking-wider mb-2">ID</label>
+                                                <input
+                                                    type="text"
+                                                    value={testCaseForm.id}
+                                                    onChange={(e) => setTestCaseForm({ ...testCaseForm, id: e.target.value })}
+                                                    placeholder="TC 001"
+                                                    className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 outline-none focus:border-purple-500"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-500 uppercase tracking-wider mb-2">Title</label>
+                                                <input
+                                                    type="text"
+                                                    value={testCaseForm.title}
+                                                    onChange={(e) => setTestCaseForm({ ...testCaseForm, title: e.target.value })}
+                                                    placeholder="Login page validation"
+                                                    className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 outline-none focus:border-purple-500"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-500 uppercase tracking-wider mb-2">Description</label>
+                                                <textarea
+                                                    rows={5}
+                                                    value={testCaseForm.description}
+                                                    onChange={(e) => setTestCaseForm({ ...testCaseForm, description: e.target.value })}
+                                                    placeholder="Describe expected behavior and validation..."
+                                                    className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 outline-none focus:border-purple-500 resize-none"
+                                                    required
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs text-gray-500 uppercase tracking-wider mb-2">Status</label>
+                                                <select
+                                                    value={testCaseForm.status}
+                                                    onChange={(e) => setTestCaseForm({ ...testCaseForm, status: e.target.value })}
+                                                    className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white outline-none focus:border-purple-500"
+                                                >
+                                                    <option value="Draft">Draft</option>
+                                                    <option value="Automated">Automated</option>
+                                                    <option value="Non Automatable">Non Automatable</option>
+                                                    <option value="Blocked">Blocked</option>
+                                                    <option value="Deprecated">Deprecated</option>
+                                                </select>
+                                            </div>
+                                            {editingTestCase && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setEditingTestCase(null);
+                                                        setTestCaseForm({ id: '', title: '', description: '', status: 'Draft' });
+                                                    }}
+                                                    className="w-full border border-gray-700 bg-gray-900 text-gray-300 hover:bg-gray-800 font-bold py-3 rounded-xl transition-all"
+                                                >
+                                                    Cancel edit
+                                                </button>
+                                            )}
+                                            <button
+                                                type="submit"
+                                                disabled={savingTestCase}
+                                                className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                                            >
+                                                {savingTestCase ? <Loader size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
+                                                {savingTestCase ? (editingTestCase ? 'Updating...' : 'Saving...') : (editingTestCase ? 'Update test case' : 'Save test case')}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         )}
                         
-                        {(mainTab === 'users' ? filteredUsers : filteredAccounts).length === 0 && (
+                        {(mainTab === 'users' ? filteredUsers : mainTab === 'accounts' ? filteredAccounts : filteredTestCases).length === 0 && (
                             <div className="py-20 text-center text-gray-600">
                                 <Search size={48} className="mx-auto mb-4 opacity-10" />
                                 <p className="text-lg font-bold">No results found</p>

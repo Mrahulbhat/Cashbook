@@ -39,7 +39,10 @@ export async function POST(req) {
             return NextResponse.json({ message: 'Test case with this title already exists' }, { status: 400 });
         }
 
-        const test = new Tests({ title, description, status });
+        const count = await Tests.countDocuments();
+        const testCaseId = `TC-${String(count + 1).padStart(3, '0')}`;
+
+        const test = new Tests({ testCaseId, title, description, status });
         const savedTest = await test.save();
 
         return NextResponse.json(savedTest, { status: 201 });

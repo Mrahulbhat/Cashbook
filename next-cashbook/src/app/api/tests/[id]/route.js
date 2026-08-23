@@ -30,7 +30,7 @@ export async function PUT(req, { params }) {
         const { title, description, status } = await req.json();
 
         await dbConnect();
-        const test = await Tests.findOne({ _id: id });
+        const test = await Tests.findOne({ $or: [{ _id: id }, { testCaseId: id }] });
         if (!test) return NextResponse.json({ message: 'Test case not found' }, { status: 404 });
 
         if (title && title !== test.title) {
@@ -61,10 +61,10 @@ export async function DELETE(req, { params }) {
 
         const { id } = await params;
         await dbConnect();
-        const test = await Tests.findOne({ _id: id });
+        const test = await Tests.findOne({ $or: [{ _id: id }, { testCaseId: id }] });
         if (!test) return NextResponse.json({ message: 'Test case not found' }, { status: 404 });
 
-        await Tests.findByIdAndDelete(id);
+        await Tests.findByIdAndDelete(test._id);
         return NextResponse.json({ message: 'Test case deleted successfully' }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
