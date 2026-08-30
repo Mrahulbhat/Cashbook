@@ -27,13 +27,14 @@ export default function AppShell({ children }) {
         return <>{children}</>;
     }
 
-    // Habit Tracker and ServiceCare — Navbar but no Cashbook sidebar
+    // Habit Tracker, ServiceCare and DSA Tracker — Navbar but no Cashbook sidebar
     const isHabits = pathname?.startsWith("/habits");
     const isServiceCare = pathname?.startsWith("/servicecare");
+    const isDsa = pathname?.startsWith("/dsa");
 
-    if (isHabits || isServiceCare) {
+    if (isHabits || isServiceCare || isDsa) {
         return (
-            <div className="h-screen flex flex-col bg-[#f7f3ed] text-[#15110c]">
+            <div className="h-screen flex flex-col bg-[#070b14] text-slate-100">
                 <Navbar />
                 <main className="flex-1 overflow-auto bank-page">
                     {children}
@@ -44,10 +45,10 @@ export default function AppShell({ children }) {
 
     // Cashbook — Navbar + Sidebar
     return (
-        <div className="h-screen flex flex-col bg-[#f7f3ed] text-[#15110c]">
+        <div className="h-screen flex flex-col bg-[#070b14] text-slate-100">
             <Navbar />
-            <div className="flex flex-1 bg-[#f7f3ed] overflow-hidden">
-                <Suspense fallback={<div className="w-64 bg-orange-50 animate-pulse" />}>
+            <div className="flex flex-1 bg-[#070b14] overflow-hidden">
+                <Suspense fallback={<div className="w-64 bg-slate-900 animate-pulse" />}>
                     <Sidebar />
                 </Suspense>
                 <main className="flex-1 overflow-auto bank-page">

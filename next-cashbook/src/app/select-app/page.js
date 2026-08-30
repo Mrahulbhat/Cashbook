@@ -54,6 +54,18 @@ const APPS = [
         accent: "group-hover:text-orange-700",
         tag: "Fitness",
     },
+    {
+        id: "dsa",
+        name: "DSA Tracker",
+        description: "Organize problems, challenges, and rankings",
+        icon: ListTodo,
+        route: "/dsa",
+        iconColor: "text-violet-700",
+        iconRing: "ring-violet-200",
+        iconBg: "bg-violet-50",
+        accent: "group-hover:text-violet-700",
+        tag: "Algorithm",
+    },
 ];
 
 const AppSelectionPage = () => {
@@ -73,17 +85,17 @@ const AppSelectionPage = () => {
         <div className="min-h-screen bank-page flex flex-col">
 
             {/* Top bar */}
-            <header className="flex items-center justify-between px-6 py-4 border-b border-[#eadfce] bg-white/75 backdrop-blur">
+            <header className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
                 <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-orange-600" />
-                    <span className="text-sm font-semibold text-slate-600 tracking-wide">App Dashboard</span>
+                    <Sparkles className="w-4 h-4 text-violet-300" />
+                    <span className="text-sm font-semibold text-slate-300 tracking-wide">App Dashboard</span>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-500 to-slate-950 flex items-center justify-center text-white font-bold text-xs ring-2 ring-orange-100 select-none">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-slate-900 flex items-center justify-center text-white font-bold text-xs ring-2 ring-violet-500/20 select-none">
                         {user?.name?.charAt(0).toUpperCase()}
                     </div>
-                    <span className="hidden sm:block text-sm text-slate-600">{user?.name}</span>
-                    <button onClick={handleLogout} className="p-1.5 text-slate-500 hover:text-red-600 transition-colors" title="Logout">
+                    <span className="hidden sm:block text-sm text-slate-300">{user?.name}</span>
+                    <button onClick={handleLogout} className="p-1.5 text-slate-400 hover:text-red-300 transition-colors" title="Logout">
                         <LogOut className="w-4 h-4" />
                     </button>
                 </div>
@@ -92,8 +104,8 @@ const AppSelectionPage = () => {
             {/* Cards */}
             <main className="flex-1 flex items-center justify-center px-6 py-12">
                 <div className="w-full max-w-lg space-y-3">
-                <h1 className="text-4xl font-bold text-[#15110c] mb-3 text-center pt-4">App Dashboard</h1>
-                    <p className="text-xs font-semibold tracking-[0.2em] text-slate-500 uppercase mb-10 text-center">Choose an app</p>
+                <h1 className="text-4xl font-bold text-white mb-3 text-center pt-4">App Dashboard</h1>
+                    <p className="text-xs font-semibold tracking-[0.2em] text-slate-400 uppercase mb-10 text-center">Choose an app</p>
 
                     {APPS.map((app) => {
                         const Icon = app.icon;
@@ -102,7 +114,7 @@ const AppSelectionPage = () => {
                                 key={app.id}
                                 id={`app-card-${app.id}`}
                                 onClick={() => router.push(app.route)}
-                                className="group flex items-center gap-4 p-4 rounded-xl border border-[#eadfce] hover:border-orange-300 bg-white/90 hover:bg-orange-50 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-orange-950/10"
+                                className="group flex items-center gap-4 p-4 rounded-xl border border-slate-800 hover:border-violet-500 bg-slate-900/80 hover:bg-slate-800 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-violet-500/10"
                             >
                                 {/* Icon */}
                                 <div className={`w-11 h-11 rounded-xl ${app.iconBg} ring-1 ${app.iconRing} flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:scale-105`}>
@@ -112,14 +124,14 @@ const AppSelectionPage = () => {
                                 {/* Text */}
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <h2 className={`text-sm font-semibold text-[#15110c] transition-colors duration-200 ${app.accent}`}>{app.name}</h2>
-                                        <span className="text-[10px] text-slate-500 font-medium">{app.tag}</span>
+                                        <h2 className={`text-sm font-semibold text-white transition-colors duration-200 ${app.accent}`}>{app.name}</h2>
+                                        <span className="text-[10px] text-slate-400 font-medium">{app.tag}</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 mt-0.5">{app.description}</p>
+                                    <p className="text-xs text-slate-400 mt-0.5">{app.description}</p>
                                 </div>
 
                                 {/* Arrow */}
-                                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-orange-700 transition-all duration-200 group-hover:translate-x-0.5 flex-shrink-0" />
+                                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-violet-300 transition-all duration-200 group-hover:translate-x-0.5 flex-shrink-0" />
                             </div>
                         );
                     })}

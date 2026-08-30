@@ -55,6 +55,18 @@ const APPS = [
         border: "hover:border-orange-300",
         matchPaths: ["/gym"],
     },
+    {
+        id: "dsa",
+        label: "DSA Tracker",
+        description: "Practice and challenge yourself",
+        detail: "Track problems, monitor progress, join challenges, and climb the leaderboard.",
+        route: "/dsa",
+        icon: ListTodo,
+        gradient: "from-violet-500 to-slate-950",
+        glow: "shadow-violet-500/20",
+        border: "hover:border-violet-300",
+        matchPaths: ["/dsa"],
+    },
 ];
 
 function getActiveApp(pathname) {
@@ -189,7 +201,7 @@ const Navbar = () => {
                 />
             )}
 
-            <nav className="w-full bg-[#fffdf9]/95 h-[10vh] grid grid-cols-3 px-4 sm:px-6 text-[#17120c] items-center relative border-b border-[#d9c6a8] backdrop-blur-sm flex-shrink-0 z-50 shadow-[0_8px_24px_rgba(79,53,20,0.08)]">
+            <nav className="w-full bg-slate-950/85 h-[10vh] grid grid-cols-3 px-4 sm:px-6 text-slate-100 items-center relative border-b border-slate-800 backdrop-blur-sm flex-shrink-0 z-50 shadow-[0_8px_24px_rgba(2,6,23,0.28)]">
 
                 {/* ── LEFT: App Switcher toggle ── */}
                 <div className="relative z-10 flex items-center">
@@ -197,7 +209,7 @@ const Navbar = () => {
                         id="app-switcher-toggle"
                         onClick={() => router.push("/select-app")}
                         title="Go to app selector"
-                        className="p-2 rounded-xl border transition-all duration-200 bg-[#fffdfa] border-[#d9c6a8] text-[#433a31] hover:bg-[#fff4e7] hover:border-[#c46d12] hover:text-[#9a4c00]"
+                        className="p-2 rounded-xl border transition-all duration-200 bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800 hover:border-violet-500 hover:text-violet-200"
                     >
                         <LayoutGrid size={20} className="transition-transform duration-200 hover:scale-110" />
                     </button>
@@ -207,7 +219,7 @@ const Navbar = () => {
                 <div className="relative z-10 flex items-center justify-center">
                     <h1
                         id="Logo"
-                        className="font-extrabold text-lg sm:text-xl text-[#17120c] cursor-pointer hover:text-[#9a4c00] transition-all duration-300 select-none whitespace-nowrap"
+                        className="font-extrabold text-lg sm:text-xl text-white cursor-pointer hover:text-violet-300 transition-all duration-300 select-none whitespace-nowrap"
                         onClick={() => router.push("/select-app")}
                     >
                         {activeApp?.label ?? "My Workspace"}
@@ -223,25 +235,25 @@ const Navbar = () => {
                                 id="userAvatar"
                                 title="Profile Settings"
                                 onClick={() => router.push("/settings")}
-                                className="w-8 h-8 rounded-full bg-gradient-to-br from-[#c46d12] to-[#17120c] flex items-center justify-center text-white font-bold text-sm select-none flex-shrink-0 shadow-lg shadow-orange-500/20 ring-2 ring-[#f7e2c2] cursor-pointer hover:scale-110 hover:ring-[#f2c88e] transition-all duration-200"
+                                className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-slate-900 flex items-center justify-center text-white font-bold text-sm select-none flex-shrink-0 shadow-lg shadow-violet-500/20 ring-2 ring-slate-700 cursor-pointer hover:scale-110 hover:ring-violet-400 transition-all duration-200"
                             >
                                 {user.name?.charAt(0).toUpperCase()}
                             </div>
 
                             <button
                                 id="LogoutBtn"
-                                className="group flex gap-2 items-center px-3 py-2 rounded-xl bg-[#fffdfa] border border-[#d9c6a8] text-[#433a31] hover:bg-[#fff1ed] hover:border-[#d97706] transition-all duration-200 flex-shrink-0"
+                                className="group flex gap-2 items-center px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-100 hover:bg-slate-800 hover:border-violet-500 transition-all duration-200 flex-shrink-0"
                                 onClick={logout}
                             >
                                 <LogOut size={16} className="group-hover:scale-110 group-hover:text-red-300 transition-all duration-200" />
-                                <span className="font-medium text-sm group-hover:text-red-600 transition-colors hidden sm:inline">Logout</span>
+                                <span className="font-medium text-sm group-hover:text-red-300 transition-colors hidden sm:inline">Logout</span>
                             </button>
                         </>
                     )}
                 </div>
 
                 {/* Bottom accent line */}
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#c46d12]/60 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/60 to-transparent"></div>
             </nav>
         </>
     );

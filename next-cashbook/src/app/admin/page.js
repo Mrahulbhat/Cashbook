@@ -392,6 +392,12 @@ const AdminDashboard = () => {
                     >
                         Bug Tracker
                     </button>
+                    <button
+                        onClick={() => router.push('/admin/test-cases')}
+                        className="bg-purple-900/20 text-purple-400 border border-purple-800/30 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-purple-900/30 transition-all"
+                    >
+                        Test Cases
+                    </button>
                     <button onClick={handleLogout} className="bg-red-900/20 text-red-400 border border-red-800/30 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-red-900/30 transition-all">
                         <LogOut size={16} /> Logout
                     </button>
@@ -482,12 +488,6 @@ const AdminDashboard = () => {
                                 className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${mainTab === 'accounts' ? 'bg-purple-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
                             >
                                 <Landmark size={16} /> Accounts & Balances
-                            </button>
-                            <button 
-                                onClick={() => setMainTab('tests')}
-                                className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${mainTab === 'tests' ? 'bg-purple-600 text-white' : 'text-gray-500 hover:text-gray-300'}`}
-                            >
-                                <ClipboardList size={16} /> Test Cases
                             </button>
                         </div>
                         

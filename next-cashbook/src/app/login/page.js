@@ -64,28 +64,28 @@ const LoginPage = () => {
 
             <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
                 <div className="flex justify-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-slate-950 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                    <div className="w-16 h-16 bg-gradient-to-br from-violet-500 via-purple-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30">
                         <ShieldCheck className="w-8 h-8 text-white" />
                     </div>
                 </div>
-                <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-slate-900">
+                <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-white">
                     Welcome to OneTrack
                 </h2>
-                <p className="mt-2 text-center text-sm text-slate-500">
+                <p className="mt-2 text-center text-sm text-slate-300">
                     Secure access to your personal dashboard
                 </p>
             </div>
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-                <div className="bg-white py-8 px-4 shadow-xl shadow-orange-950/10 sm:rounded-3xl sm:px-10 border border-[#eadfce]">
+                <div className="bg-slate-900/80 backdrop-blur-xl py-8 px-4 shadow-2xl shadow-violet-950/30 sm:rounded-3xl sm:px-10 border border-slate-700/80">
                     {!showLoginForm ? (
                         <div className="space-y-6">
                             <div className="text-center mb-8">
-                                <p className="text-slate-600">Select an authentication method to continue.</p>
+                                <p className="text-slate-300">Select an authentication method to continue.</p>
                             </div>
                             <button
                                 onClick={() => setShowLoginForm(true)}
-                                className="w-full flex items-center justify-center gap-3 bg-orange-600 hover:bg-orange-700 text-white font-medium py-3.5 px-4 rounded-xl transition-all duration-200 shadow-sm"
+                                className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-medium py-3.5 px-4 rounded-xl transition-all duration-200 shadow-lg shadow-orange-500/20"
                             >
                                 <Phone className="w-5 h-5" />
                                 Login with Phone Number
@@ -103,7 +103,7 @@ const LoginPage = () => {
                                 onClick={handleGoogleLogin}
                                 className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-[#4285F4] via-[#34A853] via-[#FBBC05] to-[#EA4335] p-[2px] transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-blue-500/10"
                             >
-                                <span className="flex w-full items-center justify-center gap-3 rounded-[10px] bg-white px-4 py-3 text-slate-800 transition-colors duration-300 group-hover:bg-slate-50">
+                                <span className="flex w-full items-center justify-center gap-3 rounded-[10px] bg-slate-950 px-4 py-3 text-slate-100 transition-colors duration-300 group-hover:bg-slate-900">
                                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                                         <path
                                             fill="#4285F4"
@@ -128,10 +128,10 @@ const LoginPage = () => {
 
                             <div className="mt-6">
                                 <div className="relative flex justify-center text-sm">
-                                    <span className="bg-white px-2 text-slate-500">New to OneTrack?</span>
+                                    <span className="bg-slate-900 px-2 text-slate-400">New to OneTrack?</span>
                                 </div>
                                 <div className="mt-4 text-center">
-                                    <a id="SignupLink" href="/signup" className="text-orange-700 hover:text-orange-800 font-semibold transition-colors">
+                                    <a id="SignupLink" href="/signup" className="text-orange-400 hover:text-orange-300 font-semibold transition-colors">
                                         Create an Account
                                     </a>
                                 </div>
@@ -140,7 +140,7 @@ const LoginPage = () => {
                     ) : (
                         <form className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500" onSubmit={handleLogin}>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                <label className="block text-sm font-medium text-slate-200 mb-2">
                                     Phone Number
                                 </label>
                                 <div className="relative">
@@ -153,7 +153,7 @@ const LoginPage = () => {
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
                                         placeholder="Your phone number"
-                                        className="w-full bg-white border border-slate-300 rounded-xl pl-10 px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all duration-300"
+                                        className="w-full bg-slate-950/80 border border-slate-700 rounded-xl pl-10 px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-500/30 transition-all duration-300"
                                         disabled={isLoading}
                                         required
                                     />
@@ -161,7 +161,7 @@ const LoginPage = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                <label className="block text-sm font-medium text-slate-200 mb-2">
                                     Password
                                 </label>
                                 <div className="relative">
@@ -174,7 +174,7 @@ const LoginPage = () => {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all duration-300"
+                                        className="w-full bg-slate-950/80 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-500/30 transition-all duration-300"
                                         disabled={isLoading}
                                         required
                                     />
@@ -185,7 +185,7 @@ const LoginPage = () => {
                                 id="LoginBtn"
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-slate-300 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center gap-2 mt-4"
+                                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 flex items-center justify-center gap-2 mt-4"
                             >
                                 {isLoading ? <Loader className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
                                 {isLoading ? "Logging in..." : "Sign In"}
@@ -195,7 +195,7 @@ const LoginPage = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowLoginForm(false)}
-                                    className="text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
+                                    className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors"
                                 >
                                     Back to options
                                 </button>
