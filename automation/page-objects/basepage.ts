@@ -21,10 +21,10 @@ export class BasePage {
     }
 
     get recordCountOnTable(): Locator {
-        return this.page.locator('#txnCount');
+        return this.page.getByText('No of records', { exact: true }).locator('..');
     }
-    toastMessage(message: string): Locator {
-        return this.page.getByTestId('toast-container').getByText(message, { exact: true });
+    get toastMessage(): Locator {
+        return this.page.getByTestId('toast-container');
     }
 
     inputFieldById(name: string): Locator {

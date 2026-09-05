@@ -39,7 +39,7 @@ const CommonConstants = {
     },
 
     toastMessages: {
-        TRANSACTION_ADDED_SUCCESSFULLY: 'Transaction recorded successfully!',
+        TRANSACTION_ADDED_SUCCESSFULLY: 'Transaction added successfully',
         TRANSACTION_UPDATED_SUCCESSFULLY: 'Transaction updated!',
         TRANSACTION_DELETED_SUCCESSFULLY: 'Transaction deleted successfully',
 

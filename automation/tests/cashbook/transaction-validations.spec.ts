@@ -14,26 +14,21 @@ test.describe('Transactions Functionality Validations', () => {
 
     const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
     const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
-    const account = await api.createAccount({
-      name: accountName,
-      balance: 1000,
-    });
-    const category = await api.createCategory({
-      name: categoryName,
-      type: 'expense',
-    });
-
     const transaction = {
       type: 'expense',
       amount: '1000',
-      accountName: account.name!,
-      categoryName: category.name!,
+      accountName,
+      categoryName,
       date: new Date().toISOString().split('T')[0],
       description: generateRecordName(CommonConstants.prefix.TRANSACTION)
     };
 
-    // Navigate to Transactions Page
-    await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+    try {
+      await api.createAccount({ name: accountName, balance: 1000 });
+      await api.createCategory({ name: categoryName, type: 'expense' });
+
+      // Navigate to Transactions Page
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
 
     // Create a Transaction 
     await expect(transactionPage.addButton).toBeVisible();
@@ -60,11 +55,11 @@ test.describe('Transactions Functionality Validations', () => {
 
     await Promise.all([
       page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.newTransactionAPI) && response.status() === 201, { timeout: 15000 }),
-      expect(transactionPage.toastMessage(CommonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
+      expect(transactionPage.toastMessage).toContainText(CommonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)
     ]);
 
     await expect(transactionPage.resultsTable).toBeVisible({ timeout: 5000 });
-    await expect(page.getByText(/No of records:\s*\d+/i)).toBeVisible({ timeout: 5000 });
+    await expect(transactionPage.recordCountOnTable).toBeVisible({ timeout: 5000 });
 
     // Verify if all details are correct in the latest transaction row
     await expect(transactionPage.firstTransactionRow).toContainText(transaction.type.toLowerCase());
@@ -76,7 +71,12 @@ test.describe('Transactions Functionality Validations', () => {
     // Match the standard locale string that the UI uses
     const expectedUIDate = dateObj.toLocaleDateString();
 
-    await expect(transactionPage.firstRowOfGrid).toContainText(expectedUIDate);
+      await expect(transactionPage.firstRowOfGrid).toContainText(expectedUIDate);
+    } finally {
+      await api.deleteTransaction(transaction.description);
+      await api.deleteCategory(categoryName);
+      await api.deleteAccount(accountName);
+    }
 
   });
 });

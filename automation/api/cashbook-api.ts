@@ -107,12 +107,31 @@ export class CashbookApi {
         });
     }
 
+    async deleteAccount(name: string): Promise<void> {
+        const account = (await this.getAccounts()).find((item) => item.name === name);
+        if (account) await this.delete(`/api/accounts/${account._id}`);
+    }
+
+    async deleteCategory(name: string): Promise<void> {
+        const category = (await this.getCategories()).find((item) => item.name === name);
+        if (category) await this.delete(`/api/categories/${category._id}`);
+    }
+
+    async deleteTransaction(description: string): Promise<void> {
+        const transaction = (await this.getTransactions()).find((item) => item.description === description);
+        if (transaction) await this.delete(`/api/transactions/${transaction._id}`);
+    }
+
     async getAccounts(): Promise<Account[]> {
         return this.get<Account[]>('/api/accounts');
     }
 
     async getCategories(): Promise<Category[]> {
         return this.get<Category[]>('/api/categories');
+    }
+
+    async getTransactions(): Promise<Transaction[]> {
+        return this.get<Transaction[]>('/api/transactions');
     }
 
     private async findAccountId(name: string): Promise<string> {
@@ -135,6 +154,11 @@ export class CashbookApi {
     private async post<T>(url: string, data: object): Promise<T> {
         const response = await this.context.post(url, { data });
         return this.readResponse<T>(response);
+    }
+
+    private async delete(url: string): Promise<void> {
+        const response = await this.context.delete(url);
+        await expect(response).toBeOK();
     }
 
     private async readResponse<T>(response: APIResponse): Promise<T> {
