@@ -4,6 +4,7 @@ import { generateRecordName, navigateToPage, waitForApiResponse } from '../../pa
 import {expect} from '@playwright/test';
 
 test.describe('Transactions Functionality Validations', () => {
+  test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page, loginPage }) => {
     await page.goto(CommonConstants.urls.baseURL);
