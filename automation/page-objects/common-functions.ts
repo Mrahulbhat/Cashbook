@@ -42,6 +42,11 @@ export async function navigateToPage(page: any, pageName: string) {
             await page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.categoriesAPI) && response.status() === 200 || 304, { timeout: 15000 });
             break;
 
+        case CommonConstants.pageName.IOU:
+            await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.IOU}`);
+            await page.waitForResponse((response: any) => response.url().includes('/api/iou') && response.status() === 200, { timeout: 15000 });
+            break;
+
         case CommonConstants.pageName.STATISTICS:
             await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.STATISTICS}`);
             await Promise.all([

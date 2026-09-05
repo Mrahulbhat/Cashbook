@@ -267,6 +267,8 @@ const AddTransactionContent = () => {
                                 <label id="IouToggleLabel" className="flex items-center gap-3 cursor-pointer select-none">
                                     <div
                                         id="IouToggle"
+                                        role="switch"
+                                        aria-checked={iouEnabled}
                                         onClick={() => setIouEnabled(v => !v)}
                                         className={`w-11 h-6 rounded-full relative transition-colors duration-300 flex-shrink-0 ${iouEnabled ? 'bg-yellow-500' : 'bg-gray-700'}`}
                                     >

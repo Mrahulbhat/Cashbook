@@ -23,6 +23,18 @@ export class TransactionPage extends BasePage {
         return this.resultsTable.locator('tbody tr').first();
     }
 
+    get iouToggle(): Locator {
+        return this.page.locator('#IouToggle');
+    }
+
+    get iouFriendNameInput(): Locator {
+        return this.page.locator('#IouFriendName');
+    }
+
+    get iouAmountToGetBackInput(): Locator {
+        return this.page.locator('#IouAmountToGetBack');
+    }
+
 
     async createTransaction(page: Page, transaction: { type: string, amount: string, accountName: string, categoryName: string, date: string, description: string }) {
 

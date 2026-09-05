@@ -24,6 +24,7 @@ const CommonConstants = {
         ACCOUNTS: 'accounts',
         TRANSFER: 'transfer',
         CATEGORIES: 'categories',
+        IOU: 'iou',
         STATISTICS: 'statistics',
         SETTINGS: 'settings'
     },
