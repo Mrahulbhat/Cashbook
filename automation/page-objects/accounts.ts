@@ -25,6 +25,10 @@ export class AccountsPage extends BasePage {
     get balanceContainer(): Locator {
         return this.page.locator('#balanceContainer');
     }
+
+    get totalBalance(): Locator {
+        return this.balanceContainer.locator('span').filter({ hasText: '₹' });
+    }
     //used to create a single account
 
     async createAccount(page: Page, account: { name: string; balance: string }) {
