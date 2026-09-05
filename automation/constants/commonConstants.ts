@@ -32,6 +32,12 @@ const CommonConstants = {
         CASHBOOK: 'cashbook'
     },
 
+    prefix: {
+        CATEGORY: 'CT',
+        ACCOUNT: 'AC',
+        TRANSACTION: 'TX',
+    },
+
     toastMessages: {
         TRANSACTION_ADDED_SUCCESSFULLY: 'Transaction recorded successfully!',
         TRANSACTION_UPDATED_SUCCESSFULLY: 'Transaction updated!',

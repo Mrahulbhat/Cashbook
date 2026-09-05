@@ -7,6 +7,9 @@ import { AccountsPage } from '../page-objects/accounts';
 import { StatisticsPage } from '../page-objects/statistics';
 import { LoginPage } from '../page-objects/login-page';
 import { SettingsPage } from '../page-objects/settings';
+import { request as playwrightRequest } from '@playwright/test';
+import { CashbookApi } from '../api/cashbook-api';
+import commonConstants from '../constants/CommonConstants';
 
 type fixtures = {
     basePage: BasePage;
@@ -16,12 +19,21 @@ type fixtures = {
     statisticsPage: StatisticsPage;
     loginPage: LoginPage;
     settingsPage: SettingsPage;
+    api: CashbookApi;
 }
 
 export const test = base.extend<fixtures>({
     storageState: async ({}, use) => {
         const statePath = path.resolve(__dirname, '../.auth/default.json');
         await use(statePath);
+    },
+    api: async ({ storageState }, use) => {
+        const context = await playwrightRequest.newContext({
+            baseURL: commonConstants.urls.baseURL,
+            storageState,
+        });
+        await use(new CashbookApi(context));
+        await context.dispose();
     },
     page: async ({ page }, use) => {
         await page.addInitScript(() => {

@@ -1,6 +1,6 @@
 import { test } from '../../fixtures/test-base';
 import CommonConstants from '../../constants/CommonConstants';
-import { navigateToPage, waitForApiResponse } from '../../page-objects/common-functions';
+import { generateRecordName, navigateToPage, waitForApiResponse } from '../../page-objects/common-functions';
 import {expect} from '@playwright/test';
 
 test.describe('Transactions Functionality Validations', () => {
@@ -10,15 +10,26 @@ test.describe('Transactions Functionality Validations', () => {
     await loginPage.navigateToApp(CommonConstants.appName.CASHBOOK);
   });
 
-  test('Transaction test', async ({ page, transactionPage, dashboardPage }) => {
+  test('Transaction test', async ({ page, transactionPage, dashboardPage, api }) => {
+
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
+    const account = await api.createAccount({
+      name: accountName,
+      balance: 1000,
+    });
+    const category = await api.createCategory({
+      name: categoryName,
+      type: 'expense',
+    });
 
     const transaction = {
       type: 'expense',
       amount: '1000',
-      accountName: 'Cash',
-      categoryName: 'Food',
+      accountName: account.name!,
+      categoryName: category.name!,
       date: new Date().toISOString().split('T')[0],
-      description: 'Test Transaction'
+      description: generateRecordName(CommonConstants.prefix.TRANSACTION)
     };
 
     // Navigate to Transactions Page

@@ -1,4 +1,4 @@
-import CommonConstants from '../constants/commonConstants.js';
+import CommonConstants from '../constants/CommonConstants';
 import { SettingsPage } from './settings.js';
 
 export async function navigateToPage(page: any, pageName: string) {
@@ -83,6 +83,15 @@ export function generateRandomPrefix(): string {
     const ms = String(now.getMilliseconds()).padStart(3, '0');
     
     return `${year}${month}${day}${hours}${minutes}${seconds}${ms}`;
+}
+
+export function generateRecordName(prefix: string): string {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const randomLetters = Array.from({ length: 8 }, () =>
+        letters[Math.floor(Math.random() * letters.length)]
+    ).join('');
+
+    return `${prefix}${randomLetters}`;
 }
 
 
