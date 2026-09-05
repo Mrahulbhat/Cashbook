@@ -60,7 +60,7 @@ test.describe('Transactions Functionality Validations', () => {
 
     await Promise.all([
       page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.newTransactionAPI) && response.status() === 201, { timeout: 15000 }),
-      expect(page.getByText(CommonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
+      expect(transactionPage.toastMessage(CommonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
     ]);
 
     await expect(transactionPage.resultsTable).toBeVisible({ timeout: 5000 });

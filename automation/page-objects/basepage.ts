@@ -23,6 +23,10 @@ export class BasePage {
     get recordCountOnTable(): Locator {
         return this.page.locator('#txnCount');
     }
+    toastMessage(message: string): Locator {
+        return this.page.getByTestId('toast-container').getByText(message, { exact: true });
+    }
+
     inputFieldById(name: string): Locator {
         return this.page.locator(`#${name}Input`);
     }

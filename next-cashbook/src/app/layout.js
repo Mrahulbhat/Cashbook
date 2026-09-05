@@ -16,7 +16,9 @@ export default function RootLayout({ children }) {
           <AppShell>
             {children}
           </AppShell>
-          <Toaster position="top-right" />
+          <div data-testid="toast-container">
+            <Toaster position="top-right" />
+          </div>
         </AuthProvider>
       </body>
     </html>
