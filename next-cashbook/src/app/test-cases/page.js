@@ -169,19 +169,19 @@ const TestCasesContent = () => {
                                             />
                                         </a>
 
-                                        <button
-                                            onClick={() =>
-                                                router.push(
-                                                    `/test-cases/edit/${testCase._id}`
-                                                )
-                                            }
+                                        <a
+                                            href={`/test-cases/edit/${testCase._id}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            title="Edit test case in a new tab"
+                                            aria-label={`Edit ${testCase.title} in a new tab`}
                                             className="p-2 rounded-lg hover:bg-blue-500/20"
                                         >
                                             <Edit2
                                                 size={18}
                                                 className="text-blue-400"
                                             />
-                                        </button>
+                                        </a>
 
                                         <button
                                             onClick={() =>
