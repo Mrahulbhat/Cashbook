@@ -27,7 +27,7 @@ export async function PUT(req, { params }) {
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
         const { id } = await params;
-        const { title, description, status } = await req.json();
+        const { title, description, status, steps } = await req.json();
 
         await dbConnect();
         const test = await Tests.findOne({ $or: [{ _id: id }, { testCaseId: id }] });
@@ -45,6 +45,10 @@ export async function PUT(req, { params }) {
 
         if (status !== undefined) {
             test.status = status;
+        }
+
+        if (steps !== undefined) {
+            test.steps = Array.isArray(steps) ? steps : [];
         }
 
         const updatedTest = await test.save();

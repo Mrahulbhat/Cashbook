@@ -27,7 +27,7 @@ export async function POST(req) {
             return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
         }
 
-        const { title, description, status } = await req.json();
+        const { title, description, status, steps = [] } = await req.json();
 
         if (!title || !description || !status) {
             return NextResponse.json({ message: 'Missing required fields: title, description, status' }, { status: 400 });
@@ -42,7 +42,7 @@ export async function POST(req) {
         const count = await Tests.countDocuments();
         const testCaseId = `TC-${String(count + 1).padStart(3, '0')}`;
 
-        const test = new Tests({ testCaseId, title, description, status });
+        const test = new Tests({ testCaseId, title, description, status, steps });
         const savedTest = await test.save();
 
         return NextResponse.json(savedTest, { status: 201 });

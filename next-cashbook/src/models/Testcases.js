@@ -20,6 +20,10 @@ const testsSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        steps: {
+            type: [String],
+            default: []
+        },
     },
     {
         timestamps: true,

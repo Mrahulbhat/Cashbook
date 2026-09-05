@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Edit2, Loader } from "lucide-react";
+import { Plus, Trash2, Edit2, ExternalLink, Loader } from "lucide-react";
 import { useTestStore } from "@/store/useTestStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Modal from "@/components/Modal";
@@ -155,6 +155,20 @@ const TestCasesContent = () => {
                                     </div>
 
                                     <div className="flex gap-2">
+                                        <a
+                                            href={`/test-cases/${testCase._id}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            title="Open test case in a new tab"
+                                            aria-label={`Open ${testCase.title} in a new tab`}
+                                            className="p-2 rounded-lg hover:bg-slate-700"
+                                        >
+                                            <ExternalLink
+                                                size={18}
+                                                className="text-gray-300"
+                                            />
+                                        </a>
+
                                         <button
                                             onClick={() =>
                                                 router.push(

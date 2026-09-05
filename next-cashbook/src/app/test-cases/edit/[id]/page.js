@@ -5,8 +5,10 @@ import { useRouter, useParams } from "next/navigation";
 import {
     ArrowLeft,
     Save,
+    Plus,
     Loader,
-    ClipboardList
+    ClipboardList,
+    Trash2
 } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
@@ -23,6 +25,7 @@ const EditTestCaseContent = () => {
         title: "",
         description: "",
         status: "Active",
+        steps: [""],
     });
 
     useEffect(() => {
@@ -34,6 +37,7 @@ const EditTestCaseContent = () => {
                     title: response.data.title || "",
                     description: response.data.description || "",
                     status: response.data.status || "Active",
+                    steps: response.data.steps?.length ? response.data.steps : [""],
                 });
             } catch (error) {
                 toast.error("Failed to fetch test case");
@@ -67,6 +71,7 @@ const EditTestCaseContent = () => {
                 title: formData.title,
                 description: formData.description,
                 status: formData.status,
+                steps: formData.steps.map((step) => step.trim()).filter(Boolean),
             });
 
             toast.success("Test case updated successfully!");
@@ -79,6 +84,24 @@ const EditTestCaseContent = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const updateStep = (index, value) => {
+        setFormData((prev) => ({
+            ...prev,
+            steps: prev.steps.map((step, stepIndex) => stepIndex === index ? value : step),
+        }));
+    };
+
+    const addStep = () => {
+        setFormData((prev) => ({ ...prev, steps: [...prev.steps, ""] }));
+    };
+
+    const removeStep = (index) => {
+        setFormData((prev) => ({
+            ...prev,
+            steps: prev.steps.length === 1 ? [""] : prev.steps.filter((_, stepIndex) => stepIndex !== index),
+        }));
     };
 
     if (fetching) {
@@ -135,6 +158,32 @@ const EditTestCaseContent = () => {
                                 className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-blue-500"
                                 required
                             />
+                        </div>
+
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-sm text-gray-400">Test Steps</label>
+                                <button type="button" onClick={addStep} className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300">
+                                    <Plus size={16} /> Add step
+                                </button>
+                            </div>
+                            <div className="space-y-3">
+                                {formData.steps.map((step, index) => (
+                                    <div key={index} className="flex items-center gap-2">
+                                        <span className="w-7 text-center text-sm text-gray-500">{index + 1}</span>
+                                        <input
+                                            type="text"
+                                            value={step}
+                                            onChange={(e) => updateStep(index, e.target.value)}
+                                            placeholder="Enter the action or expected result"
+                                            className="flex-1 p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-blue-500"
+                                        />
+                                        <button type="button" onClick={() => removeStep(index)} title="Remove step" aria-label={`Remove step ${index + 1}`} className="p-2 text-gray-500 hover:text-red-400">
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         <div>
