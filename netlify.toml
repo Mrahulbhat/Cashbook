@@ -1,15 +1,10 @@
 [build]
-  # Tell Netlify to enter your frontend folder
-  base = "frontend"
-  
-  # Run the build command inside that folder
+  base = "next-cashbook"
   command = "npm run build"
-  
-  # The folder Vite creates (relative to the 'base' folder above)
-  publish = "dist"
+  publish = ".next"
 
-[[redirects]]
-  # The FIX for the 404 refresh error
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_ENV = "production"
