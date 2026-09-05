@@ -1,26 +1,71 @@
-import {test} from '@playwright/test';
+import { test } from '../../fixtures/test-base';
+import commonConstants from '../../constants/commonConstants';
+import { navigateToPage, waitForApiResponse } from '../../page-objects/common-functions';
+import {expect} from '@playwright/test';
 
-test.describe('Transaction Validations', () => {
-  test('should validate transaction fields correctly', async ({ page }) => {
-    // Navigate to the transaction page
-    await page.goto('/transactions');
+test.describe('Transactions Functionality Validations', () => {
 
-    // Fill in the transaction form with invalid data
-    await page.fill('#transaction-amount', '-100'); // Invalid negative amount
-    await page.fill('#transaction-date', '2024-13-01'); // Invalid date format
-    await page.fill('#transaction-description', ''); // Empty description
-
-    // Submit the form
-    await page.click('#submit-transaction');
-
-    // Check for validation error messages
-    const amountError = await page.locator('#amount-error').textContent();
-    const dateError = await page.locator('#date-error').textContent();
-    const descriptionError = await page.locator('#description-error').textContent();
-
-    // Assert that the correct validation messages are displayed
-    test.expect(amountError).toBe('Amount must be a positive number.');
-    test.expect(dateError).toBe('Date must be in the format YYYY-MM-DD.');
-    test.expect(descriptionError).toBe('Description cannot be empty.');
+  test.beforeEach(async ({ page, loginPage }) => {
+    await page.goto(commonConstants.urls.baseURL);
+    await loginPage.navigateToApp();
   });
+
+  test('Transaction test', async ({ page, transactionPage, dashboardPage }) => {
+
+    const transaction = {
+      type: 'expense',
+      amount: '1000',
+      accountName: 'Cash',
+      categoryName: 'Food',
+      date: new Date().toISOString().split('T')[0],
+      description: 'Test Transaction'
+    };
+
+    // Navigate to Transactions Page
+    await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
+
+    // Create a Transaction 
+    await expect(transactionPage.addButton).toBeVisible();
+    await transactionPage.addButton.click();
+    await waitForApiResponse(page, commonConstants.urls.accountsAPI);
+    await expect(transactionPage.addTransactionForm).toBeVisible();
+
+    if (transaction.type === 'expense') {
+      await transactionPage.expenseRadio.click();
+    }
+    else {
+      await transactionPage.incomeRadio.click();
+    }
+
+    await transactionPage.enterAmount(transaction.amount);
+    await transactionPage.selectAccount(transaction.accountName);
+    await transactionPage.selectCategory(transaction.categoryName);
+    await transactionPage.selectDate(transaction.date);
+    await transactionPage.descriptionInput.fill(transaction.description);
+
+    await expect(transactionPage.cancelButton).toBeVisible();
+    await expect(transactionPage.saveButton).toBeEnabled();
+    await transactionPage.saveButton.click();
+
+    await Promise.all([
+      page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newTransactionAPI) && response.status() === 201, { timeout: 15000 }),
+      expect(page.getByText(commonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
+    ]);
+
+    await expect(transactionPage.resultsTable).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(/No of records:\s*\d+/i)).toBeVisible({ timeout: 5000 });
+
+    // Verify if all details are correct in the latest transaction row
+    await expect(transactionPage.firstTransactionRow).toContainText(transaction.type.toLowerCase());
+    await expect(transactionPage.firstTransactionRow).toContainText(transaction.categoryName);
+    await expect(transactionPage.firstTransactionRow).toContainText(transaction.accountName);
+    await expect(transactionPage.firstTransactionRow).toContainText(`₹${Number(transaction.amount).toLocaleString('en-IN')}`);
+    const dateObj = new Date(transaction.date);
+
+    // Match the standard locale string that the UI uses
+    const expectedUIDate = dateObj.toLocaleDateString();
+
+    await expect(transactionPage.firstRowOfGrid).toContainText(expectedUIDate);
+
+  }
 });

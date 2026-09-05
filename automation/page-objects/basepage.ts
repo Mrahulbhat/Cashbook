@@ -9,6 +9,10 @@ export class BasePage {
         this.page = newPage;
     }
 
+    get cashbookBtnInDashboard(): Locator {
+        return this.page.locator('#app-card-cashbook');
+    }
+
     get resultsTable(): Locator {
         return this.page.locator('table[data-testid="resultsTable"]');
     }

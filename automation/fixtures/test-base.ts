@@ -1,3 +1,4 @@
+import path from 'path';
 import { test as base } from '@playwright/test';
 import { BasePage } from '../page-objects/basepage';
 import { DashboardPage } from '../page-objects/dashboard';
@@ -18,6 +19,10 @@ type fixtures = {
 }
 
 export const test = base.extend<fixtures>({
+    storageState: async ({}, use) => {
+        const statePath = path.resolve(__dirname, '../.auth/default.json');
+        await use(statePath);
+    },
     page: async ({ page }, use) => {
         await page.addInitScript(() => {
             (window as any).inAutomation = true;

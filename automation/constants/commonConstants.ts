@@ -7,7 +7,7 @@ const commonConstants = {
     userPassword: 'test123',
 
     urls: {
-        baseURL: 'http://localhost:5173', //local testing URL
+        baseURL: 'http://localhost:5173', // local testing URL
         loginApi: '/api/auth/login',
         accountsAPI: '/api/accounts',
         transactionAPI: '/api/transactions',

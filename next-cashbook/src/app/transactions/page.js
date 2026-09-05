@@ -148,7 +148,7 @@ const TransactionsContent = () => {
                     </div>
                 </div>
 
-                <div className="mb-6 flex items-center justify-start gap-3">
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <button
                             id="AddBtnSmall"
@@ -168,6 +168,11 @@ const TransactionsContent = () => {
                             <Trash2 size={16} className="text-orange-600" />
                             <span className="text-orange-700">Delete</span>
                         </button>
+                    </div>
+
+                    <div className="inline-flex items-center gap-2 rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-2 shadow-sm">
+                        <span className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">No of records</span>
+                        <span className="text-lg font-bold text-white">{filteredTransactions.length}</span>
                     </div>
                 </div>
 
@@ -236,6 +241,7 @@ const TransactionsContent = () => {
                 ) : (
                     <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-16 text-center">
                         <p className="text-gray-400 text-lg">No transactions found</p>
+                        <p className="mt-2 text-sm text-gray-500">No of records: 0</p>
                     </div>
                 )}
 

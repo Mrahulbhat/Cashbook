@@ -10,7 +10,9 @@ export class LoginPage extends BasePage {
         super(page);
         this.page = page;
     }
-
+    get loginWithPhoneButton(): Locator {
+        return this.page.getByText('Login with Phone Number');
+    }
     get phoneInputField(): Locator {
         return this.page.locator('#PhoneInput');
     }
@@ -48,17 +50,20 @@ export class LoginPage extends BasePage {
         return this.page.locator('#SignupBtn');
     }
 
+    async navigateToApp() {
+        await this.cashbookBtnInDashboard.click();
+    }
+
     async loginUser() {
-        const userName = commonConstants.userName;
         await this.page.goto(commonConstants.urls.baseURL);
+        await this.loginWithPhoneButton.click();
         await this.phoneInputField.clear();
         await this.phoneInputField.pressSequentially(commonConstants.userPhone);
         await this.passwordInputField.clear();
         await this.passwordInputField.pressSequentially(commonConstants.userPassword);
         await this.loginButton.click();
         await waitForApiResponse(this.page, commonConstants.urls.loginApi);
-        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + '/dashboard');
-        await expect(this.navbarUserName).toBeVisible();
-        await expect(this.navbarUserName).toContainText(userName);
+        await expect(this.page).toHaveURL(commonConstants.urls.baseURL + '/select-app');
+        await this.cashbookBtnInDashboard.click();
     }
 }

@@ -27,12 +27,13 @@ export default function AppShell({ children }) {
         return <>{children}</>;
     }
 
-    // Habit Tracker, ServiceCare and DSA Tracker — Navbar but no Cashbook sidebar
+    // Pages that should keep the top navbar but not the Cashbook sidebar
     const isHabits = pathname?.startsWith("/habits");
     const isServiceCare = pathname?.startsWith("/servicecare");
     const isDsa = pathname?.startsWith("/dsa");
+    const isTestCases = pathname?.startsWith("/test-cases");
 
-    if (isHabits || isServiceCare || isDsa) {
+    if (isHabits || isServiceCare || isDsa || isTestCases) {
         return (
             <div className="h-screen flex flex-col bg-[#070b14] text-slate-100">
                 <Navbar />
