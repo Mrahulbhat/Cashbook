@@ -218,7 +218,7 @@ test.describe('Transactions Functionality Validations', () => {
     }
   });
 
-  test('Settling a transaction-created IOU updates the account balance', async ({ page, transactionPage, api }) => {
+  test('Verify if Balance is updated when IOU is settled if IOU which was created from txn', async ({ page, transactionPage, api }) => {
     const amount = 100;
     const friendName = generateRecordName('FR');
     const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
