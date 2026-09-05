@@ -14,7 +14,7 @@ const testsSchema = new mongoose.Schema(
         },
         description: {
             type: String,
-            required: true
+            default: ''
         },
         status: {
             type: String,

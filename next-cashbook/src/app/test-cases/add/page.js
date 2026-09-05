@@ -21,7 +21,7 @@ const AddTestCaseContent = () => {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        status: "Active",
+        status: "Not Automated",
         steps: [""],
     });
 
@@ -39,7 +39,6 @@ const AddTestCaseContent = () => {
 
         if (
             !formData.title.trim() ||
-            !formData.description.trim() ||
             !formData.status
         ) {
             toast.error("Please fill in all required fields");
@@ -166,7 +165,7 @@ const AddTestCaseContent = () => {
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-400 mb-2">
-                                Description *
+                                Description
                             </label>
 
                             <textarea
@@ -176,7 +175,6 @@ const AddTestCaseContent = () => {
                                 rows={6}
                                 placeholder="Describe the test scenario..."
                                 className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 text-white resize-none"
-                                required
                             />
                         </div>
 
@@ -191,10 +189,11 @@ const AddTestCaseContent = () => {
                                 onChange={handleInputChange}
                                 className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 text-white"
                             >
-                                <option value="Active">Active</option>
-                                <option value="Draft">Draft</option>
+                                <option value="Not Automated">Not Automated</option>
+                                <option value="Automated">Automated</option>
+                                <option value="Partial">Partial</option>
                                 <option value="Blocked">Blocked</option>
-                                <option value="Deprecated">Deprecated</option>
+                                <option value="Obselete">Obselete</option>
                             </select>
                         </div>
 

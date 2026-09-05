@@ -89,13 +89,13 @@ const TestCasesContent = () => {
 
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
                         <p className="text-gray-400 text-sm">
-                            Active
+                            Automated
                         </p>
                         <h2 className="text-3xl font-bold mt-2 text-green-400">
                             {
                                 testCases.filter(
                                     (tc) =>
-                                        tc.status?.toLowerCase() === "active"
+                                        tc.status?.toLowerCase() === "automated"
                                 ).length
                             }
                         </h2>
@@ -109,7 +109,7 @@ const TestCasesContent = () => {
                             {
                                 testCases.filter(
                                     (tc) =>
-                                        tc.status?.toLowerCase() !== "active"
+                                        tc.status?.toLowerCase() !== "automated"
                                 ).length
                             }
                         </h2>
@@ -145,7 +145,7 @@ const TestCasesContent = () => {
 
                                         <span
                                             className={`inline-flex mt-2 px-3 py-1 rounded-full text-xs font-semibold ${
-                                                testCase.status?.toLowerCase() === "active"
+                                                testCase.status?.toLowerCase() === "automated"
                                                     ? "bg-green-500/20 text-green-400"
                                                     : "bg-yellow-500/20 text-yellow-400"
                                             }`}

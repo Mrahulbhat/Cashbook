@@ -75,8 +75,8 @@ export async function PUT(request, { params }) {
         const description = (body.description || '').trim();
         const status = (body.status || '').trim();
 
-        if (!customId || !title || !description || !status) {
-            return NextResponse.json({ success: false, error: 'ID, title, description, and status are required' }, { status: 400 });
+        if (!customId || !title || !status) {
+            return NextResponse.json({ success: false, error: 'ID, title, and status are required' }, { status: 400 });
         }
 
         await dbConnect();

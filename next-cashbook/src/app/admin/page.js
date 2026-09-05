@@ -170,7 +170,7 @@ const AdminDashboard = () => {
         id: '',
         title: '',
         description: '',
-        status: 'Draft'
+        status: 'Not Automated'
     });
     const [savingTestCase, setSavingTestCase] = useState(false);
     const [expandedTestDescriptions, setExpandedTestDescriptions] = useState({});
@@ -295,7 +295,7 @@ const AdminDashboard = () => {
     const handleTestCaseSubmit = async (e) => {
         e.preventDefault();
 
-        if (!testCaseForm.id.trim() || !testCaseForm.title.trim() || !testCaseForm.description.trim() || !testCaseForm.status.trim()) {
+        if (!testCaseForm.id.trim() || !testCaseForm.title.trim() || !testCaseForm.status.trim()) {
             toast.error('Please complete all test case fields');
             return;
         }
@@ -319,7 +319,7 @@ const AdminDashboard = () => {
             }
 
             toast.success(editingTestCase ? 'Test case updated successfully' : 'Test case saved successfully');
-            setTestCaseForm({ id: '', title: '', description: '', status: 'Draft' });
+            setTestCaseForm({ id: '', title: '', description: '', status: 'Not Automated' });
             setEditingTestCase(null);
             fetchAllData();
         } catch (error) {
@@ -335,7 +335,7 @@ const AdminDashboard = () => {
             id: testCase.testCaseId || testCase.id || '',
             title: testCase.title || '',
             description: testCase.description || '',
-            status: testCase.status || 'Draft'
+            status: testCase.status || 'Not Automated'
         });
     };
 
@@ -353,7 +353,7 @@ const AdminDashboard = () => {
             setTestCases(prev => prev.filter(item => item._id !== testCaseId));
             if (editingTestCase && editingTestCase._id === testCaseId) {
                 setEditingTestCase(null);
-                setTestCaseForm({ id: '', title: '', description: '', status: 'Draft' });
+                setTestCaseForm({ id: '', title: '', description: '', status: 'Not Automated' });
             }
         } catch (error) {
             toast.error(error.message || 'Failed to delete test case');
@@ -619,8 +619,8 @@ const AdminDashboard = () => {
                                                 <p className="text-2xl font-bold text-green-400 mt-2">{testCases.filter(tc => tc.status === 'Automated').length}</p>
                                             </div>
                                             <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-4">
-                                                <p className="text-xs text-gray-500 uppercase tracking-wider">Draft</p>
-                                                <p className="text-2xl font-bold text-yellow-400 mt-2">{testCases.filter(tc => tc.status === 'Draft').length}</p>
+                                                <p className="text-xs text-gray-500 uppercase tracking-wider">Not Automated</p>
+                                                <p className="text-2xl font-bold text-yellow-400 mt-2">{testCases.filter(tc => tc.status === 'Not Automated').length}</p>
                                             </div>
                                         </div>
 
@@ -634,11 +634,11 @@ const AdminDashboard = () => {
                                                 className="bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-purple-500"
                                             >
                                                 <option value="All">All statuses</option>
-                                                <option value="Draft">Draft</option>
+                                                <option value="Not Automated">Not Automated</option>
                                                 <option value="Automated">Automated</option>
-                                                <option value="Non Automatable">Non Automatable</option>
+                                                <option value="Partial">Partial</option>
                                                 <option value="Blocked">Blocked</option>
-                                                <option value="Deprecated">Deprecated</option>
+                                                <option value="Obselete">Obselete</option>
                                             </select>
                                         </div>
 
@@ -684,11 +684,11 @@ const AdminDashboard = () => {
                                                                     <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
                                                                         testCase.status === 'Automated' ? 'bg-green-500/15 text-green-400 border border-green-500/20' :
                                                                         testCase.status === 'Blocked' ? 'bg-red-500/15 text-red-400 border border-red-500/20' :
-                                                                        testCase.status === 'Non Automatable' ? 'bg-orange-500/15 text-orange-300 border border-orange-500/20' :
-                                                                        testCase.status === 'Deprecated' ? 'bg-gray-500/15 text-gray-300 border border-gray-500/20' :
+                                                                        testCase.status === 'Partial' ? 'bg-orange-500/15 text-orange-300 border border-orange-500/20' :
+                                                                        testCase.status === 'Obselete' ? 'bg-gray-500/15 text-gray-300 border border-gray-500/20' :
                                                                         'bg-yellow-500/15 text-yellow-400 border border-yellow-500/20'
                                                                     }`}>
-                                                                        {testCase.status || 'Draft'}
+                                                                        {testCase.status || 'Not Automated'}
                                                                     </span>
                                                                 </td>
                                                                 <td className="px-4 py-3 align-top">
@@ -770,7 +770,6 @@ const AdminDashboard = () => {
                                                     onChange={(e) => setTestCaseForm({ ...testCaseForm, description: e.target.value })}
                                                     placeholder="Describe expected behavior and validation..."
                                                     className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder:text-gray-500 outline-none focus:border-purple-500 resize-none"
-                                                    required
                                                 />
                                             </div>
                                             <div>
@@ -780,11 +779,11 @@ const AdminDashboard = () => {
                                                     onChange={(e) => setTestCaseForm({ ...testCaseForm, status: e.target.value })}
                                                     className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white outline-none focus:border-purple-500"
                                                 >
-                                                    <option value="Draft">Draft</option>
+                                                    <option value="Not Automated">Not Automated</option>
                                                     <option value="Automated">Automated</option>
-                                                    <option value="Non Automatable">Non Automatable</option>
+                                                    <option value="Partial">Partial</option>
                                                     <option value="Blocked">Blocked</option>
-                                                    <option value="Deprecated">Deprecated</option>
+                                                    <option value="Obselete">Obselete</option>
                                                 </select>
                                             </div>
                                             {editingTestCase && (
@@ -792,7 +791,7 @@ const AdminDashboard = () => {
                                                     type="button"
                                                     onClick={() => {
                                                         setEditingTestCase(null);
-                                                        setTestCaseForm({ id: '', title: '', description: '', status: 'Draft' });
+                                                        setTestCaseForm({ id: '', title: '', description: '', status: 'Not Automated' });
                                                     }}
                                                     className="w-full border border-gray-700 bg-gray-900 text-gray-300 hover:bg-gray-800 font-bold py-3 rounded-xl transition-all"
                                                 >

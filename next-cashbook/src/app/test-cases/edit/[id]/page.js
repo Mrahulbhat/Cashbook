@@ -24,7 +24,7 @@ const EditTestCaseContent = () => {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        status: "Active",
+        status: "Not Automated",
         steps: [""],
     });
 
@@ -36,7 +36,7 @@ const EditTestCaseContent = () => {
                 setFormData({
                     title: response.data.title || "",
                     description: response.data.description || "",
-                    status: response.data.status || "Active",
+                    status: response.data.status || "Not Automated",
                     steps: response.data.steps?.length ? response.data.steps : [""],
                 });
             } catch (error) {
@@ -57,7 +57,6 @@ const EditTestCaseContent = () => {
 
         if (
             !formData.title.trim() ||
-            !formData.description.trim() ||
             !formData.status
         ) {
             toast.error("Please fill all required fields");
@@ -201,7 +200,6 @@ const EditTestCaseContent = () => {
                                     })
                                 }
                                 className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-blue-500 resize-none"
-                                required
                             />
                         </div>
 
@@ -220,10 +218,11 @@ const EditTestCaseContent = () => {
                                 }
                                 className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-blue-500"
                             >
-                                <option value="Active">Active</option>
-                                <option value="Draft">Draft</option>
+                                <option value="Not Automated">Not Automated</option>
+                                <option value="Automated">Automated</option>
+                                <option value="Partial">Partial</option>
                                 <option value="Blocked">Blocked</option>
-                                <option value="Deprecated">Deprecated</option>
+                                <option value="Obselete">Obselete</option>
                             </select>
                         </div>
 

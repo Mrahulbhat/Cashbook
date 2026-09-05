@@ -27,10 +27,10 @@ export async function POST(req) {
             return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
         }
 
-        const { title, description, status, steps = [] } = await req.json();
+        const { title, description = '', status, steps = [] } = await req.json();
 
-        if (!title || !description || !status) {
-            return NextResponse.json({ message: 'Missing required fields: title, description, status' }, { status: 400 });
+        if (!title || !status) {
+            return NextResponse.json({ message: 'Missing required fields: title, status' }, { status: 400 });
         }
 
         await dbConnect();

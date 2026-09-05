@@ -77,8 +77,8 @@ export async function POST(request) {
         const description = (body.description || '').trim();
         const status = (body.status || '').trim();
 
-        if (!trimmedId || !title || !description || !status) {
-            return NextResponse.json({ success: false, error: 'ID, title, description, and status are required' }, { status: 400 });
+        if (!trimmedId || !title || !status) {
+            return NextResponse.json({ success: false, error: 'ID, title, and status are required' }, { status: 400 });
         }
 
         await dbConnect();
