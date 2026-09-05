@@ -79,4 +79,16 @@ test.describe('Transactions Functionality Validations', () => {
     }
 
   });
+
+  test('Transaction date is auto generated with today\'s date', async ({ page, transactionPage }) => {
+    await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+
+    await expect(transactionPage.addButton).toBeVisible();
+    await transactionPage.addButton.click();
+    await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+    await expect(transactionPage.addTransactionForm).toBeVisible();
+
+    const today = new Date().toISOString().split('T')[0];
+    await expect(transactionPage.dateInput).toHaveValue(today);
+  });
 });
