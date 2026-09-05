@@ -1,58 +1,57 @@
-import commonConstants from '../constants/commonConstants.js';
-import { LoginPage } from './login-page.js';
+import CommonConstants from '../constants/commonConstants.js';
 import { SettingsPage } from './settings.js';
 
 export async function navigateToPage(page: any, pageName: string) {
     switch (pageName) {
 
-        case commonConstants.urls.baseURL:
-            await page.goto(commonConstants.urls.baseURL);
+        case CommonConstants.urls.baseURL:
+            await page.goto(CommonConstants.urls.baseURL);
             break;
 
-        case commonConstants.pageName.DASHBOARD:
-            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.DASHBOARD}`);
+        case CommonConstants.pageName.DASHBOARD:
+            await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.DASHBOARD}`);
             await Promise.all([
-                page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200, { timeout: 15000 }),
-                page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200, { timeout: 15000 }),
+                page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.accountsAPI) && response.status() === 200, { timeout: 15000 }),
+                page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.transactionAPI) && response.status() === 200, { timeout: 15000 }),
             ]);
             break;
 
-        case commonConstants.pageName.TRANSACTIONS:
-            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSACTIONS}`);
-            await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200 || 304, { timeout: 15000 });
+        case CommonConstants.pageName.TRANSACTIONS:
+            await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.TRANSACTIONS}`);
+            await page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.transactionAPI) && response.status() === 200 || 304, { timeout: 15000 });
 
             break;
 
-        case commonConstants.pageName.ACCOUNTS:
-            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.ACCOUNTS}`);
+        case CommonConstants.pageName.ACCOUNTS:
+            await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.ACCOUNTS}`);
             try {
-                await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200 || 304, { timeout: 15000 });
+                await page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.accountsAPI) && response.status() === 200 || 304, { timeout: 15000 });
             }
             catch {
                 console.log('Intercept might have arrived before');
             }
             break;
 
-        case commonConstants.pageName.TRANSFER:
-            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.TRANSFER}`);
-            await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.accountsAPI) && response.status() === 200 || 304, { timeout: 15000 });
+        case CommonConstants.pageName.TRANSFER:
+            await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.TRANSFER}`);
+            await page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.accountsAPI) && response.status() === 200 || 304, { timeout: 15000 });
             break;
 
-        case commonConstants.pageName.CATEGORIES:
-            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.CATEGORIES}`);
-            await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 200 || 304, { timeout: 15000 });
+        case CommonConstants.pageName.CATEGORIES:
+            await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.CATEGORIES}`);
+            await page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.categoriesAPI) && response.status() === 200 || 304, { timeout: 15000 });
             break;
 
-        case commonConstants.pageName.STATISTICS:
-            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.STATISTICS}`);
+        case CommonConstants.pageName.STATISTICS:
+            await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.STATISTICS}`);
             await Promise.all([
-                await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.categoriesAPI) && response.status() === 200 || 304, { timeout: 15000 }),
-                await page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.transactionAPI) && response.status() === 200 || 304, { timeout: 15000 }),
+                await page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.categoriesAPI) && response.status() === 200 || 304, { timeout: 15000 }),
+                await page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.transactionAPI) && response.status() === 200 || 304, { timeout: 15000 }),
             ]);
             break;
 
-        case commonConstants.pageName.SETTINGS:
-            await page.goto(`${commonConstants.urls.baseURL}/${commonConstants.pageName.SETTINGS}`);
+        case CommonConstants.pageName.SETTINGS:
+            await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.SETTINGS}`);
             break;
 
         default: console.error('Invalid page name provided for navigation.');
@@ -88,9 +87,9 @@ export function generateRandomPrefix(): string {
 
 
 export async function deleteMyAccount(page: any) {
-    await navigateToPage(page, commonConstants.pageName.SETTINGS);
+    await navigateToPage(page, CommonConstants.pageName.SETTINGS);
     const settingsPage = new SettingsPage(page);
     await settingsPage.deleteAccountButton.click();
     await settingsPage.modalOkBtn.click();
-    await waitForApiResponse(page, commonConstants.urls.logout);
+    await waitForApiResponse(page, CommonConstants.urls.logout);
 }

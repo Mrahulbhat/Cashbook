@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './basepage';
 import { navigateToPage, waitForApiResponse } from './common-functions';
-import commonConstants from '../constants/commonConstants';
+import commonConstants from '../constants/CommonConstants';
 
 export class AccountsPage extends BasePage {
     readonly page: Page;

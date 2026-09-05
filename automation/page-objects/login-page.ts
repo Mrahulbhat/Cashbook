@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './basepage';
-import commonConstants from '../constants/commonConstants';
+import commonConstants from '../constants/CommonConstants';
 import { waitForApiResponse } from './common-functions';
 
 export class LoginPage extends BasePage {
@@ -50,8 +50,13 @@ export class LoginPage extends BasePage {
         return this.page.locator('#SignupBtn');
     }
 
-    async navigateToApp() {
-        await this.cashbookBtnInDashboard.click();
+    async navigateToApp(appName: string) {
+        if(appName.toLowerCase() === 'cashbook') {
+            await this.cashbookBtnInDashboard.click();
+        }
+        else {
+            await this.cashbookBtnInDashboard.click();
+        }
     }
 
     async loginUser() {

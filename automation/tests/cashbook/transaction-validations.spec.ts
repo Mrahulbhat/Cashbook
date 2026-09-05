@@ -1,13 +1,13 @@
 import { test } from '../../fixtures/test-base';
-import commonConstants from '../../constants/commonConstants';
+import CommonConstants from '../../constants/CommonConstants';
 import { navigateToPage, waitForApiResponse } from '../../page-objects/common-functions';
 import {expect} from '@playwright/test';
 
 test.describe('Transactions Functionality Validations', () => {
 
   test.beforeEach(async ({ page, loginPage }) => {
-    await page.goto(commonConstants.urls.baseURL);
-    await loginPage.navigateToApp();
+    await page.goto(CommonConstants.urls.baseURL);
+    await loginPage.navigateToApp(CommonConstants.appName.CASHBOOK);
   });
 
   test('Transaction test', async ({ page, transactionPage, dashboardPage }) => {
@@ -22,12 +22,12 @@ test.describe('Transactions Functionality Validations', () => {
     };
 
     // Navigate to Transactions Page
-    await navigateToPage(page, commonConstants.pageName.TRANSACTIONS);
+    await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
 
     // Create a Transaction 
     await expect(transactionPage.addButton).toBeVisible();
     await transactionPage.addButton.click();
-    await waitForApiResponse(page, commonConstants.urls.accountsAPI);
+    await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
     await expect(transactionPage.addTransactionForm).toBeVisible();
 
     if (transaction.type === 'expense') {
@@ -48,8 +48,8 @@ test.describe('Transactions Functionality Validations', () => {
     await transactionPage.saveButton.click();
 
     await Promise.all([
-      page.waitForResponse((response: any) => response.url().includes(commonConstants.urls.newTransactionAPI) && response.status() === 201, { timeout: 15000 }),
-      expect(page.getByText(commonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
+      page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.newTransactionAPI) && response.status() === 201, { timeout: 15000 }),
+      expect(page.getByText(CommonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY)).toBeVisible()
     ]);
 
     await expect(transactionPage.resultsTable).toBeVisible({ timeout: 5000 });
@@ -67,5 +67,5 @@ test.describe('Transactions Functionality Validations', () => {
 
     await expect(transactionPage.firstRowOfGrid).toContainText(expectedUIDate);
 
-  }
+  });
 });

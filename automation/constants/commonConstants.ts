@@ -1,6 +1,6 @@
 const test_date = new Date().toISOString().split('T')[0]; //current date in YYYY-MM-DD format
 
-const commonConstants = {
+const CommonConstants = {
 
     userName: 'test_name',
     userPhone: '9876543210',
@@ -26,6 +26,10 @@ const commonConstants = {
         CATEGORIES: 'categories',
         STATISTICS: 'statistics',
         SETTINGS: 'settings'
+    },
+
+    appName: {
+        CASHBOOK: 'cashbook'
     },
 
     toastMessages: {
@@ -82,4 +86,4 @@ const commonConstants = {
     ],
 };
 
-export default commonConstants;
+export default CommonConstants;
