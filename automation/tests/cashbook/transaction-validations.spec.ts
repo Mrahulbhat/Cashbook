@@ -92,7 +92,7 @@ test.describe('Transactions Functionality Validations', () => {
     await expect(transactionPage.dateInput).toHaveValue(today);
   });
 
-  test('Paid for a friend creates a transaction and IOU', async ({ page, transactionPage }) => {
+  test('Paid for a friend creates a transaction and IOU', async ({ page, transactionPage, api }) => {
     await navigateToPage(page, CommonConstants.pageName.IOU);
     const initialIouCount = await page.locator('[id^="DeleteIouBtn-"]').count();
 
@@ -116,7 +116,8 @@ test.describe('Transactions Functionality Validations', () => {
     const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
     const amount = '100';
 
-    await transactionPage.amountInput.fill(amount);
+    try {
+      await transactionPage.amountInput.fill(amount);
     await transactionPage.accountDropdownContainer.selectOption(accountValue!);
     await transactionPage.categoryDropdownContainer.selectOption(categoryValue!);
     await transactionPage.descriptionInput.fill(description);
@@ -146,9 +147,12 @@ test.describe('Transactions Functionality Validations', () => {
     await expect(iouCard).toContainText(friendName);
     await expect(iouCard).toContainText(description);
     await expect(iouCard).toContainText(`₹${Number(amount).toLocaleString('en-IN')}`);
+    } finally {
+      await api.deleteTransaction(description);
+    }
   });
 
-  test('IOU partial payment updates the account balance', async ({ page, transactionPage }) => {
+  test('IOU partial payment updates the account balance', async ({ page, transactionPage, api }) => {
     const amount = 100;
     const partialPayment = 50;
     const friendName = generateRecordName('FR');
@@ -168,7 +172,8 @@ test.describe('Transactions Functionality Validations', () => {
     const categoryValue = await categoryOption.getAttribute('value');
     const accountName = (await accountOption.textContent())?.trim() || '';
 
-    await transactionPage.amountInput.fill(String(amount));
+    try {
+      await transactionPage.amountInput.fill(String(amount));
     await transactionPage.accountDropdownContainer.selectOption(accountValue!);
     await transactionPage.categoryDropdownContainer.selectOption(categoryValue!);
     await transactionPage.descriptionInput.fill(description);
@@ -207,5 +212,8 @@ test.describe('Transactions Functionality Validations', () => {
     await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
     const balanceAfterPartialPayment = Number((await accountRow.locator('td').nth(3).innerText()).replace(/[^0-9.-]/g, ''));
     expect(balanceAfterPartialPayment).toBe(balanceAfterTransaction + partialPayment);
+    } finally {
+      await api.deleteTransaction(description);
+    }
   });
 });
