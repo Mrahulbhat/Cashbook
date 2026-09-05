@@ -217,4 +217,63 @@ test.describe('Transactions Functionality Validations', () => {
       await api.deleteTransaction(description);
     }
   });
+
+  test('Settling a transaction-created IOU updates the account balance', async ({ page, transactionPage, api }) => {
+    const amount = 100;
+    const friendName = generateRecordName('FR');
+    const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
+
+    try {
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+      await transactionPage.addButton.click();
+      await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+      await expect(transactionPage.addTransactionForm).toBeVisible();
+
+      const accountOption = transactionPage.accountDropdownContainer.locator('option').nth(2);
+      const categoryOption = transactionPage.categoryDropdownContainer.locator('option').nth(2);
+      const accountValue = await accountOption.getAttribute('value');
+      const categoryValue = await categoryOption.getAttribute('value');
+      const accountName = (await accountOption.textContent())?.trim() || '';
+
+      await transactionPage.amountInput.fill(String(amount));
+      await transactionPage.accountDropdownContainer.selectOption(accountValue!);
+      await transactionPage.categoryDropdownContainer.selectOption(categoryValue!);
+      await transactionPage.descriptionInput.fill(description);
+      await transactionPage.iouToggle.click();
+      await transactionPage.iouFriendNameInput.fill(friendName);
+      await transactionPage.iouAmountToGetBackInput.fill(String(amount));
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes('/api/transactions') && response.status() === 201),
+        page.waitForResponse((response: any) => response.url().includes('/api/iou') && response.status() === 201),
+        transactionPage.saveButton.click(),
+      ]);
+
+      await page.waitForURL(/\/transactions$/);
+      await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
+      const accountRow = page.locator('tbody tr').filter({ hasText: accountName });
+      const balanceAfterTransaction = Number((await accountRow.locator('td').nth(3).innerText()).replace(/[^0-9.-]/g, ''));
+
+      await navigateToPage(page, CommonConstants.pageName.IOU);
+      const iouCard = page.locator('div.bg-gray-900.border.rounded-2xl.overflow-hidden').filter({ hasText: friendName });
+      await iouCard.getByRole('button', { name: 'They Paid Back' }).click();
+      await expect(page.locator('#SettleAmountInput')).toHaveValue(String(amount));
+      await page.locator('#SettleAccountSelect').selectOption(accountValue!);
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes('/api/iou/') && response.status() === 200),
+        page.locator('#SettleConfirmBtn').click(),
+      ]);
+
+      await expect(page.getByText(/IOU fully settled/)).toBeVisible();
+      await page.locator('#FilterTab-pending').click();
+      await expect(page.locator('div.bg-gray-900.border.rounded-2xl.overflow-hidden').filter({ hasText: friendName })).toHaveCount(0);
+
+      await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
+      const balanceAfterSettlement = Number((await accountRow.locator('td').nth(3).innerText()).replace(/[^0-9.-]/g, ''));
+      expect(balanceAfterSettlement).toBe(balanceAfterTransaction + amount);
+    } finally {
+      await api.deleteTransaction(description);
+    }
+  });
 });
