@@ -403,24 +403,29 @@ test.describe('Transactions Functionality Validations', () => {
 
   test('Verify if Balance is updated when IOU is settled if IOU which was created from txn', async ({ page, transactionPage, api }) => {
     const amount = 100;
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
     const friendName = generateRecordName('FR');
     const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
 
     try {
+      await api.createAccount({ name: accountName, balance: 1000 });
+      await api.createCategory({ name: categoryName, type: 'expense' });
+
       await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
       await transactionPage.addButton.click();
       await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
       await expect(transactionPage.addTransactionForm).toBeVisible();
 
-      const accountOption = transactionPage.accountDropdownContainer.locator('option').nth(2);
-      const categoryOption = transactionPage.categoryDropdownContainer.locator('option').nth(2);
+      const accountOption = transactionPage.accountDropdownContainer.locator('option', { hasText: accountName });
+      const categoryOption = transactionPage.categoryDropdownContainer.locator('option', { hasText: categoryName });
+      await expect(accountOption).toBeAttached();
+      await expect(categoryOption).toBeAttached();
       const accountValue = await accountOption.getAttribute('value');
-      const categoryValue = await categoryOption.getAttribute('value');
-      const accountName = (await accountOption.textContent())?.trim() || '';
 
       await transactionPage.amountInput.fill(String(amount));
-      await transactionPage.accountDropdownContainer.selectOption(accountValue!);
-      await transactionPage.categoryDropdownContainer.selectOption(categoryValue!);
+      await transactionPage.accountDropdownContainer.selectOption({ label: accountName });
+      await transactionPage.categoryDropdownContainer.selectOption({ label: categoryName });
       await transactionPage.descriptionInput.fill(description);
       await transactionPage.iouToggle.click();
       await transactionPage.iouFriendNameInput.fill(friendName);
@@ -457,6 +462,8 @@ test.describe('Transactions Functionality Validations', () => {
       expect(balanceAfterSettlement).toBe(balanceAfterTransaction + amount);
     } finally {
       await api.deleteTransaction(description);
+      await api.deleteCategory(categoryName);
+      await api.deleteAccount(accountName);
     }
   });
 });
