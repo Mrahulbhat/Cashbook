@@ -53,4 +53,57 @@ test.describe('Categories Functionality Validations', () => {
       }
     }
   });
+
+  test('Only shows categories matching the selected transaction type', async ({ page, basePage, transactionPage, api }) => {
+    const categories = {
+      income: generateRecordName(CommonConstants.prefix.CATEGORY),
+      expense: generateRecordName(CommonConstants.prefix.CATEGORY),
+      investment: generateRecordName(CommonConstants.prefix.CATEGORY),
+    };
+
+    const createCategoryFromUi = async (type: keyof typeof categories) => {
+      await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.CATEGORIES}/add`);
+      await basePage.nameInput.fill(categories[type]);
+      await page.locator(`#TypeRadio-${type}`).check();
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.categoriesAPI) && response.status() === 201),
+        basePage.saveButton.click(),
+      ]);
+
+      await expect(page.getByText('Category created successfully!', { exact: true })).toBeVisible();
+    };
+
+    const expectCategoryOptions = async (expectedCategory: string, excludedCategories: string[]) => {
+      const categoryOptions = transactionPage.categoryDropdownContainer.locator('optgroup[label="Existing Categories"] option');
+      await expect(categoryOptions).toContainText([expectedCategory]);
+      for (const excludedCategory of excludedCategories) {
+        await expect(categoryOptions).not.toContainText([excludedCategory]);
+      }
+    };
+
+    try {
+      await createCategoryFromUi('income');
+      await createCategoryFromUi('expense');
+      await createCategoryFromUi('investment');
+
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+      await transactionPage.addButton.click();
+      await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+      await expect(transactionPage.addTransactionForm).toBeVisible();
+
+      await transactionPage.incomeRadio.check();
+      await expectCategoryOptions(categories.income, [categories.expense, categories.investment]);
+
+      await transactionPage.expenseRadio.check();
+      await expectCategoryOptions(categories.expense, [categories.income, categories.investment]);
+
+      await page.locator('#TypeRadio-investment').check();
+      await expectCategoryOptions(categories.investment, [categories.income, categories.expense]);
+    } finally {
+      await api.deleteCategory(categories.income);
+      await api.deleteCategory(categories.expense);
+      await api.deleteCategory(categories.investment);
+    }
+  });
 });
