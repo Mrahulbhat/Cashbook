@@ -11,6 +11,49 @@ test.describe('Transactions Functionality Validations', () => {
     await loginPage.navigateToApp(CommonConstants.appName.CASHBOOK);
   });
 
+  test('Verify all elements are displayed on the Transactions page', async ({ page, transactionPage, api }) => {
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
+    const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
+
+    try {
+      await api.createAccount({ name: accountName, balance: 1000 });
+      await api.createCategory({ name: categoryName, type: 'expense' });
+      await api.createTransaction({
+        amount: 100,
+        type: 'expense',
+        description,
+        accountName,
+        categoryName,
+      });
+
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+
+      await expect(transactionPage.pageHeader).toBeVisible();
+      await expect(transactionPage.dailyFilterButton).toBeVisible();
+      await expect(transactionPage.monthlyFilterButton).toBeVisible();
+      await expect(transactionPage.yearlyFilterButton).toBeVisible();
+      await expect(transactionPage.lifetimeFilterButton).toBeVisible();
+
+      await expect(transactionPage.totalExpenseCard).toBeVisible();
+      await expect(transactionPage.totalIncomeCard).toBeVisible();
+      await expect(transactionPage.balanceCard).toBeVisible();
+      await expect(transactionPage.addButton).toBeVisible();
+      await expect(transactionPage.bulkDeleteButton).toBeVisible();
+      await expect(transactionPage.recordCountOnTable).toBeVisible();
+      await expect(transactionPage.resultsTable).toBeVisible();
+      await expect(transactionPage.selectAllCheckbox).toBeVisible();
+
+      for (const column of ['Actions', 'Date', 'Type', 'Amount', 'Category', 'Account']) {
+        await expect(transactionPage.columnHeader(column)).toBeVisible();
+      }
+    } finally {
+      await api.deleteTransaction(description);
+      await api.deleteCategory(categoryName);
+      await api.deleteAccount(accountName);
+    }
+  });
+
   test('Transaction test', async ({ page, transactionPage, dashboardPage, api }) => {
 
     const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);

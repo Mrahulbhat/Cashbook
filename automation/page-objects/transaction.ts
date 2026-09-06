@@ -11,6 +11,50 @@ export class TransactionPage extends BasePage {
         this.page = page;
     }
 
+    get pageHeader(): Locator {
+        return this.page.getByRole('heading', { name: 'Transactions', exact: true });
+    }
+
+    get dailyFilterButton(): Locator {
+        return this.page.locator('#FilterBtn-daily');
+    }
+
+    get monthlyFilterButton(): Locator {
+        return this.page.locator('#FilterBtn-monthly');
+    }
+
+    get yearlyFilterButton(): Locator {
+        return this.page.locator('#FilterBtn-yearly');
+    }
+
+    get lifetimeFilterButton(): Locator {
+        return this.page.locator('#FilterBtn-lifetime');
+    }
+
+    get totalIncomeCard(): Locator {
+        return this.page.locator('#totalIncomeCard');
+    }
+
+    get totalExpenseCard(): Locator {
+        return this.page.locator('#totalExpenseCard');
+    }
+
+    get balanceCard(): Locator {
+        return this.page.locator('#balanceCard');
+    }
+
+    get bulkDeleteButton(): Locator {
+        return this.page.locator('#BulkDeleteBtn');
+    }
+
+    get selectAllCheckbox(): Locator {
+        return this.page.getByRole('checkbox', { name: 'Select all transactions' });
+    }
+
+    columnHeader(name: string): Locator {
+        return this.resultsTable.getByRole('columnheader', { name, exact: true });
+    }
+
     get addTransactionForm(): Locator {
         return this.page.locator('#AddTransactionForm');
     }
