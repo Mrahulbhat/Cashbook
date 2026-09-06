@@ -86,20 +86,18 @@ const AccountsContent = () => {
                         <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Accounts</h1>                    </div>
                 </div>
 
-                {accounts.length > 0 && (
-                    <div id="balanceContainer" className="mb-8 bg-white/5 border border-orange-500/20 rounded-2xl p-4 backdrop-blur-sm">
-                        <div className="flex items-center justify-between gap-5">
-                            <div className="text-orange-600 text-sm flex items-center gap-2">
-                                <span className="font-semibold">Total Balance</span>
-                                <span className="text-white font-bold">{formatCurrency(getTotalBalance())}</span>
-                            </div>
-                            <div className="text-orange-600 text-sm">
-                                <span className="text-white font-semibold">{accounts.length}</span>
-                                <span className="ml-2">account(s)</span>
-                            </div>
+                <div id="balanceContainer" className="mb-8 bg-white/5 border border-orange-500/20 rounded-2xl p-4 backdrop-blur-sm">
+                    <div className="flex items-center justify-between gap-5">
+                        <div className="text-orange-600 text-sm flex items-center gap-2">
+                            <span className="font-semibold">Total Balance</span>
+                            <span className="text-white font-bold">{formatCurrency(getTotalBalance())}</span>
+                        </div>
+                        <div className="text-orange-600 text-sm">
+                            <span className="text-white font-semibold">{accounts.length}</span>
+                            <span className="ml-2">account(s)</span>
                         </div>
                     </div>
-                )}
+                </div>
 
                 <div className="mb-6 flex items-center justify-start gap-3">
                     <div className="flex items-center gap-3">

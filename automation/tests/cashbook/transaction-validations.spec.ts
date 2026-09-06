@@ -1,5 +1,5 @@
 import { test } from '../../fixtures/test-base';
-import CommonConstants from '../../constants/CommonConstants';
+import CommonConstants from '../../constants/commonConstants';
 import { generateRecordName, navigateToPage, waitForApiResponse } from '../../page-objects/common-functions';
 import {expect} from '@playwright/test';
 

@@ -112,6 +112,10 @@ const CategoriesContent = () => {
                             <span className="text-orange-700">Delete</span>
                         </button>
                     </div>
+                    <div className="inline-flex items-center gap-2 rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-2 shadow-sm">
+                        <span className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">No of records</span>
+                        <span className="text-lg font-bold text-white">{filteredCategories.length}</span>
+                    </div>
                 </div>
 
                 <div className="overflow-x-auto bg-gray-900/30 border border-gray-800 rounded-2xl p-4">

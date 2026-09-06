@@ -112,10 +112,10 @@ test.describe('Categories Functionality Validations', () => {
     const openCategoriesAndWaitForLoad = async (categoryToWaitFor?: string) => {
       await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.CATEGORIES}`);
       await page.waitForLoadState('networkidle');
-      const rowToWaitFor = categoryToWaitFor
-        ? page.locator('tbody tr').filter({ hasText: categoryToWaitFor })
-        : page.locator('tbody tr').first();
-      await expect(rowToWaitFor).toBeVisible();
+      await expect(page.getByText('No of records', { exact: true })).toBeVisible();
+      if (categoryToWaitFor) {
+        await expect(page.locator('tbody tr').filter({ hasText: categoryToWaitFor })).toBeVisible();
+      }
       return page.locator('tbody tr').count();
     };
 
