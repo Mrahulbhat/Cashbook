@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
     Users, Plus, CheckCircle2, Clock, ChevronDown, ChevronUp,
     Trash2, X, Loader, HandCoins, AlertCircle, ArrowDownCircle
@@ -331,6 +332,7 @@ function IouCard({ iou, accounts, onSettle, onDelete, loading }) {
 
 // ── Main Page ─────────────────────────────────────────────────────
 const IouContent = () => {
+    const router = useRouter();
     const { ious, loading, fetchIous, addIou, settleIou, deleteIou } = useIouStore();
     const { accounts, fetchAccounts } = useAccountStore();
     const [showAdd, setShowAdd] = useState(false);
@@ -378,7 +380,7 @@ const IouContent = () => {
                     </div>
                     <button
                         id="AddIouBtn"
-                        onClick={() => setShowAdd(true)}
+                        onClick={() => router.push("/add-transaction")}
                         className="flex items-center gap-2 px-4 py-2.5 bg-yellow-600 hover:bg-yellow-500 text-black font-bold rounded-xl transition-all hover:scale-105 text-sm shadow-lg shadow-yellow-600/20"
                     >
                         <Plus size={16} /> New IOU

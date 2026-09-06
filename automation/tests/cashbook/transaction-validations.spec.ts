@@ -341,6 +341,23 @@ test.describe('Transactions Functionality Validations', () => {
     await expect(transactionPage.dateInput).toHaveValue(today);
   });
 
+  test('New IOU button redirects to the add transaction form', async ({ page, transactionPage }) => {
+    await navigateToPage(page, CommonConstants.pageName.IOU);
+
+    await expect(page.locator('#AddIouBtn')).toBeVisible();
+    await page.locator('#AddIouBtn').click();
+
+    await expect(page).toHaveURL(/\/add-transaction$/);
+    await expect(transactionPage.addTransactionForm).toBeVisible();
+    await expect(transactionPage.amountInput).toBeVisible();
+    await expect(transactionPage.accountDropdownContainer).toBeVisible();
+    await expect(transactionPage.categoryDropdownContainer).toBeVisible();
+    await expect(transactionPage.dateInput).toBeVisible();
+    await expect(transactionPage.descriptionInput).toBeVisible();
+    await expect(transactionPage.iouToggle).toBeVisible();
+    await expect(transactionPage.saveButton).toBeVisible();
+  });
+
   test('Paid for a friend creates a transaction and IOU', async ({ page, transactionPage, api }) => {
     const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
     const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
