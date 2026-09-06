@@ -37,7 +37,7 @@ automation/node_modules
 automation/playwright-report/
 automation/blob-report/
 automation/playwright/.cache/
-automation/playwright/.auth/
+automation/.auth/
 
 # Mobile
 
