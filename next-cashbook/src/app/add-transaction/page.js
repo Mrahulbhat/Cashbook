@@ -11,6 +11,14 @@ import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import QuickCreateModal from "@/components/QuickCreateModal";
 
+const getLocalDateString = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
+
 const AddTransactionContent = () => {
     const router = useRouter();
     const { addTransaction, loading: transLoading } = useTransactionStore();
@@ -24,7 +32,7 @@ const AddTransactionContent = () => {
         purchaseImportance: "moderate",
         description: "",
         category: "",
-        date: new Date().toISOString().split("T")[0],
+        date: getLocalDateString(),
         account: "",
         toAccount: "",
     });
@@ -69,6 +77,12 @@ const AddTransactionContent = () => {
     };
 
     const submitTransaction = async () => {
+        const today = getLocalDateString();
+        if (formData.date > today) {
+            toast.error("Transaction date cannot be in the future");
+            return null;
+        }
+
         // Derive defaults if not explicitly selected
         const defaultAccount = accounts.find(acc => acc.isDefault);
         const accountToUse = formData.account || (defaultAccount ? defaultAccount._id : "");
@@ -103,12 +117,13 @@ const AddTransactionContent = () => {
 
         const result = await addTransaction({
             ...formData,
+            timezoneOffset: new Date().getTimezoneOffset(),
             account: accountToUse,
             category: isInvestment ? undefined : categoryToUse,
             purchaseImportance: formData.type === "expense" ? formData.purchaseImportance : undefined,
             toAccount: isInvestment ? formData.toAccount : undefined,
             amount: parseFloat(formData.amount),
-            date: new Date(formData.date),
+            date: formData.date,
         });
 
         if (result) {

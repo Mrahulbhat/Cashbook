@@ -6,6 +6,13 @@ import Transaction from '@/models/Transaction';
 import Account from '@/models/Account';
 import { getAuthUser } from '@/lib/getAuthUser';
 
+const getDateString = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 export async function GET(req) {
     try {
         const user = await getAuthUser(req);
@@ -40,6 +47,7 @@ export async function POST(req) {
             description,
             category,
             date,
+            timezoneOffset,
             account,
             toAccount
         } = await req.json();
@@ -47,6 +55,19 @@ export async function POST(req) {
         if (!amount || !type || !date || !account) {
             return NextResponse.json(
                 { message: "Missing required fields" },
+                { status: 400 }
+            );
+        }
+
+        const offset = Number(timezoneOffset);
+        const now = Number.isFinite(offset)
+            ? new Date(Date.now() - offset * 60 * 1000)
+            : new Date();
+        const today = getDateString(now);
+        const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(date) && !Number.isNaN(Date.parse(`${date}T00:00:00Z`));
+        if (!isValidDate || date > today) {
+            return NextResponse.json(
+                { message: "Transaction date cannot be in the future" },
                 { status: 400 }
             );
         }

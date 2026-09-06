@@ -58,7 +58,12 @@ test.describe('Transactions Functionality Validations', () => {
     const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
     const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
     const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
-    const transactionDate = new Date().toISOString().split('T')[0];
+    const currentDate = new Date();
+    const transactionDate = [
+      currentDate.getFullYear(),
+      String(currentDate.getMonth() + 1).padStart(2, '0'),
+      String(currentDate.getDate()).padStart(2, '0'),
+    ].join('-');
 
     const readRecordCount = async () => {
       const text = await transactionPage.recordCountOnTable.innerText();
@@ -339,6 +344,41 @@ test.describe('Transactions Functionality Validations', () => {
 
     const today = new Date().toISOString().split('T')[0];
     await expect(transactionPage.dateInput).toHaveValue(today);
+  });
+
+  test('Future transaction date is rejected', async ({ page, transactionPage, api }) => {
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
+    const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 1);
+
+    try {
+      await api.createAccount({ name: accountName, balance: 1000 });
+      await api.createCategory({ name: categoryName, type: 'expense' });
+      const initialTransactionCount = (await api.getTransactions()).length;
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+      await transactionPage.addButton.click();
+      await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+      await expect(transactionPage.addTransactionForm).toBeVisible();
+
+      await transactionPage.amountInput.fill('100');
+      await transactionPage.accountDropdownContainer.selectOption({ label: accountName });
+      await transactionPage.categoryDropdownContainer.selectOption({ label: categoryName });
+      await transactionPage.dateInput.fill(futureDate.toISOString().split('T')[0]);
+      await transactionPage.descriptionInput.fill(description);
+      await transactionPage.saveButton.click();
+
+      await expect(page.getByText('Transaction date cannot be in the future', { exact: true })).toBeVisible();
+      await expect(page).toHaveURL(/\/add-transaction$/);
+      await expect(transactionPage.addTransactionForm).toBeVisible();
+      await expect.poll(async () => (await api.getTransactions()).length).toBe(initialTransactionCount);
+      await expect.poll(async () => (await api.getTransactions()).some(transaction => transaction.description === description)).toBe(false);
+    } finally {
+      await api.deleteTransaction(description);
+      await api.deleteCategory(categoryName);
+      await api.deleteAccount(accountName);
+    }
   });
 
   test('New IOU button redirects to the add transaction form', async ({ page, transactionPage }) => {
