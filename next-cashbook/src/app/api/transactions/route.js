@@ -36,6 +36,7 @@ export async function POST(req) {
         const {
             amount,
             type,
+            purchaseImportance,
             description,
             category,
             date,
@@ -53,6 +54,13 @@ export async function POST(req) {
         if (type !== "investment" && !category) {
             return NextResponse.json(
                 { message: "Category is required" },
+                { status: 400 }
+            );
+        }
+
+        if (type.toLowerCase() === "expense" && !purchaseImportance) {
+            return NextResponse.json(
+                { message: "Purchase importance is required" },
                 { status: 400 }
             );
         }
@@ -99,6 +107,7 @@ export async function POST(req) {
             userId: user.userId,
             amount,
             type: type.toLowerCase(),
+            purchaseImportance: type.toLowerCase() === "expense" ? purchaseImportance : undefined,
             description,
             category: type === "investment" ? undefined : category,
             date,

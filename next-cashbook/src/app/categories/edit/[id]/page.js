@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, Save, Loader, ChevronRight } from "lucide-react";
+import { ArrowLeft, Save, Loader } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -12,7 +12,7 @@ const EditCategoryContent = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
-    const [formData, setFormData] = useState({ name: "", type: "expense", planningBucket: "None" });
+    const [formData, setFormData] = useState({ name: "", type: "expense" });
 
     useEffect(() => {
         const fetchCategory = async () => {
@@ -21,7 +21,6 @@ const EditCategoryContent = () => {
                 setFormData({
                     name: response.data.name,
                     type: response.data.type,
-                    planningBucket: response.data.planningBucket || "None",
                 });
             } catch (error) {
                 toast.error("Failed to fetch category");
@@ -66,25 +65,6 @@ const EditCategoryContent = () => {
                                     <input id={`TypeRadio-${t}`} type="radio" checked={formData.type === t} onChange={() => setFormData({ ...formData, type: t })} /> {t}
                                 </label>
                             ))}
-                        </div>
-                        <div>
-                            <label className="block text-sm text-gray-400 mb-2">Planning Bucket</label>
-                            <div className="relative">
-                                <select
-                                    id="PlanningBucketDropdown"
-                                    value={formData.planningBucket}
-                                    onChange={e => setFormData({ ...formData, planningBucket: e.target.value })}
-                                    className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none appearance-none cursor-pointer"
-                                >
-                                    {['None', 'Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
-                                        <option key={bucket} value={bucket}>{bucket}</option>
-                                    ))}
-                                </select>
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                                    <ChevronRight size={18} className="rotate-90" />
-                                </div>
-                            </div>
-                            <p className="text-xs text-gray-500 mt-2">Assign this category to a financial bucket for tracking.</p>
                         </div>
                         <button id="SaveBtn" disabled={loading} className="w-full py-4 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-500 transition-all flex justify-center items-center gap-2">
                             {loading ? <Loader className="animate-spin" size={18} /> : <Save size={18} />} Save Changes

@@ -201,11 +201,12 @@ const TransactionsContent = () => {
                                     <th className="py-3 border border-gray-800">Amount</th>
                                     <th className="py-3 border border-gray-800">Category</th>
                                     <th className="py-3 border border-gray-800">Account</th>
+                                    <th className="py-3 border border-gray-800">Purchase Importance</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredTransactions.map((t) => (
-                                    <tr key={t._id} className="hover:bg-gray-800/20">
+                                    <tr key={t._id} data-description={t.description || ''} className="hover:bg-gray-800/20">
                                         <td className="w-10 py-1 px-2 border border-gray-800">
                                             <input
                                                 type="checkbox"
@@ -234,6 +235,7 @@ const TransactionsContent = () => {
                                         <td className={`py-4 border border-gray-800 font-bold ${t.type === 'income' ? 'text-green-400' : t.type === 'investment' ? 'text-blue-400' : 'text-red-400'}`}>{formatCurrency(t.amount)}</td>
                                         <td className="py-4 border border-gray-800">{t.category?.name || 'N/A'}</td>
                                         <td className="py-4 border border-gray-800">{t.type === "investment" ? `${t.account?.name} → ${t.toAccount?.name || "N/A"}` : t.account?.name || 'N/A'}</td>
+                                        <td className="py-4 border border-gray-800">{t.type === 'expense' ? t.purchaseImportance || 'N/A' : 'N/A'}</td>
                                     </tr>
                                 ))}
                             </tbody>

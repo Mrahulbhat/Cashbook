@@ -17,6 +17,13 @@ const transactionSchema = new mongoose.Schema(
             enum: ["income", "expense", "investment"],
             required: true
         },
+        purchaseImportance: {
+            type: String,
+            enum: ["critical", "necessary", "moderate", "want_expensive", "avoidable_major"],
+            required: function () {
+                return this.type === "expense";
+            },
+        },
         description: {
             type: String,
         },

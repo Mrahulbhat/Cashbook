@@ -18,6 +18,7 @@ export type CategoryDetails = {
 export type TransactionDetails = {
     amount?: number | string;
     type?: 'income' | 'expense' | 'investment';
+    purchaseImportance?: 'critical' | 'necessary' | 'moderate' | 'want_expensive' | 'avoidable_major';
     description?: string;
     date?: string;
     account?: string;
@@ -59,6 +60,7 @@ export const defaultApiValues: ApiDefaults = {
     transaction: {
         amount: 100,
         type: 'expense',
+        purchaseImportance: 'moderate',
         description: 'Created by API automation',
         date: today,
     },
@@ -99,6 +101,7 @@ export class CashbookApi {
         return this.post<Transaction>('/api/transactions', {
             amount: values.amount,
             type: values.type,
+            ...(values.type === 'expense' ? { purchaseImportance: values.purchaseImportance } : {}),
             description: values.description,
             date: values.date,
             account,

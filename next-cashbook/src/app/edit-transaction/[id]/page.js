@@ -21,6 +21,7 @@ const EditTransactionContent = () => {
     const [formData, setFormData] = useState({
         amount: "",
         type: "expense",
+        purchaseImportance: "moderate",
         description: "",
         category: "",
         date: "",
@@ -44,6 +45,7 @@ const EditTransactionContent = () => {
                 setFormData({
                     amount: tx.amount,
                     type: tx.type,
+                    purchaseImportance: tx.purchaseImportance || "moderate",
                     description: tx.description || "",
                     category: tx.category?._id || tx.category || "",
                     date: new Date(tx.date).toISOString().split("T")[0],
@@ -88,6 +90,7 @@ const EditTransactionContent = () => {
         try {
             await axiosInstance.put(`/transactions/${id}`, {
                 ...formData,
+                purchaseImportance: formData.type === "expense" ? formData.purchaseImportance : undefined,
                 amount: parseFloat(formData.amount),
                 date: new Date(formData.date),
             });
@@ -165,6 +168,25 @@ const EditTransactionContent = () => {
                             <label className="block text-sm text-gray-400 mb-2">Description</label>
                             <textarea id="DescriptionInput" name="description" value={formData.description} onChange={handleInputChange} rows="3" className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none resize-none" />
                         </div>
+                        {formData.type === 'expense' && (
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-2" htmlFor="PurchaseImportanceDropdown">How important was this purchase? *</label>
+                                <select
+                                    id="PurchaseImportanceDropdown"
+                                    name="purchaseImportance"
+                                    value={formData.purchaseImportance}
+                                    onChange={handleInputChange}
+                                    className="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none"
+                                    required
+                                >
+                                    <option value="critical">Critical purchase</option>
+                                    <option value="necessary">Necessary purchase</option>
+                                    <option value="moderate">Moderately important</option>
+                                    <option value="want_expensive">Wanted, but expensive</option>
+                                    <option value="avoidable_major">Major purchase that could be avoided</option>
+                                </select>
+                            </div>
+                        )}
                         <div className="flex gap-4">
                             <button id="CancelBtn" type="button" onClick={() => router.back()} className="flex-1 py-4 bg-gray-800 text-white rounded-xl font-bold hover:bg-gray-700 transition-all">Cancel</button>
                             <button id="SaveBtn" disabled={loading} className="flex-1 py-4 bg-green-600 text-white rounded-xl font-bold hover:bg-green-500 transition-all flex justify-center items-center gap-2">

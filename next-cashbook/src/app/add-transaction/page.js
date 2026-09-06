@@ -21,6 +21,7 @@ const AddTransactionContent = () => {
     const [formData, setFormData] = useState({
         amount: "",
         type: "expense",
+        purchaseImportance: "moderate",
         description: "",
         category: "",
         date: new Date().toISOString().split("T")[0],
@@ -76,7 +77,7 @@ const AddTransactionContent = () => {
         const defaultCategory = categories.find(cat => cat.isDefault && cat.type === formData.type);
         const categoryToUse = isInvestment ? "" : (formData.category || (defaultCategory ? defaultCategory._id : ""));
 
-        if (!formData.amount || !accountToUse || (!isInvestment && !categoryToUse)) {
+        if (!formData.amount || !accountToUse || (!isInvestment && !categoryToUse) || (formData.type === "expense" && !formData.purchaseImportance)) {
             toast.error("Please fill in all required fields");
             return null;
         }
@@ -104,6 +105,7 @@ const AddTransactionContent = () => {
             ...formData,
             account: accountToUse,
             category: isInvestment ? undefined : categoryToUse,
+            purchaseImportance: formData.type === "expense" ? formData.purchaseImportance : undefined,
             toAccount: isInvestment ? formData.toAccount : undefined,
             amount: parseFloat(formData.amount),
             date: new Date(formData.date),
@@ -141,6 +143,7 @@ const AddTransactionContent = () => {
             setFormData(prev => ({
                 amount: "",
                 type: prev.type,
+                purchaseImportance: "moderate",
                 description: "",
                 category: "",
                 date: prev.date, // KEEP DATE
@@ -260,6 +263,26 @@ const AddTransactionContent = () => {
                             <label className="block text-sm font-semibold text-gray-400 mb-2">Description</label>
                             <textarea id="DescriptionInput" name="description" value={formData.description} onChange={handleInputChange} rows="3" className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white resize-none" />
                         </div>
+
+                        {formData.type === 'expense' && (
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-400 mb-2" htmlFor="PurchaseImportanceDropdown">How important was this purchase? *</label>
+                                <select
+                                    id="PurchaseImportanceDropdown"
+                                    name="purchaseImportance"
+                                    value={formData.purchaseImportance}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-green-500 text-white"
+                                    required
+                                >
+                                    <option value="critical">Critical purchase</option>
+                                    <option value="necessary">Necessary purchase</option>
+                                    <option value="moderate">Moderately important</option>
+                                    <option value="want_expensive">Wanted, but expensive</option>
+                                    <option value="avoidable_major">Major purchase that could be avoided</option>
+                                </select>
+                            </div>
+                        )}
 
                         {/* IOU Toggle — only show for expense */}
                         {formData.type === 'expense' && (

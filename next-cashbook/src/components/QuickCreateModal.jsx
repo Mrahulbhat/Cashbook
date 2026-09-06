@@ -12,7 +12,6 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
     const [categoryData, setCategoryData] = useState({
         name: '',
         type: initialType,
-        planningBucket: 'None',
         isDefault: false,
     });
 
@@ -147,18 +146,6 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
                                         {t}
                                     </button>
                                 ))}
-                            </div>                            <div>
-                                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-1">Planning Bucket</label>
-                                <select 
-                                    id="QuickCatBucket"
-                                    value={categoryData.planningBucket}
-                                    onChange={(e) => setCategoryData({ ...categoryData, planningBucket: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 text-white text-sm cursor-pointer"
-                                >
-                                    {['None', 'Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
-                                        <option key={bucket} value={bucket}>{bucket}</option>
-                                    ))}
-                                </select>
                             </div>
 
                             <div>

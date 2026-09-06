@@ -23,7 +23,6 @@ test.describe('Categories Functionality Validations', () => {
 
       await basePage.nameInput.fill(categoryName);
       await basePage.expenseRadio.check();
-      await page.locator('#PlanningBucketDropdown').selectOption('Needs');
       await page.locator('#DefaultCheckbox').check();
 
       await Promise.all([

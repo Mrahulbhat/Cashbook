@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from './basepage';
-import commonConstants from '../constants/CommonConstants';
+import commonConstants from '../constants/commonConstants';
 import { navigateToPage, waitForApiResponse } from './common-functions';
 
 export class TransactionPage extends BasePage {
@@ -85,6 +85,10 @@ export class TransactionPage extends BasePage {
 
     get iouAmountToGetBackInput(): Locator {
         return this.page.locator('#IouAmountToGetBack');
+    }
+
+    get purchaseImportanceDropdown(): Locator {
+        return this.page.locator('#PurchaseImportanceDropdown');
     }
 
     get categoryDropdown(): Locator {

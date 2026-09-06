@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus, Loader, Tag, ChevronRight } from "lucide-react";
+import { ArrowLeft, Plus, Loader, Tag } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -13,7 +13,6 @@ const AddCategoryContent = () => {
     const [formData, setFormData] = useState({
         name: "",
         type: "expense",
-        planningBucket: "None",
         isDefault: false,
     });
 
@@ -82,27 +81,6 @@ const AddCategoryContent = () => {
                                     </label>
                                 ))}
                             </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-400 mb-2">Planning Bucket</label>
-                            <div className="relative">
-                                <select
-                                    id="PlanningBucketDropdown"
-                                    name="planningBucket"
-                                    value={formData.planningBucket}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white appearance-none cursor-pointer"
-                                >
-                                    {['None', 'Needs', 'Wants', 'Short Term', 'Long Term'].map(bucket => (
-                                        <option key={bucket} value={bucket}>{bucket}</option>
-                                    ))}
-                                </select>
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                                    <ChevronRight size={18} className="rotate-90" />
-                                </div>
-                            </div>
-                            <p className="text-xs text-gray-500 mt-2">Track this category against your targets in the Planning section.</p>
                         </div>
 
                         <div>

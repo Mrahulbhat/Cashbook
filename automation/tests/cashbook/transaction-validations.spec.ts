@@ -44,7 +44,7 @@ test.describe('Transactions Functionality Validations', () => {
       await expect(transactionPage.resultsTable).toBeVisible();
       await expect(transactionPage.selectAllCheckbox).toBeVisible();
 
-      for (const column of ['Actions', 'Date', 'Type', 'Amount', 'Category', 'Account']) {
+      for (const column of ['Actions', 'Date', 'Type', 'Amount', 'Category', 'Account', 'Purchase Importance']) {
         await expect(transactionPage.columnHeader(column)).toBeVisible();
       }
     } finally {
@@ -122,7 +122,6 @@ test.describe('Transactions Functionality Validations', () => {
 
       await transactionPage.quickCategoryNameInput.fill(categoryName);
       await transactionPage.quickCategoryExpenseTypeButton.click();
-      await transactionPage.quickCategoryPlanningBucketDropdown.selectOption('Needs');
 
       await Promise.all([
         page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.categoriesAPI) && response.status() === 201),
@@ -135,6 +134,74 @@ test.describe('Transactions Functionality Validations', () => {
       await expect(transactionPage.categoryDropdown.locator('option:checked')).toHaveText(categoryName);
     } finally {
       await api.deleteCategory(categoryName);
+    }
+  });
+
+  test('Purchase importance options are displayed, saved, and limited to expenses', async ({ page, transactionPage, api }) => {
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
+    const transactionDescriptions: string[] = [];
+    const purchaseImportanceOptions = [
+      { value: 'critical', label: 'Critical purchase' },
+      { value: 'necessary', label: 'Necessary purchase' },
+      { value: 'moderate', label: 'Moderately important' },
+      { value: 'want_expensive', label: 'Wanted, but expensive' },
+      { value: 'avoidable_major', label: 'Major purchase that could be avoided' },
+    ];
+
+    try {
+      await api.createAccount({ name: accountName, balance: 10000 });
+      await api.createCategory({ name: categoryName, type: 'expense' });
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+
+      await transactionPage.addButton.click();
+      await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+      await expect(transactionPage.addTransactionForm).toBeVisible();
+
+      await expect(transactionPage.purchaseImportanceDropdown).toHaveValue('moderate');
+      await expect(transactionPage.purchaseImportanceDropdown.locator('option')).toHaveCount(purchaseImportanceOptions.length);
+      await expect(transactionPage.purchaseImportanceDropdown.locator('option')).toHaveText(purchaseImportanceOptions.map(option => option.label));
+
+      for (const [index, option] of purchaseImportanceOptions.entries()) {
+        const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
+        transactionDescriptions.push(description);
+
+        await transactionPage.amountInput.fill(String((index + 1) * 100));
+        await transactionPage.accountDropdownContainer.selectOption({ label: accountName });
+        await transactionPage.categoryDropdownContainer.selectOption({ label: categoryName });
+        await transactionPage.descriptionInput.fill(description);
+        await transactionPage.purchaseImportanceDropdown.selectOption(option.value);
+
+        await Promise.all([
+          page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.newTransactionAPI) && response.status() === 201),
+          transactionPage.saveButton.click(),
+        ]);
+
+        await expect(page).toHaveURL(/\/transactions$/);
+        const savedTransactionRow = transactionPage.resultsTable.locator(`tbody tr[data-description="${description}"]`);
+        await expect(savedTransactionRow).toContainText(option.value);
+
+        if (index < purchaseImportanceOptions.length - 1) {
+          await transactionPage.addButton.click();
+          await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+          await expect(transactionPage.addTransactionForm).toBeVisible();
+        }
+      }
+
+      await transactionPage.addButton.click();
+      await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+      await expect(transactionPage.addTransactionForm).toBeVisible();
+      await transactionPage.incomeRadio.click();
+      await expect(transactionPage.purchaseImportanceDropdown).toBeHidden();
+      await transactionPage.expenseRadio.click();
+      await expect(transactionPage.purchaseImportanceDropdown).toBeVisible();
+      await expect(transactionPage.purchaseImportanceDropdown).toHaveValue('moderate');
+    } finally {
+      for (const description of transactionDescriptions) {
+        await api.deleteTransaction(description);
+      }
+      await api.deleteCategory(categoryName);
+      await api.deleteAccount(accountName);
     }
   });
 
@@ -228,6 +295,7 @@ test.describe('Transactions Functionality Validations', () => {
     await transactionPage.selectCategory(transaction.categoryName);
     await transactionPage.selectDate(transaction.date);
     await transactionPage.descriptionInput.fill(transaction.description);
+    await transactionPage.purchaseImportanceDropdown.selectOption('necessary');
 
     await expect(transactionPage.cancelButton).toBeVisible();
     await expect(transactionPage.saveButton).toBeEnabled();
@@ -246,6 +314,7 @@ test.describe('Transactions Functionality Validations', () => {
     await expect(transactionPage.firstTransactionRow).toContainText(transaction.categoryName);
     await expect(transactionPage.firstTransactionRow).toContainText(transaction.accountName);
     await expect(transactionPage.firstTransactionRow).toContainText(`₹${Number(transaction.amount).toLocaleString('en-IN')}`);
+    await expect(transactionPage.firstTransactionRow).toContainText('necessary');
     const dateObj = new Date(transaction.date);
 
     // Match the standard locale string that the UI uses

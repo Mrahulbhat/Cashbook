@@ -43,7 +43,11 @@ export async function PUT(req, { params }) {
 
         const { id } = await params;
         const body = await req.json();
-        const { amount, type, description, category, date, account } = body;
+        const { amount, type, purchaseImportance, description, category, date, account } = body;
+
+        if (type?.toLowerCase() === 'expense' && !purchaseImportance) {
+            return NextResponse.json({ message: 'Purchase importance is required' }, { status: 400 });
+        }
 
         await dbConnect();
         const transaction = await Transaction.findOne({ _id: id, userId: user.userId });
@@ -70,6 +74,9 @@ export async function PUT(req, { params }) {
 
         transaction.amount = amount ?? transaction.amount;
         transaction.type = type ? type.toLowerCase() : transaction.type;
+        transaction.purchaseImportance = transaction.type === 'expense'
+            ? (purchaseImportance ?? transaction.purchaseImportance)
+            : undefined;
         transaction.description = description ?? transaction.description;
         transaction.category = category ?? transaction.category;
         transaction.date = date ?? transaction.date;
