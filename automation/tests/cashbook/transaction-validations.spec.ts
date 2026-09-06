@@ -54,6 +54,60 @@ test.describe('Transactions Functionality Validations', () => {
     }
   });
 
+  test('Transaction record count updates after creating and deleting a transaction', async ({ page, transactionPage, api }) => {
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
+    const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
+    const transactionDate = new Date().toISOString().split('T')[0];
+
+    const readRecordCount = async () => {
+      const text = await transactionPage.recordCountOnTable.innerText();
+      const count = Number(text.match(/\d+/)?.[0]);
+      expect(Number.isNaN(count)).toBe(false);
+      return count;
+    };
+
+    try {
+      await api.createAccount({ name: accountName, balance: 1000 });
+      await api.createCategory({ name: categoryName, type: 'expense' });
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+
+      const now = new Date();
+      const initialCount = (await api.getTransactions()).filter((transaction) => {
+        const transactionDate = new Date(transaction.date || '');
+        return transactionDate.getMonth() === now.getMonth() &&
+          transactionDate.getFullYear() === now.getFullYear();
+      }).length;
+      await expect.poll(readRecordCount).toBe(initialCount);
+
+      await transactionPage.createTransaction(page, {
+        type: 'expense',
+        amount: '100',
+        accountName,
+        categoryName,
+        date: transactionDate,
+        description,
+      });
+      await expect(transactionPage.recordCountOnTable).toContainText(`${initialCount + 1}`);
+      await expect.poll(readRecordCount).toBe(initialCount + 1);
+
+      await transactionPage.firstTransactionRow.getByRole('checkbox').click();
+      await transactionPage.bulkDeleteButton.click();
+      await expect(transactionPage.modalOkBtn).toBeVisible();
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.transactionAPI) && response.status() === 200),
+        transactionPage.modalOkBtn.click(),
+      ]);
+
+      await expect.poll(readRecordCount).toBe(initialCount);
+    } finally {
+      await api.deleteTransaction(description);
+      await api.deleteCategory(categoryName);
+      await api.deleteAccount(accountName);
+    }
+  });
+
   test('Transaction test', async ({ page, transactionPage, dashboardPage, api }) => {
 
     const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
