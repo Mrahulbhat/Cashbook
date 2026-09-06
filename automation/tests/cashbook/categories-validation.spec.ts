@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from '../../fixtures/test-base';
-import CommonConstants from '../../constants/CommonConstants';
+import CommonConstants from '../../constants/commonConstants';
 import { navigateToPage, waitForApiResponse, generateRecordName } from '../../page-objects/common-functions';
 
 test.describe('Categories Functionality Validations', () => {
