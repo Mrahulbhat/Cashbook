@@ -83,4 +83,47 @@ test.describe('Accounts Functionality Validations', () => {
       }
     }
   });
+
+  test('Shows an error and preserves the account count for duplicate names', async ({ page, accountsPage, api }) => {
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const accountBalance = '500';
+
+    try {
+      await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
+      await accountsPage.addButton.click();
+      await page.waitForURL('**/accounts/add');
+      await accountsPage.nameInput.fill(accountName);
+      await accountsPage.balanceInput.fill(accountBalance);
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.newAccountAPI) && response.status() === 201),
+        accountsPage.saveButton.click(),
+      ]);
+      await expect(page.getByText(CommonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY, { exact: true })).toBeVisible();
+
+      await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
+      await page.waitForLoadState('networkidle');
+      await expect(page.locator('tbody tr').filter({ hasText: accountName })).toBeVisible();
+      const accountCountAfterCreate = await page.locator('tbody tr').count();
+
+      await accountsPage.addButton.click();
+      await page.waitForURL('**/accounts/add');
+      await accountsPage.nameInput.fill(accountName);
+      await accountsPage.balanceInput.fill(accountBalance);
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.newAccountAPI) && response.status() === 400),
+        accountsPage.saveButton.click(),
+      ]);
+      await expect(page.getByText(CommonConstants.toastMessages.ACCOUNT_ALREADY_EXISTS, { exact: true })).toBeVisible();
+
+      await accountsPage.cancelButton.click();
+      await page.waitForURL('**/accounts');
+      await page.waitForLoadState('networkidle');
+      await expect(page.locator('tbody tr').filter({ hasText: accountName })).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(accountCountAfterCreate);
+    } finally {
+      await api.deleteAccount(accountName);
+    }
+  });
 });
