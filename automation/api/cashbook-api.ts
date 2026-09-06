@@ -112,6 +112,10 @@ export class CashbookApi {
         if (account) await this.delete(`/api/accounts/${account._id}`);
     }
 
+    async updateAccount(id: string, details: AccountDetails): Promise<Account> {
+        return this.put<Account>(`/api/accounts/${id}`, details);
+    }
+
     async deleteCategory(name: string): Promise<void> {
         const category = (await this.getCategories()).find((item) => item.name === name);
         if (category) await this.delete(`/api/categories/${category._id}`);
@@ -153,6 +157,11 @@ export class CashbookApi {
 
     private async post<T>(url: string, data: object): Promise<T> {
         const response = await this.context.post(url, { data });
+        return this.readResponse<T>(response);
+    }
+
+    private async put<T>(url: string, data: object): Promise<T> {
+        const response = await this.context.put(url, { data });
         return this.readResponse<T>(response);
     }
 

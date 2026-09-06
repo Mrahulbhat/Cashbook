@@ -29,6 +29,10 @@ export class AccountsPage extends BasePage {
     get totalBalance(): Locator {
         return this.balanceContainer.locator('span').filter({ hasText: '₹' });
     }
+
+    get defaultCheckbox(): Locator {
+        return this.page.locator('#DefaultCheckbox');
+    }
     //used to create a single account
 
     async createAccount(page: Page, account: { name: string; balance: string }) {
