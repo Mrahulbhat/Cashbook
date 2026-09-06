@@ -59,12 +59,20 @@ export class TransactionPage extends BasePage {
         return this.page.locator('#AddTransactionForm');
     }
 
+    get editTransactionForm(): Locator {
+        return this.page.locator('#EditTransactionForm');
+    }
+
     get resultsTable(): Locator {
         return this.page.getByTestId('resultsTable');
     }
 
     get firstTransactionRow(): Locator {
         return this.resultsTable.locator('tbody tr').first();
+    }
+
+    transactionRow(categoryName: string): Locator {
+        return this.resultsTable.locator('tbody tr').filter({ hasText: categoryName });
     }
 
     get iouToggle(): Locator {

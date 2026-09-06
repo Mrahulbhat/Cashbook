@@ -138,6 +138,58 @@ test.describe('Transactions Functionality Validations', () => {
     }
   });
 
+  test('Edit a transaction account and category', async ({ page, transactionPage, api }) => {
+    const originalAccountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const updatedAccountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const originalCategoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
+    const updatedCategoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
+    const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
+
+    try {
+      await api.createAccount({ name: originalAccountName, balance: 1000 });
+      await api.createAccount({ name: updatedAccountName, balance: 1000 });
+      await api.createCategory({ name: originalCategoryName, type: 'expense' });
+      await api.createCategory({ name: updatedCategoryName, type: 'expense' });
+      await api.createTransaction({
+        amount: 100,
+        type: 'expense',
+        description,
+        accountName: originalAccountName,
+        categoryName: originalCategoryName,
+      });
+
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+      const transactionRow = transactionPage.transactionRow(originalCategoryName);
+      await expect(transactionRow).toBeVisible();
+      await transactionRow.getByRole('button').click();
+
+      await expect(transactionPage.editTransactionForm).toBeVisible();
+      await transactionPage.accountDropdownContainer.selectOption({ label: updatedAccountName });
+      await transactionPage.categoryDropdownContainer.selectOption({ label: updatedCategoryName });
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.transactionAPI) && response.request().method() === 'PUT' && response.status() === 200),
+        transactionPage.saveButton.click(),
+      ]);
+
+      await expect(page.getByText(CommonConstants.toastMessages.TRANSACTION_UPDATED_SUCCESSFULLY, { exact: true })).toBeVisible();
+      await expect(page).toHaveURL(/\/transactions$/);
+
+      const updatedTransactionRow = transactionPage.transactionRow(updatedCategoryName);
+      await expect(updatedTransactionRow).toContainText(updatedCategoryName);
+      await expect(updatedTransactionRow).toContainText(updatedAccountName);
+      await expect(updatedTransactionRow).toContainText('₹100.00');
+      await expect(updatedTransactionRow).not.toContainText(originalCategoryName);
+      await expect(updatedTransactionRow).not.toContainText(originalAccountName);
+    } finally {
+      await api.deleteTransaction(description);
+      await api.deleteCategory(originalCategoryName);
+      await api.deleteCategory(updatedCategoryName);
+      await api.deleteAccount(originalAccountName);
+      await api.deleteAccount(updatedAccountName);
+    }
+  });
+
   test('Transaction test', async ({ page, transactionPage, dashboardPage, api }) => {
 
     const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
