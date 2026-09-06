@@ -106,4 +106,53 @@ test.describe('Categories Functionality Validations', () => {
       await api.deleteCategory(categories.investment);
     }
   });
+
+  test('Shows an error and preserves the category count for duplicate names', async ({ page, basePage, api }) => {
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
+    const openCategoriesAndWaitForLoad = async (categoryToWaitFor?: string) => {
+      await page.goto(`${CommonConstants.urls.baseURL}/${CommonConstants.pageName.CATEGORIES}`);
+      await page.waitForLoadState('networkidle');
+      const rowToWaitFor = categoryToWaitFor
+        ? page.locator('tbody tr').filter({ hasText: categoryToWaitFor })
+        : page.locator('tbody tr').first();
+      await expect(rowToWaitFor).toBeVisible();
+      return page.locator('tbody tr').count();
+    };
+
+    try {
+      await openCategoriesAndWaitForLoad();
+
+      await page.locator('#AddBtnSmall').click();
+      await page.waitForURL('**/categories/add');
+      await basePage.nameInput.fill(categoryName);
+      await basePage.expenseRadio.check();
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.categoriesAPI) && response.status() === 201),
+        basePage.saveButton.click(),
+      ]);
+      await expect(page.getByText('Category created successfully!', { exact: true })).toBeVisible();
+
+      const categoryCountAfterCreate = await openCategoriesAndWaitForLoad(categoryName);
+
+      await page.locator('#AddBtnSmall').click();
+      await page.waitForURL('**/categories/add');
+      await basePage.nameInput.fill(categoryName);
+      await basePage.expenseRadio.check();
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.categoriesAPI) && response.status() === 400),
+        basePage.saveButton.click(),
+      ]);
+      await expect(page.getByText('Category with this name already exists', { exact: true })).toBeVisible();
+
+      await basePage.cancelButton.click();
+      await page.waitForURL('**/categories');
+      await page.waitForLoadState('networkidle');
+      await expect(page.locator('tbody tr').filter({ hasText: categoryName })).toBeVisible();
+      await expect(page.locator('tbody tr')).toHaveCount(categoryCountAfterCreate);
+    } finally {
+      await api.deleteCategory(categoryName);
+    }
+  });
 });
