@@ -108,6 +108,36 @@ test.describe('Transactions Functionality Validations', () => {
     }
   });
 
+  test('Create a category from the transaction form', async ({ page, transactionPage, api }) => {
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
+
+    try {
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+      await transactionPage.addButton.click();
+      await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+      await expect(transactionPage.addTransactionForm).toBeVisible();
+
+      await transactionPage.categoryDropdown.selectOption('ADD_NEW_CATEGORY');
+      await expect(transactionPage.quickCreateCategoryModal).toBeVisible();
+
+      await transactionPage.quickCategoryNameInput.fill(categoryName);
+      await transactionPage.quickCategoryExpenseTypeButton.click();
+      await transactionPage.quickCategoryPlanningBucketDropdown.selectOption('Needs');
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.categoriesAPI) && response.status() === 201),
+        transactionPage.quickCategoryCreateButton.click(),
+      ]);
+
+      await expect(page.getByText(CommonConstants.toastMessages.CATEGORY_CREATED_SUCCESSFULLY, { exact: true })).toBeVisible();
+      await expect(transactionPage.quickCreateCategoryModal).toBeHidden();
+      await expect(transactionPage.categoryDropdown).toHaveValue(/.+/);
+      await expect(transactionPage.categoryDropdown.locator('option:checked')).toHaveText(categoryName);
+    } finally {
+      await api.deleteCategory(categoryName);
+    }
+  });
+
   test('Transaction test', async ({ page, transactionPage, dashboardPage, api }) => {
 
     const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);

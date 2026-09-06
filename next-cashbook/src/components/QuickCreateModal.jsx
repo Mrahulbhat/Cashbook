@@ -58,6 +58,7 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
             <div 
+                id="QuickCreateModal"
                 className="bg-gray-900 border border-gray-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
                 onClick={(e) => e.stopPropagation()}
             >
@@ -138,6 +139,7 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
                                 {['income', 'expense', 'investment'].map(t => (
                                     <button 
                                         key={t}
+                                        id={`QuickCatType-${t}`}
                                         type="button"
                                         onClick={() => setCategoryData({ ...categoryData, type: t })}
                                         className={`flex-1 py-2 px-3 rounded-lg capitalize text-xs font-bold transition-all ${categoryData.type === t ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
@@ -173,6 +175,7 @@ const QuickCreateModal = ({ isOpen, onClose, type, onSuccess, initialType = 'exp
                             </div>
 
                             <button
+                                id="QuickCatCreateBtn"
                                 type="submit"
                                 disabled={isLoading}
                                 className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 mt-2 shadow-lg shadow-purple-900/20"

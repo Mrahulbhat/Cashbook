@@ -79,6 +79,30 @@ export class TransactionPage extends BasePage {
         return this.page.locator('#IouAmountToGetBack');
     }
 
+    get categoryDropdown(): Locator {
+        return this.page.locator('#CategoryDropdown');
+    }
+
+    get quickCreateCategoryModal(): Locator {
+        return this.page.locator('#QuickCreateModal');
+    }
+
+    get quickCategoryNameInput(): Locator {
+        return this.page.locator('#QuickCatName');
+    }
+
+    get quickCategoryExpenseTypeButton(): Locator {
+        return this.page.locator('#QuickCatType-expense');
+    }
+
+    get quickCategoryPlanningBucketDropdown(): Locator {
+        return this.page.locator('#QuickCatBucket');
+    }
+
+    get quickCategoryCreateButton(): Locator {
+        return this.page.locator('#QuickCatCreateBtn');
+    }
+
 
     async createTransaction(page: Page, transaction: { type: string, amount: string, accountName: string, categoryName: string, date: string, description: string }) {
 
