@@ -121,6 +121,10 @@ export class CashbookApi {
         if (category) await this.delete(`/api/categories/${category._id}`);
     }
 
+    async updateCategory(id: string, details: CategoryDetails): Promise<Category> {
+        return this.put<Category>(`/api/categories/${id}`, details);
+    }
+
     async deleteTransaction(description: string): Promise<void> {
         const transaction = (await this.getTransactions()).find((item) => item.description === description);
         if (transaction) await this.delete(`/api/transactions/${transaction._id}`);
