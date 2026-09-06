@@ -273,127 +273,131 @@ test.describe('Transactions Functionality Validations', () => {
   });
 
   test('Paid for a friend creates a transaction and IOU', async ({ page, transactionPage, api }) => {
-    await navigateToPage(page, CommonConstants.pageName.IOU);
-    const initialIouCount = await page.locator('[id^="DeleteIouBtn-"]').count();
-
-    await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
-    await transactionPage.addButton.click();
-    await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
-    await expect(transactionPage.addTransactionForm).toBeVisible();
-
-    await expect(transactionPage.iouToggle).toHaveAttribute('aria-checked', 'false');
-
-    const accountOption = transactionPage.accountDropdownContainer.locator('option').nth(2);
-    const categoryOption = transactionPage.categoryDropdownContainer.locator('option').nth(2);
-    await expect(accountOption).toBeAttached();
-    await expect(categoryOption).toBeAttached();
-
-    const accountValue = await accountOption.getAttribute('value');
-    const categoryValue = await categoryOption.getAttribute('value');
-    const accountName = (await accountOption.textContent())?.trim() || '';
-    const categoryName = (await categoryOption.textContent())?.trim() || '';
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
     const friendName = generateRecordName('FR');
     const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
     const amount = '100';
 
     try {
+      await api.createAccount({ name: accountName, balance: 1000 });
+      await api.createCategory({ name: categoryName, type: 'expense' });
+
+      await navigateToPage(page, CommonConstants.pageName.IOU);
+      const initialIouCount = await page.locator('[id^="DeleteIouBtn-"]').count();
+
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+      await transactionPage.addButton.click();
+      await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+      await expect(transactionPage.addTransactionForm).toBeVisible();
+
+      await expect(transactionPage.iouToggle).toHaveAttribute('aria-checked', 'false');
+      await expect(transactionPage.accountDropdownContainer.locator('option', { hasText: accountName })).toBeAttached();
+      await expect(transactionPage.categoryDropdownContainer.locator('option', { hasText: categoryName })).toBeAttached();
+
       await transactionPage.amountInput.fill(amount);
-    await transactionPage.accountDropdownContainer.selectOption(accountValue!);
-    await transactionPage.categoryDropdownContainer.selectOption(categoryValue!);
-    await transactionPage.descriptionInput.fill(description);
-    await transactionPage.iouToggle.click();
+      await transactionPage.accountDropdownContainer.selectOption({ label: accountName });
+      await transactionPage.categoryDropdownContainer.selectOption({ label: categoryName });
+      await transactionPage.descriptionInput.fill(description);
+      await transactionPage.iouToggle.click();
 
-    await expect(transactionPage.iouToggle).toHaveAttribute('aria-checked', 'true');
-    await transactionPage.iouFriendNameInput.fill(friendName);
-    await transactionPage.iouAmountToGetBackInput.fill(amount);
+      await expect(transactionPage.iouToggle).toHaveAttribute('aria-checked', 'true');
+      await transactionPage.iouFriendNameInput.fill(friendName);
+      await transactionPage.iouAmountToGetBackInput.fill(amount);
 
-    await Promise.all([
-      page.waitForResponse((response: any) => response.url().includes('/api/transactions') && response.status() === 201),
-      page.waitForResponse((response: any) => response.url().includes('/api/iou') && response.status() === 201),
-      transactionPage.saveButton.click(),
-    ]);
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes('/api/transactions') && response.status() === 201),
+        page.waitForResponse((response: any) => response.url().includes('/api/iou') && response.status() === 201),
+        transactionPage.saveButton.click(),
+      ]);
 
-    await expect(page.getByText(CommonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY, { exact: true })).toBeVisible();
-    await expect(page.getByText('IOU created!', { exact: true })).toBeVisible();
-    await expect(page).toHaveURL(/\/transactions$/);
-    await expect(transactionPage.firstTransactionRow).toContainText('expense');
-    await expect(transactionPage.firstTransactionRow).toContainText(categoryName);
-    await expect(transactionPage.firstTransactionRow).toContainText(accountName);
-    await expect(transactionPage.firstTransactionRow).toContainText(`₹${Number(amount).toLocaleString('en-IN')}`);
+      await expect(page.getByText(CommonConstants.toastMessages.TRANSACTION_ADDED_SUCCESSFULLY, { exact: true })).toBeVisible();
+      await expect(page.getByText('IOU created!', { exact: true })).toBeVisible();
+      await expect(page).toHaveURL(/\/transactions$/);
+      await expect(transactionPage.firstTransactionRow).toContainText('expense');
+      await expect(transactionPage.firstTransactionRow).toContainText(categoryName);
+      await expect(transactionPage.firstTransactionRow).toContainText(accountName);
+      await expect(transactionPage.firstTransactionRow).toContainText(`₹${Number(amount).toLocaleString('en-IN')}`);
 
-    await navigateToPage(page, CommonConstants.pageName.IOU);
-    await expect(page.locator('[id^="DeleteIouBtn-"]')).toHaveCount(initialIouCount + 1);
-    const iouCard = page.locator('div.bg-gray-900.border.rounded-2xl.overflow-hidden').filter({ hasText: friendName });
-    await expect(iouCard).toContainText(friendName);
-    await expect(iouCard).toContainText(description);
-    await expect(iouCard).toContainText(`₹${Number(amount).toLocaleString('en-IN')}`);
+      await navigateToPage(page, CommonConstants.pageName.IOU);
+      await expect(page.locator('[id^="DeleteIouBtn-"]')).toHaveCount(initialIouCount + 1);
+      const iouCard = page.locator('div.bg-gray-900.border.rounded-2xl.overflow-hidden').filter({ hasText: friendName });
+      await expect(iouCard).toContainText(friendName);
+      await expect(iouCard).toContainText(description);
+      await expect(iouCard).toContainText(`₹${Number(amount).toLocaleString('en-IN')}`);
     } finally {
       await api.deleteTransaction(description);
+      await api.deleteCategory(categoryName);
+      await api.deleteAccount(accountName);
     }
   });
 
   test('IOU partial payment updates the account balance', async ({ page, transactionPage, api }) => {
     const amount = 100;
     const partialPayment = 50;
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const categoryName = generateRecordName(CommonConstants.prefix.CATEGORY);
     const friendName = generateRecordName('FR');
     const description = generateRecordName(CommonConstants.prefix.TRANSACTION);
 
-    await navigateToPage(page, CommonConstants.pageName.IOU);
-    const initialIouCount = await page.locator('[id^="DeleteIouBtn-"]').count();
-
-    await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
-    await transactionPage.addButton.click();
-    await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
-    await expect(transactionPage.addTransactionForm).toBeVisible();
-
-    const accountOption = transactionPage.accountDropdownContainer.locator('option').nth(2);
-    const categoryOption = transactionPage.categoryDropdownContainer.locator('option').nth(2);
-    const accountValue = await accountOption.getAttribute('value');
-    const categoryValue = await categoryOption.getAttribute('value');
-    const accountName = (await accountOption.textContent())?.trim() || '';
-
     try {
+      await api.createAccount({ name: accountName, balance: 1000 });
+      await api.createCategory({ name: categoryName, type: 'expense' });
+
+      await navigateToPage(page, CommonConstants.pageName.IOU);
+      const initialIouCount = await page.locator('[id^="DeleteIouBtn-"]').count();
+
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+      await transactionPage.addButton.click();
+      await waitForApiResponse(page, CommonConstants.urls.accountsAPI);
+      await expect(transactionPage.addTransactionForm).toBeVisible();
+
+      await expect(transactionPage.accountDropdownContainer.locator('option', { hasText: accountName })).toBeAttached();
+      await expect(transactionPage.categoryDropdownContainer.locator('option', { hasText: categoryName })).toBeAttached();
+
       await transactionPage.amountInput.fill(String(amount));
-    await transactionPage.accountDropdownContainer.selectOption(accountValue!);
-    await transactionPage.categoryDropdownContainer.selectOption(categoryValue!);
-    await transactionPage.descriptionInput.fill(description);
-    await transactionPage.iouToggle.click();
-    await transactionPage.iouFriendNameInput.fill(friendName);
-    await transactionPage.iouAmountToGetBackInput.fill(String(amount));
+      await transactionPage.accountDropdownContainer.selectOption({ label: accountName });
+      await transactionPage.categoryDropdownContainer.selectOption({ label: categoryName });
+      await transactionPage.descriptionInput.fill(description);
+      await transactionPage.iouToggle.click();
+      await transactionPage.iouFriendNameInput.fill(friendName);
+      await transactionPage.iouAmountToGetBackInput.fill(String(amount));
 
-    await Promise.all([
-      page.waitForResponse((response: any) => response.url().includes('/api/transactions') && response.status() === 201),
-      page.waitForResponse((response: any) => response.url().includes('/api/iou') && response.status() === 201),
-      transactionPage.saveButton.click(),
-    ]);
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes('/api/transactions') && response.status() === 201),
+        page.waitForResponse((response: any) => response.url().includes('/api/iou') && response.status() === 201),
+        transactionPage.saveButton.click(),
+      ]);
 
-    await page.waitForURL(/\/transactions$/);
-    await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
-    const accountRow = page.locator('tbody tr').filter({ hasText: accountName });
-    const balanceCell = accountRow.locator('td').nth(3);
-    const balanceAfterTransaction = Number((await balanceCell.innerText()).replace(/[^0-9.-]/g, ''));
+      await page.waitForURL(/\/transactions$/);
+      await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
+      const accountRow = page.locator('tbody tr').filter({ hasText: accountName });
+      const balanceCell = accountRow.locator('td').nth(3);
+      const balanceAfterTransaction = Number((await balanceCell.innerText()).replace(/[^0-9.-]/g, ''));
 
-    await navigateToPage(page, CommonConstants.pageName.IOU);
-    await expect(page.locator('[id^="DeleteIouBtn-"]')).toHaveCount(initialIouCount + 1);
-    const iouCard = page.locator('div.bg-gray-900.border.rounded-2xl.overflow-hidden').filter({ hasText: friendName });
-    await iouCard.getByRole('button', { name: 'They Paid Back' }).click();
-    await expect(page.locator('#SettleAmountInput')).toHaveValue(String(amount));
-    await page.locator('#SettleAmountInput').fill(String(partialPayment));
+      await navigateToPage(page, CommonConstants.pageName.IOU);
+      await expect(page.locator('[id^="DeleteIouBtn-"]')).toHaveCount(initialIouCount + 1);
+      const iouCard = page.locator('div.bg-gray-900.border.rounded-2xl.overflow-hidden').filter({ hasText: friendName });
+      await iouCard.getByRole('button', { name: 'They Paid Back' }).click();
+      await expect(page.locator('#SettleAmountInput')).toHaveValue(String(amount));
+      await page.locator('#SettleAmountInput').fill(String(partialPayment));
 
-    await Promise.all([
-      page.waitForResponse((response: any) => response.url().includes('/api/iou/') && response.status() === 200),
-      page.locator('#SettleConfirmBtn').click(),
-    ]);
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes('/api/iou/') && response.status() === 200),
+        page.locator('#SettleConfirmBtn').click(),
+      ]);
 
-    await expect(iouCard).toContainText('partially paid');
-    await navigateToPage(page, CommonConstants.pageName.IOU);
-    await expect(page.locator('[id^="DeleteIouBtn-"]')).toHaveCount(initialIouCount + 1);
+      await expect(iouCard).toContainText('partially paid');
+      await navigateToPage(page, CommonConstants.pageName.IOU);
+      await expect(page.locator('[id^="DeleteIouBtn-"]')).toHaveCount(initialIouCount + 1);
 
-    await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
-    const balanceAfterPartialPayment = Number((await accountRow.locator('td').nth(3).innerText()).replace(/[^0-9.-]/g, ''));
-    expect(balanceAfterPartialPayment).toBe(balanceAfterTransaction + partialPayment);
+      await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
+      const balanceAfterPartialPayment = Number((await accountRow.locator('td').nth(3).innerText()).replace(/[^0-9.-]/g, ''));
+      expect(balanceAfterPartialPayment).toBe(balanceAfterTransaction + partialPayment);
     } finally {
       await api.deleteTransaction(description);
+      await api.deleteCategory(categoryName);
+      await api.deleteAccount(accountName);
     }
   });
 
