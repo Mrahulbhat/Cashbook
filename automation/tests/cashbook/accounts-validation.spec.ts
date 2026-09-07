@@ -35,9 +35,45 @@ test.describe('Accounts Functionality Validations', () => {
       await expect(accountRow).toBeVisible();
       await expect(accountRow).toContainText(accountName);
       await expect(accountRow).toContainText('₹500');
-      await expect(accountRow.getByLabel('Default account')).toBeVisible();
     } finally {
       await api.deleteAccount(accountName);
+    }
+  });
+
+  test('Display default account balance in transactions page', async ({ page, accountsPage, transactionPage, api }) => {
+    const accountName = generateRecordName(CommonConstants.prefix.ACCOUNT);
+    const accountBalance = '500';
+    const previousDefaultAccount = (await api.getAccounts()).find((account) => account.isDefault);
+
+    try {
+      await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
+      await accountsPage.addButton.click();
+      await page.waitForURL('**/accounts/add');
+
+      await accountsPage.nameInput.fill(accountName);
+      await accountsPage.balanceInput.fill(accountBalance);
+      await accountsPage.defaultCheckbox.check();
+
+      await Promise.all([
+        page.waitForResponse((response: any) => response.url().includes(CommonConstants.urls.newAccountAPI) && response.status() === 201),
+        accountsPage.saveButton.click(),
+      ]);
+
+      await expect(page.getByText(CommonConstants.toastMessages.ACCOUNT_CREATED_SUCCESSFULLY, { exact: true })).toBeVisible();
+      await navigateToPage(page, CommonConstants.pageName.ACCOUNTS);
+
+      const accountRow = page.locator('tbody tr').filter({ hasText: accountName });
+      await expect(accountRow).toBeVisible();
+      await expect(accountRow.getByLabel('Default account')).toBeVisible();
+
+      await navigateToPage(page, CommonConstants.pageName.TRANSACTIONS);
+      await expect(transactionPage.defaultAccountBalanceCard).toContainText(accountName);
+      await expect(transactionPage.defaultAccountBalanceCard).toContainText('₹500');
+    } finally {
+      await api.deleteAccount(accountName);
+      if (previousDefaultAccount) {
+        await api.updateAccount(previousDefaultAccount._id, { isDefault: true });
+      }
     }
   });
 
