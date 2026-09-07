@@ -35,6 +35,10 @@ export class TransactionPage extends BasePage {
         return this.page.locator('#totalExpenseCard');
     }
 
+    get defaultAccountBalanceCard(): Locator {
+        return this.page.locator('#defaultAccountBalanceCard');
+    }
+
     get bulkDeleteButton(): Locator {
         return this.page.locator('#BulkDeleteBtn');
     }

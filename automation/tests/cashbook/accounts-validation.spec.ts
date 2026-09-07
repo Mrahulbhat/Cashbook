@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from '../../fixtures/test-base';
-import CommonConstants from '../../constants/CommonConstants';
+import CommonConstants from '../../constants/commonConstants';
 import { generateRecordName, navigateToPage, waitForApiResponse } from '../../page-objects/common-functions';
 
 test.describe('Accounts Functionality Validations', () => {
@@ -35,6 +35,7 @@ test.describe('Accounts Functionality Validations', () => {
       await expect(accountRow).toBeVisible();
       await expect(accountRow).toContainText(accountName);
       await expect(accountRow).toContainText('₹500');
+      await expect(accountRow.getByLabel('Default account')).toBeVisible();
     } finally {
       await api.deleteAccount(accountName);
     }

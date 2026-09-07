@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Folder, Trash2, Loader } from "lucide-react";
+import { Plus, Folder, Trash2, Loader, Star } from "lucide-react";
 import { useAccountStore } from "@/store/useAccountStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Modal from "@/components/Modal";
@@ -159,7 +159,16 @@ const AccountsContent = () => {
                                         </div>
                                     </td>
                                     <td className="py-4 border border-gray-800">
-                                        <div className="text-white font-semibold">{account.name}</div>
+                                        <div className="flex items-center justify-center gap-2 text-white font-semibold">
+                                            <span>{account.name}</span>
+                                            {account.isDefault && (
+                                                <Star
+                                                    className="w-4 h-4 text-amber-400 fill-amber-400"
+                                                    aria-label="Default account"
+                                                    title="Default account"
+                                                />
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="py-4 border border-gray-800">
                                         <div className="font-bold text-white">{formatCurrency(account.balance)}</div>

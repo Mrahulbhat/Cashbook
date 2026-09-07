@@ -2,26 +2,27 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Folder, Trash2, Loader, ArrowUpRight, ArrowDownLeft, Repeat } from "lucide-react";
+import { Plus, Folder, Trash2, Loader, ArrowUpRight, ArrowDownLeft, Repeat, Wallet } from "lucide-react";
 import { useTransactionStore } from "@/store/useTransactionStore";
+import { useAccountStore } from "@/store/useAccountStore";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Modal from "@/components/Modal";
 
 const TransactionsContent = () => {
     const router = useRouter();
     const { transactions, fetchTransactions, deleteTransaction, loading } = useTransactionStore();
+    const { accounts, fetchAccounts } = useAccountStore();
     const [filter, setFilter] = useState("monthly");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
     const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
-    const [stats, setStats] = useState({
-        totalExpense: 0,
-    });
+    const defaultAccount = accounts.find((account) => account.isDefault);
 
     useEffect(() => {
         fetchTransactions();
-    }, [fetchTransactions]);
+        fetchAccounts();
+    }, [fetchTransactions, fetchAccounts]);
 
     const filteredTransactions = useMemo(() => {
         return transactions.filter(t => {
@@ -47,7 +48,7 @@ const TransactionsContent = () => {
         });
     }, [transactions, filter]);
 
-    useEffect(() => {
+    const stats = useMemo(() => {
         let totalExpense = 0;
 
         filteredTransactions.forEach((t) => {
@@ -58,9 +59,9 @@ const TransactionsContent = () => {
             }
         });
 
-        setStats({
+        return {
             totalExpense,
-        });
+        };
     }, [filteredTransactions]);
 
     const handleDelete = (id) => {
@@ -71,6 +72,7 @@ const TransactionsContent = () => {
     const handleConfirmDelete = async () => {
         if (selectedTransactionId) {
             await deleteTransaction(selectedTransactionId);
+            await fetchAccounts();
             setSelectedTransactionId(null);
         }
     };
@@ -80,6 +82,7 @@ const TransactionsContent = () => {
         for (const id of selectedIds) {
             await deleteTransaction(id);
         }
+        await fetchAccounts();
         setSelectedIds([]);
     };
 
@@ -113,7 +116,7 @@ const TransactionsContent = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div id="totalExpenseCard" className="bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
                         <div className="flex items-center justify-between mb-2">
                             <h3 className="text-red-400 font-semibold text-xs">Total Expense</h3>
@@ -122,6 +125,19 @@ const TransactionsContent = () => {
                             </div>
                         </div>
                         <p id="totalExpense" className="text-xl font-bold text-white">{formatCurrency(stats.totalExpense)}</p>
+                    </div>
+
+                    <div id="defaultAccountBalanceCard" className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-blue-400 font-semibold text-xs">Default Account Balance</h3>
+                            <div className="p-1.5 bg-blue-500/20 rounded-md">
+                                <Wallet className="w-4 h-4 text-blue-400" />
+                            </div>
+                        </div>
+                        <p id="defaultAccountBalance" className="text-xl font-bold text-white">
+                            {defaultAccount ? formatCurrency(defaultAccount.balance) : "Not set"}
+                        </p>
+                        {defaultAccount && <p className="text-xs text-gray-400 mt-1">{defaultAccount.name}</p>}
                     </div>
                 </div>
 
