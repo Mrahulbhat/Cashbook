@@ -157,10 +157,8 @@ const TestCasesContent = () => {
                                     <div className="flex gap-2">
                                         <a
                                             href={`/test-cases/${testCase._id}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            title="Open test case in a new tab"
-                                            aria-label={`Open ${testCase.title} in a new tab`}
+                                            title="Open test case"
+                                            aria-label={`Open ${testCase.title}`}
                                             className="p-2 rounded-lg hover:bg-slate-700"
                                         >
                                             <ExternalLink
@@ -171,10 +169,8 @@ const TestCasesContent = () => {
 
                                         <a
                                             href={`/test-cases/edit/${testCase._id}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            title="Edit test case in a new tab"
-                                            aria-label={`Edit ${testCase.title} in a new tab`}
+                                            title="Edit test case"
+                                            aria-label={`Edit ${testCase.title}`}
                                             className="p-2 rounded-lg hover:bg-blue-500/20"
                                         >
                                             <Edit2
