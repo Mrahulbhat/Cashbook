@@ -31,16 +31,8 @@ export class TransactionPage extends BasePage {
         return this.page.locator('#FilterBtn-lifetime');
     }
 
-    get totalIncomeCard(): Locator {
-        return this.page.locator('#totalIncomeCard');
-    }
-
     get totalExpenseCard(): Locator {
         return this.page.locator('#totalExpenseCard');
-    }
-
-    get balanceCard(): Locator {
-        return this.page.locator('#balanceCard');
     }
 
     get bulkDeleteButton(): Locator {

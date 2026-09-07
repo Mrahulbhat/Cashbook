@@ -16,9 +16,7 @@ const TransactionsContent = () => {
     const [selectedIds, setSelectedIds] = useState([]);
     const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
     const [stats, setStats] = useState({
-        totalIncome: 0,
         totalExpense: 0,
-        balance: 0,
     });
 
     useEffect(() => {
@@ -50,23 +48,18 @@ const TransactionsContent = () => {
     }, [transactions, filter]);
 
     useEffect(() => {
-        let totalIncome = 0;
         let totalExpense = 0;
 
         filteredTransactions.forEach((t) => {
             const amount = Number(t.amount);
             const type = t.type.toLowerCase();
-            if (type === "income") {
-                totalIncome += amount;
-            } else if (type === "expense") {
+            if (type === "expense") {
                 totalExpense += amount;
             }
         });
 
         setStats({
-            totalIncome,
             totalExpense,
-            balance: totalIncome - totalExpense,
         });
     }, [filteredTransactions]);
 
@@ -120,17 +113,7 @@ const TransactionsContent = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div id="totalIncomeCard" className="bg-gradient-to-br from-green-900/40 to-green-800/20 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm">
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-green-400 font-semibold text-xs">Total Income</h3>
-                            <div className="p-1.5 bg-green-500/20 rounded-md">
-                                <ArrowDownLeft className="w-4 h-4 text-green-400" />
-                            </div>
-                        </div>
-                        <p id="totalIncome" className="text-xl font-bold text-white">{formatCurrency(stats.totalIncome)}</p>
-                    </div>
-
+                <div className="grid grid-cols-1 gap-4 mb-6">
                     <div id="totalExpenseCard" className="bg-gradient-to-br from-red-900/40 to-red-800/20 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
                         <div className="flex items-center justify-between mb-2">
                             <h3 className="text-red-400 font-semibold text-xs">Total Expense</h3>
@@ -139,13 +122,6 @@ const TransactionsContent = () => {
                             </div>
                         </div>
                         <p id="totalExpense" className="text-xl font-bold text-white">{formatCurrency(stats.totalExpense)}</p>
-                    </div>
-
-                    <div id="balanceCard" className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-blue-400 font-semibold text-xs">Balance</h3>
-                        </div>
-                        <p id="totalBalance" className="text-xl font-bold text-white">{formatCurrency(stats.balance)}</p>
                     </div>
                 </div>
 

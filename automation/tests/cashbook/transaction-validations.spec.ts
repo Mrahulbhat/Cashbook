@@ -36,8 +36,6 @@ test.describe('Transactions Functionality Validations', () => {
       await expect(transactionPage.lifetimeFilterButton).toBeVisible();
 
       await expect(transactionPage.totalExpenseCard).toBeVisible();
-      await expect(transactionPage.totalIncomeCard).toBeVisible();
-      await expect(transactionPage.balanceCard).toBeVisible();
       await expect(transactionPage.addButton).toBeVisible();
       await expect(transactionPage.bulkDeleteButton).toBeVisible();
       await expect(transactionPage.recordCountOnTable).toBeVisible();
