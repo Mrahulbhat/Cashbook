@@ -4,6 +4,7 @@ import User from '@/models/User';
 import Account from '@/models/Account';
 import Transaction from '@/models/Transaction';
 import Category from '@/models/Category';
+import Todo from '@/models/Todo';
 import mongoose from 'mongoose';
 import { verifyAdminToken } from '@/lib/adminAuth';
 
@@ -102,7 +103,10 @@ export async function DELETE(request, { params }) {
         // 3. Delete Categories
         await Category.deleteMany({ userId });
 
-        // 4. Delete the User profile
+        // 4. Delete to-do items
+        await Todo.deleteMany({ userId });
+
+        // 5. Delete the User profile
         await User.findByIdAndDelete(userId);
 
         return NextResponse.json({

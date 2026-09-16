@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { LogOut, LayoutGrid, Wallet, ListTodo, Plus, X, ArrowRight, Dumbbell } from "lucide-react";
+import { LogOut, LayoutGrid, Wallet, ListTodo, Plus, X, ArrowRight, Dumbbell, ClipboardCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 // ── App catalogue ──────────────────────────────────────────────
@@ -66,6 +66,18 @@ const APPS = [
         glow: "shadow-violet-500/20",
         border: "hover:border-violet-300",
         matchPaths: ["/dsa"],
+    },
+    {
+        id: "todo",
+        label: "To-Do List",
+        description: "Deadlines & priorities",
+        detail: "Organize your work and keep important deadlines visible.",
+        route: "/todo",
+        icon: ClipboardCheck,
+        gradient: "from-orange-500 to-slate-950",
+        glow: "shadow-orange-500/20",
+        border: "hover:border-orange-300",
+        matchPaths: ["/todo"],
     },
 ];
 

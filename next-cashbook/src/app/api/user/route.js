@@ -4,6 +4,7 @@ import User from '@/models/User';
 import Account from '@/models/Account';
 import Category from '@/models/Category';
 import Transaction from '@/models/Transaction';
+import Todo from '@/models/Todo';
 import { getAuthUser } from '@/lib/getAuthUser';
 
 export async function DELETE(req) {
@@ -24,6 +25,9 @@ export async function DELETE(req) {
 
         // 2. Delete all categories
         await Category.deleteMany({ userId: user.userId });
+
+        // Delete all to-do items
+        await Todo.deleteMany({ userId: user.userId });
 
         if (action === 'wipe') {
             return NextResponse.json({ success: true, message: 'All data wiped successfully' });

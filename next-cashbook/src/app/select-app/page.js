@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { Wallet, ListTodo, Plus, LogOut, ArrowRight, Sparkles, Dumbbell } from "lucide-react";
+import { Wallet, ListTodo, Plus, LogOut, ArrowRight, Sparkles, Dumbbell, ClipboardCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -17,6 +17,18 @@ const APPS = [
         iconBg: "bg-orange-50",
         accent: "group-hover:text-orange-700",
         tag: "Finance",
+    },
+    {
+        id: "todo",
+        name: "To-Do List",
+        description: "Organize work by deadline & priority",
+        icon: ClipboardCheck,
+        route: "/todo",
+        iconColor: "text-orange-700",
+        iconRing: "ring-orange-200",
+        iconBg: "bg-orange-50",
+        accent: "group-hover:text-orange-700",
+        tag: "Productivity",
     },
     {
         id: "servicecare",
@@ -82,7 +94,7 @@ const AppSelectionPage = () => {
     };
 
     return (
-        <div className="min-h-screen bank-page flex flex-col">
+        <div className="h-screen overflow-hidden bank-page flex flex-col">
 
             {/* Top bar */}
             <header className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
@@ -102,10 +114,12 @@ const AppSelectionPage = () => {
             </header>
 
             {/* Cards */}
-            <main className="flex-1 flex items-center justify-center px-6 py-12">
-                <div className="w-full max-w-lg space-y-3">
-                <h1 className="text-4xl font-bold text-white mb-3 text-center pt-4">App Dashboard</h1>
-                    <p className="text-xs font-semibold tracking-[0.2em] text-slate-400 uppercase mb-10 text-center">Choose an app</p>
+            <main className="min-h-0 flex-1 flex items-stretch justify-center px-6 py-8">
+                <div className="grid h-full w-full max-w-3xl grid-cols-2 grid-rows-[auto_repeat(3,minmax(0,1fr))] gap-4">
+                    <div className="col-span-full mb-6 text-center">
+                        <h1 className="pt-4 text-4xl font-bold text-white">App Dashboard</h1>
+                        <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Choose an app</p>
+                    </div>
 
                     {APPS.map((app) => {
                         const Icon = app.icon;

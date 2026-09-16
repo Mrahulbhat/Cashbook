@@ -29,11 +29,12 @@ export default function AppShell({ children }) {
 
     // Pages that should keep the top navbar but not the Cashbook sidebar
     const isHabits = pathname?.startsWith("/habits");
+    const isTodo = pathname?.startsWith("/todo");
     const isServiceCare = pathname?.startsWith("/servicecare");
     const isDsa = pathname?.startsWith("/dsa");
     const isTestCases = pathname?.startsWith("/test-cases");
 
-    if (isHabits || isServiceCare || isDsa || isTestCases) {
+    if (isHabits || isTodo || isServiceCare || isDsa || isTestCases) {
         return (
             <div className="h-screen flex flex-col bg-[#070b14] text-slate-100">
                 <Navbar />

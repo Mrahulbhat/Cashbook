@@ -1,0 +1,33 @@
+import mongoose from "mongoose";
+
+const todoSchema = new mongoose.Schema(
+    {
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        workTitle: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        deadline: {
+            type: Date,
+            required: true,
+        },
+        priority: {
+            type: String,
+            enum: ["Low", "Medium", "High"],
+            default: "Medium",
+        },
+        completed: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    { timestamps: true }
+);
+
+const Todo = mongoose.models.Todo || mongoose.model("Todo", todoSchema);
+export default Todo;
