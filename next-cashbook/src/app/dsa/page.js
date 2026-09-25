@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { axiosInstance } from '@/lib/axios';
-import { Trophy, ListTodo, Swords, Settings, Plus, Link2, ExternalLink, Pencil, Trash2, Medal, Target, Sparkles } from 'lucide-react';
+import { Trophy, ListTodo, Swords, Settings, Plus, Link2, ExternalLink, Pencil, Trash2, Medal, Target, Sparkles, UserPlus, UserCheck, UserX, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
@@ -28,11 +28,11 @@ const emptyForm = {
 function DSATrackerContent() {
   const searchParams = useSearchParams();
   const requestedTab = searchParams.get('tab');
-  const activeTab = ['problems', 'challenges', 'leaderboard', 'settings'].includes(requestedTab) ? requestedTab : 'problems';
+  const activeTab = ['problems', 'friends', 'challenges', 'leaderboard', 'settings'].includes(requestedTab) ? requestedTab : 'problems';
   const [problems, setProblems] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [challenges, setChallenges] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [friendData, setFriendData] = useState({ friends: [], incomingRequests: [], outgoingRequests: [], users: [] });
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
@@ -43,16 +43,16 @@ function DSATrackerContent() {
   const fetchAll = async () => {
     try {
       setLoading(true);
-      const [problemsRes, leaderboardRes, challengesRes, usersRes] = await Promise.all([
+      const [problemsRes, leaderboardRes, challengesRes, friendsRes] = await Promise.all([
         axiosInstance.get('/dsa/problems'),
         axiosInstance.get('/dsa/leaderboard'),
         axiosInstance.get('/dsa/challenges'),
-        axiosInstance.get('/dsa/users'),
+        axiosInstance.get('/dsa/friends'),
       ]);
       setProblems(problemsRes.data || []);
       setLeaderboard(leaderboardRes.data || []);
       setChallenges(challengesRes.data || []);
-      setUsers(usersRes.data || []);
+      setFriendData(friendsRes.data || { friends: [], incomingRequests: [], outgoingRequests: [], users: [] });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Unable to load DSA data');
     } finally {
@@ -157,6 +157,26 @@ function DSATrackerContent() {
       toast.success('Challenge sent');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to send challenge');
+    }
+  };
+
+  const sendFriendRequest = async (targetUserId) => {
+    try {
+      const response = await axiosInstance.post('/dsa/friends', { targetUserId });
+      toast.success(response.data.message || 'Friend request sent');
+      await fetchAll();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to send friend request');
+    }
+  };
+
+  const respondToFriendRequest = async (requestId, action) => {
+    try {
+      const response = await axiosInstance.patch(`/dsa/friends/${requestId}`, { action });
+      toast.success(response.data.message);
+      await fetchAll();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update friend request');
     }
   };
 
@@ -300,6 +320,63 @@ function DSATrackerContent() {
           </div>
         )}
 
+        {activeTab === 'friends' && (
+          <div className="space-y-5">
+            <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5">
+              <h2 className="mb-4 text-xl font-bold">Incoming friend requests</h2>
+              {friendData.incomingRequests.length === 0 ? <p className="text-sm text-slate-400">No incoming requests.</p> : (
+                <div className="space-y-3">
+                  {friendData.incomingRequests.map((request) => (
+                    <div key={request._id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 p-4">
+                      <div>
+                        <p className="font-semibold">{request.user.name}</p>
+                        <p className="text-xs text-slate-400">{request.user.email || 'No email'}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => respondToFriendRequest(request._id, 'accept')} className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white"><UserCheck className="h-4 w-4" />Accept</button>
+                        <button onClick={() => respondToFriendRequest(request._id, 'reject')} className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300"><UserX className="h-4 w-4" />Decline</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {friendData.outgoingRequests.length > 0 && (
+                <div className="mt-5 border-t border-slate-800 pt-4">
+                  <h3 className="mb-3 text-sm font-semibold text-slate-300">Sent requests</h3>
+                  <div className="space-y-2">
+                    {friendData.outgoingRequests.map((request) => (
+                      <div key={request._id} className="flex items-center justify-between rounded-xl bg-slate-950/60 px-4 py-3">
+                        <span className="text-sm">{request.user.name}</span>
+                        <span className="text-xs text-amber-300">Pending</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+
+            <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5">
+              <h2 className="mb-4 text-xl font-bold">Find people</h2>
+              {friendData.users.length === 0 ? <p className="text-sm text-slate-400">No other users found.</p> : (
+                <div className="space-y-2">
+                  {friendData.users.map((person) => (
+                    <div key={person._id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 px-4 py-3">
+                      <div>
+                        <p className="font-medium">{person.name}</p>
+                        <p className="text-xs text-slate-400">{person.email || 'No email'}</p>
+                      </div>
+                      {person.relationship === 'none' && <button onClick={() => sendFriendRequest(person._id)} className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-2 text-sm font-semibold text-white"><UserPlus className="h-4 w-4" />Add friend</button>}
+                      {person.relationship === 'friend' && <span className="inline-flex items-center gap-2 text-sm text-emerald-300"><Users className="h-4 w-4" />Friend</span>}
+                      {person.relationship === 'outgoing' && <span className="text-sm text-amber-300">Request sent</span>}
+                      {person.relationship === 'incoming' && <span className="text-sm text-slate-400">Request received above</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+        )}
+
         {activeTab === 'challenges' && (
           <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5">
@@ -343,7 +420,7 @@ function DSATrackerContent() {
                   <textarea value={challengeMessage} onChange={(e) => setChallengeMessage(e.target.value)} rows={3} className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-white" />
                 </label>
 
-                {users.map((user) => (
+                {friendData.friends.map((user) => (
                   <div key={user._id} className="flex items-center justify-between rounded-2xl border border-slate-800 p-3">
                     <div>
                       <p className="font-medium text-white">{user.name}</p>
@@ -352,6 +429,7 @@ function DSATrackerContent() {
                     <button onClick={() => challengeUser(user._id)} disabled={!problems.length} className="rounded-xl bg-violet-500 px-3 py-2 text-sm font-semibold text-white disabled:opacity-40">Challenge</button>
                   </div>
                 ))}
+                {friendData.friends.length === 0 && <p className="text-sm text-slate-400">Add friends before sending challenges.</p>}
               </div>
             </div>
           </div>

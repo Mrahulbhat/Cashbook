@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Menu, X, TrendingUp, Wallet, Tag, Repeat, Target, Dumbbell, History, List, HandCoins, Trophy, Swords, Settings } from "lucide-react";
+import { Menu, X, TrendingUp, Wallet, Tag, Repeat, Target, Dumbbell, History, List, HandCoins, Trophy, Swords, Settings, Users } from "lucide-react";
 
 const MIN_SIDEBAR_WIDTH = 208;
 const MAX_SIDEBAR_WIDTH = 360;
@@ -44,6 +44,7 @@ const Sidebar = () => {
 
     const dsaTabs = [
         { name: "Problems", icon: List, path: "/dsa", id: "dsa-problems", tab: "problems" },
+        { name: "Friends", icon: Users, path: "/dsa", id: "dsa-friends", tab: "friends" },
         { name: "Challenges", icon: Swords, path: "/dsa", id: "dsa-challenges", tab: "challenges" },
         { name: "Leaderboard", icon: Trophy, path: "/dsa", id: "dsa-leaderboard", tab: "leaderboard" },
         { name: "Settings", icon: Settings, path: "/dsa", id: "dsa-settings", tab: "settings" },

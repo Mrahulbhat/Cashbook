@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import DSAChallenge from '@/models/DSAChallenge';
+import DSAFriendship from '@/models/DSAFriendship';
 import DSAProblem from '@/models/DSAProblem';
 import User from '@/models/User';
 import { getAuthUser } from '@/lib/getAuthUser';
@@ -65,6 +66,17 @@ export async function POST(req) {
 
         if (finalTargetUserId.toString() === user.userId.toString()) {
             return NextResponse.json({ message: 'You cannot challenge yourself' }, { status: 400 });
+        }
+
+        const areFriends = await DSAFriendship.exists({
+            status: 'accepted',
+            $or: [
+                { requesterId: user.userId, recipientId: finalTargetUserId },
+                { requesterId: finalTargetUserId, recipientId: user.userId },
+            ],
+        });
+        if (!areFriends) {
+            return NextResponse.json({ message: 'You can only challenge accepted friends' }, { status: 403 });
         }
 
         const challenge = await DSAChallenge.create({
