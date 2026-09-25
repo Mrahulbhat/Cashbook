@@ -8,8 +8,9 @@ export async function GET(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
+        const { id } = await params;
         await dbConnect();
-        const problem = await DSAProblem.findOne({ _id: params.id, userId: user.userId });
+        const problem = await DSAProblem.findOne({ _id: id, userId: user.userId });
         if (!problem) return NextResponse.json({ message: 'Problem not found' }, { status: 404 });
 
         return NextResponse.json(problem, { status: 200 });
@@ -23,11 +24,12 @@ export async function PUT(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
+        const { id } = await params;
         const payload = await req.json();
         const { difficulty, title, topic, source, tags, problemUrl, solutionUrl, status, notes } = payload;
 
         await dbConnect();
-        const problem = await DSAProblem.findOne({ _id: params.id, userId: user.userId });
+        const problem = await DSAProblem.findOne({ _id: id, userId: user.userId });
         if (!problem) return NextResponse.json({ message: 'Problem not found' }, { status: 404 });
 
         problem.difficulty = difficulty || problem.difficulty;
@@ -54,9 +56,10 @@ export async function PATCH(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
+        const { id } = await params;
         const payload = await req.json();
         await dbConnect();
-        const problem = await DSAProblem.findOne({ _id: params.id, userId: user.userId });
+        const problem = await DSAProblem.findOne({ _id: id, userId: user.userId });
         if (!problem) return NextResponse.json({ message: 'Problem not found' }, { status: 404 });
 
         if (payload.status) problem.status = payload.status;
@@ -74,8 +77,9 @@ export async function DELETE(req, { params }) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
+        const { id } = await params;
         await dbConnect();
-        const deleted = await DSAProblem.findOneAndDelete({ _id: params.id, userId: user.userId });
+        const deleted = await DSAProblem.findOneAndDelete({ _id: id, userId: user.userId });
         if (!deleted) return NextResponse.json({ message: 'Problem not found' }, { status: 404 });
 
         return NextResponse.json({ success: true, message: 'Problem deleted successfully' }, { status: 200 });

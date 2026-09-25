@@ -10,8 +10,8 @@ import Sidebar from "@/components/Sidebar";
  *
  *  /admin/*      → bare (admin has its own layout)
  *  /login, /signup, /select-app → bare (no chrome needed)
- *  /habits       → Navbar only  (habit tracker is self-contained, no sidebar)
- *  everything else (Cashbook) → Navbar + Sidebar
+ *  /habits, /todo, /servicecare, /test-cases → Navbar only
+ *  /dsa and Cashbook → Navbar + Sidebar
  */
 export default function AppShell({ children }) {
     const pathname = usePathname();
@@ -31,10 +31,9 @@ export default function AppShell({ children }) {
     const isHabits = pathname?.startsWith("/habits");
     const isTodo = pathname?.startsWith("/todo");
     const isServiceCare = pathname?.startsWith("/servicecare");
-    const isDsa = pathname?.startsWith("/dsa");
     const isTestCases = pathname?.startsWith("/test-cases");
 
-    if (isHabits || isTodo || isServiceCare || isDsa || isTestCases) {
+    if (isHabits || isTodo || isServiceCare || isTestCases) {
         return (
             <div className="h-screen flex flex-col bg-[#070b14] text-slate-100">
                 <Navbar />
@@ -45,7 +44,7 @@ export default function AppShell({ children }) {
         );
     }
 
-    // Cashbook — Navbar + Sidebar
+    // DSA and Cashbook — Navbar + Sidebar
     return (
         <div className="h-screen flex flex-col bg-[#070b14] text-slate-100">
             <Navbar />

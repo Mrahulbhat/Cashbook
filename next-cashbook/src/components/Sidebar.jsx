@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Menu, X, TrendingUp, Wallet, Tag, Repeat, Target, Dumbbell, History, List, HandCoins } from "lucide-react";
+import { Menu, X, TrendingUp, Wallet, Tag, Repeat, Target, Dumbbell, History, List, HandCoins, Trophy, Swords, Settings } from "lucide-react";
 
 const MIN_SIDEBAR_WIDTH = 208;
 const MAX_SIDEBAR_WIDTH = 360;
@@ -23,6 +23,7 @@ const Sidebar = () => {
     const currentTab = searchParams.get('tab');
 
     const isGym = pathname?.startsWith("/gym");
+    const isDsa = pathname?.startsWith("/dsa");
 
     const cashbookTabs = [
         { name: "Transactions", icon: TrendingUp, path: "/transactions", id: "transactions" },
@@ -41,7 +42,14 @@ const Sidebar = () => {
         { name: "History", icon: History, path: "/gym", id: "gym-history", tab: "history" },
     ];
 
-    const tabs = isGym ? gymTabs : cashbookTabs;
+    const dsaTabs = [
+        { name: "Problems", icon: List, path: "/dsa", id: "dsa-problems", tab: "problems" },
+        { name: "Challenges", icon: Swords, path: "/dsa", id: "dsa-challenges", tab: "challenges" },
+        { name: "Leaderboard", icon: Trophy, path: "/dsa", id: "dsa-leaderboard", tab: "leaderboard" },
+        { name: "Settings", icon: Settings, path: "/dsa", id: "dsa-settings", tab: "settings" },
+    ];
+
+    const tabs = isDsa ? dsaTabs : isGym ? gymTabs : cashbookTabs;
     
     // Clean banking theme colors
     const activeBg = "bg-violet-500/15 text-violet-200 font-semibold border-r-4 border-violet-400 shadow-sm";
@@ -109,15 +117,17 @@ const Sidebar = () => {
 
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
-                        const active = isGym 
-                            ? (currentTab === tab.tab || (!currentTab && tab.tab === 'workout'))
-                            : isActive(tab.path);
+                        const active = isDsa
+                            ? (currentTab === tab.tab || (!currentTab && tab.tab === 'problems'))
+                            : isGym
+                                ? (currentTab === tab.tab || (!currentTab && tab.tab === 'workout'))
+                                : isActive(tab.path);
 
                         return (
                             <button
                                 id={tab.id}
                                 key={tab.id}
-                                onClick={() => handleNavigation(isGym ? `${tab.path}?tab=${tab.tab}` : tab.path)}
+                                onClick={() => handleNavigation(isDsa || isGym ? `${tab.path}?tab=${tab.tab}` : tab.path)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${active ? activeBg : inactiveClass}`}
                             >
                                 <Icon className={`w-5 h-5 flex-shrink-0 ${active ? "text-violet-300" : "text-slate-400"}`} />

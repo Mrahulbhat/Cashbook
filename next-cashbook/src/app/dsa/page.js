@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { axiosInstance } from '@/lib/axios';
 import { Trophy, ListTodo, Swords, Settings, Plus, Link2, ExternalLink, Pencil, Trash2, Medal, Target, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -25,12 +26,14 @@ const emptyForm = {
 };
 
 function DSATrackerContent() {
+  const searchParams = useSearchParams();
+  const requestedTab = searchParams.get('tab');
+  const activeTab = ['problems', 'challenges', 'leaderboard', 'settings'].includes(requestedTab) ? requestedTab : 'problems';
   const [problems, setProblems] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [challenges, setChallenges] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [showForm, setShowForm] = useState(false);
@@ -202,18 +205,6 @@ function DSATrackerContent() {
           <StatCard label="Hard" value={totals.hard} icon={<Trophy className="w-5 h-5" />} color="rose" />
         </div>
 
-        <div className="flex flex-wrap gap-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-2">
-          {['dashboard', 'leaderboard', 'challenge', 'settings'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold capitalize transition ${activeTab === tab ? 'bg-violet-500 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
         {showForm && (
           <form onSubmit={submitProblem} className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 md:p-6 space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
@@ -234,7 +225,7 @@ function DSATrackerContent() {
           </form>
         )}
 
-        {activeTab === 'dashboard' && (
+        {activeTab === 'problems' && (
           <div className="space-y-5">
             {loading ? <LoadingState /> : problems.length === 0 ? <EmptyState /> : problems.map((problem) => (
               <div key={problem._id} className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5">
@@ -309,7 +300,7 @@ function DSATrackerContent() {
           </div>
         )}
 
-        {activeTab === 'challenge' && (
+        {activeTab === 'challenges' && (
           <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5">
               <div className="mb-4 flex items-center gap-3">
@@ -440,7 +431,9 @@ function EmptyState() { return <div className="rounded-3xl border border-dashed 
 export default function DSATrackerPage() {
   return (
     <ProtectedRoute>
-      <DSATrackerContent />
+      <Suspense fallback={<div className="min-h-screen bg-[#0b1020]" />}>
+        <DSATrackerContent />
+      </Suspense>
     </ProtectedRoute>
   );
 }
