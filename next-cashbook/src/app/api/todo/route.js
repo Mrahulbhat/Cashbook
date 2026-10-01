@@ -23,17 +23,21 @@ export async function POST(req) {
         const user = await getAuthUser(req);
         if (!user) return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
 
-        const { workTitle, deadline, priority } = await req.json();
-        if (!workTitle?.trim() || !deadline || !priority) {
-            return NextResponse.json({ message: 'Work title, deadline, and priority are required' }, { status: 400 });
+        const { workTitle, deadline, workType, completed, completedAt, isFavorite } = await req.json();
+        const validWorkTypes = ['New Scripting', 'R&D', 'Regression', 'Other'];
+        if (!workTitle?.trim() || !validWorkTypes.includes(workType) || (completed && !completedAt)) {
+            return NextResponse.json({ message: 'Work title, a valid work type, and a completion date for finished work are required' }, { status: 400 });
         }
 
         await dbConnect();
         const todo = await Todo.create({
             userId: user.userId,
             workTitle: workTitle.trim(),
-            deadline,
-            priority,
+            deadline: deadline || null,
+            workType,
+            completed: Boolean(completed),
+            completedAt: completed ? completedAt : null,
+            isFavorite: Boolean(completed && isFavorite),
         });
         return NextResponse.json(todo, { status: 201 });
     } catch (error) {

@@ -14,20 +14,31 @@ const todoSchema = new mongoose.Schema(
         },
         deadline: {
             type: Date,
-            required: true,
         },
-        priority: {
+        workType: {
             type: String,
-            enum: ["Low", "Medium", "High"],
-            default: "Medium",
+            enum: ["New Scripting", "R&D", "Regression", "Other"],
+            default: "Other",
         },
         completed: {
+            type: Boolean,
+            default: false,
+        },
+        completedAt: {
+            type: Date,
+            default: null,
+        },
+        isFavorite: {
             type: Boolean,
             default: false,
         },
     },
     { timestamps: true }
 );
+
+if (mongoose.models.Todo && !mongoose.models.Todo.schema.path("workType")) {
+    mongoose.deleteModel("Todo");
+}
 
 const Todo = mongoose.models.Todo || mongoose.model("Todo", todoSchema);
 export default Todo;

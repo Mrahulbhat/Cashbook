@@ -20,8 +20,8 @@ const APPS = [
     },
     {
         id: "todo",
-        name: "To-Do List",
-        description: "Organize work by deadline & priority",
+        name: "Work Tracker",
+        description: "Log completed work and plan what comes next",
         icon: ClipboardCheck,
         route: "/todo",
         iconColor: "text-orange-700",

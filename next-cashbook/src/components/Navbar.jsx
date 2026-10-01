@@ -69,9 +69,9 @@ const APPS = [
     },
     {
         id: "todo",
-        label: "To-Do List",
-        description: "Deadlines & priorities",
-        detail: "Organize your work and keep important deadlines visible.",
+        label: "Work Tracker",
+        description: "Daily work & plans",
+        detail: "Log what you completed, plan upcoming work, and keep favorites close.",
         route: "/todo",
         icon: ClipboardCheck,
         gradient: "from-orange-500 to-slate-950",
