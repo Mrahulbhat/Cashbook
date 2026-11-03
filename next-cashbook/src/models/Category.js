@@ -28,5 +28,8 @@ const categorySchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+categorySchema.index({ userId: 1, type: 1 });
+categorySchema.index({ userId: 1, isDefault: 1 });
+
 const Category = mongoose.models.Category || mongoose.model("Category", categorySchema);
 export default Category;

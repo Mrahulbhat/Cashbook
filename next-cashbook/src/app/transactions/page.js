@@ -10,68 +10,75 @@ import Modal from "@/components/Modal";
 
 const TransactionsContent = () => {
     const router = useRouter();
-    const { transactions, fetchTransactions, deleteTransaction, loading } = useTransactionStore();
+    const { transactions, pagination, fetchTransactions, deleteTransaction, loading } = useTransactionStore();
     const { accounts, fetchAccounts } = useAccountStore();
     const [filter, setFilter] = useState("monthly");
+    const [page, setPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
     const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
     const defaultAccount = accounts.find((account) => account.isDefault);
 
+    const dateRange = useMemo(() => {
+        const now = new Date();
+        let start;
+        let end;
+
+        if (filter === "daily") {
+            start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        } else if (filter === "monthly") {
+            start = new Date(now.getFullYear(), now.getMonth(), 1);
+            end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        } else if (filter === "yearly") {
+            start = new Date(now.getFullYear(), 0, 1);
+            end = new Date(now.getFullYear() + 1, 0, 1);
+        }
+
+        return start ? { from: start.toISOString(), to: end.toISOString() } : {};
+    }, [filter]);
+
     useEffect(() => {
-        fetchTransactions();
+        fetchTransactions({ page, limit: 25, ...dateRange });
+    }, [fetchTransactions, page, dateRange]);
+
+    useEffect(() => {
         fetchAccounts();
-    }, [fetchTransactions, fetchAccounts]);
+    }, [fetchAccounts]);
 
     const filteredTransactions = useMemo(() => {
-        return transactions.filter(t => {
-            const now = new Date();
-            const d = new Date(t.date);
-            
-            if (filter === 'daily') {
-                return d.getDate() === now.getDate() && 
-                       d.getMonth() === now.getMonth() && 
-                       d.getFullYear() === now.getFullYear();
-            }
-            if (filter === 'monthly') {
-                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-            }
-            if (filter === 'yearly') {
-                return d.getFullYear() === now.getFullYear();
-            }
-            return true;
-        }).sort((a, b) => {
-            const dateCompare = new Date(b.date) - new Date(a.date);
-            if (dateCompare !== 0) return dateCompare;
-            return new Date(b.createdAt) - new Date(a.createdAt);
-        });
-    }, [transactions, filter]);
+        return transactions;
+    }, [transactions]);
 
     const stats = useMemo(() => {
-        let totalExpense = 0;
-
-        filteredTransactions.forEach((t) => {
-            const amount = Number(t.amount);
-            const type = t.type.toLowerCase();
-            if (type === "expense") {
-                totalExpense += amount;
-            }
-        });
-
         return {
-            totalExpense,
+            totalExpense: pagination?.totalExpense ?? filteredTransactions.reduce(
+                (total, transaction) => transaction.type === "expense"
+                    ? total + Number(transaction.amount)
+                    : total,
+                0
+            ),
         };
-    }, [filteredTransactions]);
+    }, [filteredTransactions, pagination]);
 
     const handleDelete = (id) => {
         setSelectedTransactionId(id);
         setIsModalOpen(true);
     };
 
+    const clampPageToTotal = () => {
+        const totalPages = useTransactionStore.getState().pagination?.totalPages;
+        if (totalPages !== undefined && page > Math.max(1, totalPages)) {
+            setSelectedIds([]);
+            setPage(Math.max(1, totalPages));
+        }
+    };
+
     const handleConfirmDelete = async () => {
         if (selectedTransactionId) {
             await deleteTransaction(selectedTransactionId);
+            clampPageToTotal();
             await fetchAccounts();
             setSelectedTransactionId(null);
         }
@@ -82,6 +89,7 @@ const TransactionsContent = () => {
         for (const id of selectedIds) {
             await deleteTransaction(id);
         }
+        clampPageToTotal();
         await fetchAccounts();
         setSelectedIds([]);
     };
@@ -107,7 +115,11 @@ const TransactionsContent = () => {
                             <button
                                 key={f}
                                 id={`FilterBtn-${f}`}
-                                onClick={() => setFilter(f)}
+                                onClick={() => {
+                                    setFilter(f);
+                                    setPage(1);
+                                    setSelectedIds([]);
+                                }}
                                 className={`px-6 py-2.5 rounded-xl capitalize text-sm font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${filter === f ? 'bg-green-600 text-white shadow-lg shadow-green-900/40 transform scale-105' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'}`}
                             >
                                 {f}
@@ -165,7 +177,7 @@ const TransactionsContent = () => {
 
                     <div className="inline-flex items-center gap-2 rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-2 shadow-sm">
                         <span className="text-xs font-medium uppercase tracking-[0.12em] text-gray-400">No of records</span>
-                        <span className="text-lg font-bold text-white">{filteredTransactions.length}</span>
+                        <span className="text-lg font-bold text-white">{pagination?.total ?? filteredTransactions.length}</span>
                     </div>
                 </div>
 
@@ -237,6 +249,43 @@ const TransactionsContent = () => {
                     <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-16 text-center">
                         <p className="text-gray-400 text-lg">No transactions found</p>
                         <p className="mt-2 text-sm text-gray-500">No of records: 0</p>
+                    </div>
+                )}
+
+                {pagination && pagination.totalPages > 1 && (
+                    <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-400">
+                        <span>
+                            Showing {(pagination.page - 1) * pagination.limit + 1}
+                            {" - "}
+                            {Math.min(pagination.page * pagination.limit, pagination.total)}
+                            {" of "}
+                            {pagination.total}
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setSelectedIds([]);
+                                    setPage((currentPage) => Math.max(1, currentPage - 1));
+                                }}
+                                disabled={page === 1 || loading}
+                                className="rounded-lg border border-gray-700 px-3 py-2 text-white disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                Previous
+                            </button>
+                            <span>Page {pagination.page} of {pagination.totalPages}</span>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setSelectedIds([]);
+                                    setPage((currentPage) => Math.min(pagination.totalPages, currentPage + 1));
+                                }}
+                                disabled={page >= pagination.totalPages || loading}
+                                className="rounded-lg border border-gray-700 px-3 py-2 text-white disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
                 )}
 

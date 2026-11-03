@@ -23,5 +23,8 @@ const accountSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+accountSchema.index({ userId: 1, isDefault: 1 });
+accountSchema.index({ userId: 1, name: 1 });
+
 const Account = mongoose.models.Account || mongoose.model("Account", accountSchema);
 export default Account;

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 
 export const dynamic = 'force-dynamic';
 import dbConnect from '@/lib/dbConnect';
@@ -20,14 +21,86 @@ export async function GET(req) {
             return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
         }
 
+        const { searchParams } = new URL(req.url);
+        const pageParam = searchParams.get('page');
+        const limitParam = searchParams.get('limit');
+        const fromParam = searchParams.get('from');
+        const toParam = searchParams.get('to');
+        const isPaginated = pageParam !== null || limitParam !== null || fromParam !== null || toParam !== null;
+
         await dbConnect();
-        const transactions = await Transaction.find({ userId: user.userId })
+
+        const query = { userId: user.userId };
+        let from;
+        let to;
+
+        if (fromParam !== null) {
+            from = new Date(fromParam);
+            if (Number.isNaN(from.getTime())) {
+                return NextResponse.json({ message: 'Invalid from date' }, { status: 400 });
+            }
+        }
+
+        if (toParam !== null) {
+            to = new Date(toParam);
+            if (Number.isNaN(to.getTime())) {
+                return NextResponse.json({ message: 'Invalid to date' }, { status: 400 });
+            }
+        }
+
+        if (from || to) {
+            query.date = {
+                ...(from ? { $gte: from } : {}),
+                ...(to ? { $lt: to } : {}),
+            };
+        }
+
+        let transactionQuery = Transaction.find(query)
             .populate('account')
             .populate('toAccount')
             .populate('category')
             .sort({ date: -1, createdAt: -1 });
 
-        return NextResponse.json(transactions, { status: 200 });
+        if (!isPaginated) {
+            const transactions = await transactionQuery;
+            return NextResponse.json(transactions, { status: 200 });
+        }
+
+        const page = Number(pageParam ?? 1);
+        const limit = Number(limitParam ?? 25);
+        if (!Number.isInteger(page) || page < 1 || !Number.isInteger(limit) || limit < 1 || limit > 100) {
+            return NextResponse.json(
+                { message: 'Page must be a positive integer and limit must be between 1 and 100' },
+                { status: 400 }
+            );
+        }
+
+        transactionQuery = transactionQuery.skip((page - 1) * limit).limit(limit);
+        const [transactions, total, expenseTotals] = await Promise.all([
+            transactionQuery,
+            Transaction.countDocuments(query),
+            Transaction.aggregate([
+                {
+                    $match: {
+                        ...query,
+                        userId: new mongoose.Types.ObjectId(user.userId),
+                        type: 'expense',
+                    },
+                },
+                { $group: { _id: null, total: { $sum: '$amount' } } },
+            ]),
+        ]);
+
+        return NextResponse.json({
+            transactions,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                totalExpense: expenseTotals[0]?.total ?? 0,
+            },
+        }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }

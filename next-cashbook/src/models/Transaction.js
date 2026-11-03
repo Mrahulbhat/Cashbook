@@ -52,6 +52,10 @@ const transactionSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+transactionSchema.index({ userId: 1, date: -1, createdAt: -1 });
+transactionSchema.index({ userId: 1, account: 1 });
+transactionSchema.index({ userId: 1, category: 1 });
+
 const Transaction = mongoose.models.Transaction || mongoose.model("Transaction", transactionSchema);
 
 export default Transaction;

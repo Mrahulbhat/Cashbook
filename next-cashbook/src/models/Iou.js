@@ -53,5 +53,7 @@ const iouSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+iouSchema.index({ userId: 1, linkedTransactionId: 1 });
+
 const Iou = mongoose.models.Iou || mongoose.model("Iou", iouSchema);
 export default Iou;
