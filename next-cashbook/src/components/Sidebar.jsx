@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Menu, X, TrendingUp, Wallet, Tag, Repeat, Target, Dumbbell, History, List, HandCoins, Trophy, Swords, Settings, Users } from "lucide-react";
+import { Menu, X, TrendingUp, Wallet, Tag, Repeat, Target, Dumbbell, History, List, HandCoins, Trophy, Swords, Settings, Users, Sparkles } from "lucide-react";
 
 const MIN_SIDEBAR_WIDTH = 208;
 const MAX_SIDEBAR_WIDTH = 360;
@@ -34,6 +34,7 @@ const Sidebar = () => {
         // { name: "Transfer", icon: Repeat, path: "/transfer", id: "transfer" },
         { name: "IOU Tracker", icon: HandCoins, path: "/iou", id: "iou" },
         { name: "Statistics", icon: TrendingUp, path: "/stats", id: "statistics" },
+        { name: "Financial Insights", icon: Sparkles, path: "/insights", id: "insights" },
     ];
 
     const gymTabs = [

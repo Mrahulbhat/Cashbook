@@ -17,7 +17,7 @@ const APPS = [
         gradient: "from-orange-500 to-slate-950",
         glow: "shadow-orange-500/20",
         border: "hover:border-orange-300",
-        matchPaths: ["/dashboard", "/transactions", "/accounts", "/categories", "/stats", "/planning", "/transfer", "/settings", "/add-transaction", "/edit-transaction", "/iou"],
+        matchPaths: ["/dashboard", "/transactions", "/accounts", "/categories", "/stats", "/insights", "/planning", "/transfer", "/settings", "/add-transaction", "/edit-transaction", "/iou"],
     },
     {
         id: "servicecare",
