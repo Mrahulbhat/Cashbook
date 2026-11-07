@@ -44,9 +44,11 @@ function TodoContent() {
     const [editingId, setEditingId] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
     const [activeView, setActiveView] = useState('reminders');
     const [selectedMonth, setSelectedMonth] = useState(() => localDateString().slice(0, 7));
     const deadlineInputRef = useRef(null);
+    const isSavingRef = useRef(false);
 
     const loadTodos = async () => {
         try {
@@ -128,6 +130,10 @@ function TodoContent() {
 
     const submitTodo = async (event) => {
         event.preventDefault();
+        if (isSavingRef.current) return;
+
+        isSavingRef.current = true;
+        setIsSaving(true);
         try {
             const payload = {
                 ...form,
@@ -148,6 +154,9 @@ function TodoContent() {
             resetForm();
         } catch (error) {
             toast.error(error.response?.data?.message || 'Unable to save to-do');
+        } finally {
+            isSavingRef.current = false;
+            setIsSaving(false);
         }
     };
 
@@ -266,7 +275,7 @@ function TodoContent() {
                         <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{viewContent.title}</h1>
                         <p className="mt-2 text-sm text-slate-500">{viewContent.description}</p>
                     </div>
-                    {activeView !== 'favorites' && <button onClick={openCreateForm} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#21170f] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-orange-950/10 transition hover:bg-orange-800">
+                    {activeView !== 'favorites' && <button onClick={openCreateForm} disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#21170f] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-orange-950/10 transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-60">
                         <Plus size={17} /> {activeView === 'daily-log' ? 'Log completed work' : 'Add reminder'}
                     </button>}
                 </header>
@@ -289,7 +298,7 @@ function TodoContent() {
                     <form onSubmit={submitTodo} className="border border-[#eadfce] bg-white p-5 shadow-sm sm:p-6">
                         <div className="mb-5 flex items-center justify-between">
                             <h2 className="text-lg font-black">{editingId ? 'Edit work' : activeView === 'daily-log' ? 'Log completed work' : 'New reminder'}</h2>
-                            <button type="button" onClick={resetForm} className="rounded-lg p-1 text-slate-400 hover:bg-orange-50 hover:text-orange-700" aria-label="Close form"><X size={18} /></button>
+                            <button type="button" onClick={resetForm} disabled={isSaving} className="rounded-lg p-1 text-slate-400 hover:bg-orange-50 hover:text-orange-700 disabled:cursor-not-allowed disabled:opacity-60" aria-label="Close form"><X size={18} /></button>
                         </div>
                         <div className="grid gap-4 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-end">
                             {form.completed
@@ -297,7 +306,7 @@ function TodoContent() {
                                 : <label className="text-sm font-semibold text-slate-600">Reminder title<input value={form.workTitle} onChange={(event) => setForm({ ...form, workTitle: event.target.value })} className="mt-2 w-full rounded-lg border border-[#ddcfbd] bg-[#fffdf9] px-3 py-3 text-[#21170f] outline-none focus:border-orange-500" required /></label>}
                             {!form.completed && <label className="text-sm font-semibold text-slate-600">Deadline (optional)<div className="relative mt-2"><input ref={deadlineInputRef} type="date" value={form.deadline} onChange={(event) => setForm({ ...form, deadline: event.target.value })} className="w-full rounded-lg border border-[#ddcfbd] bg-[#fffdf9] px-3 py-3 pr-11 text-[#21170f] outline-none focus:border-orange-500" /><button type="button" onClick={() => { deadlineInputRef.current?.focus(); deadlineInputRef.current?.showPicker?.(); }} className="absolute right-1 top-1/2 -translate-y-1/2 rounded-md p-2 text-orange-700 hover:bg-orange-100" aria-label="Open deadline date picker"><CalendarDays size={17} /></button></div></label>}
                             <label className="text-sm font-semibold text-slate-600">Type<select value={form.workType} onChange={(event) => setForm({ ...form, workType: event.target.value })} className="mt-2 w-full rounded-lg border border-[#ddcfbd] bg-[#fffdf9] px-3 py-3 text-[#21170f] outline-none focus:border-orange-500"><option>New Scripting</option><option>R&amp;D</option><option>Regression</option><option>Other</option></select></label>
-                            <button type="submit" className="rounded-lg bg-orange-700 px-5 py-3 font-bold text-white hover:bg-orange-800">{editingId ? 'Save' : activeView === 'daily-log' ? 'Log work' : 'Add reminder'}</button>
+                            <button type="submit" disabled={isSaving} className="rounded-lg bg-orange-700 px-5 py-3 font-bold text-white hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-60">{isSaving ? 'Saving...' : editingId ? 'Save' : activeView === 'daily-log' ? 'Log work' : 'Add reminder'}</button>
                         </div>
                         <div className="mt-4 flex flex-col gap-3 border-t border-[#eadfce] pt-4 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex flex-wrap gap-x-6 gap-y-3">
